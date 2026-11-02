@@ -62,11 +62,11 @@
             let htmlKonten = "";
             produk.forEach(item => {
                 htmlKonten += `
-                    <div class="produk-kard" data-nama="${item.name.toLowerCase()}">
-                        <img src="${item.image_url || 'https://placeholder.com'}" alt="${item.name}">
-                        <h4>${item.name}</h4>
+                    <div class="produk-kard" data-title="${item.title.toLowerCase()}">
+                        <img src="${item.image_url || 'https://placeholder.com'}" alt="${item.title}">
+                        <h4>${item.title}</h4>
                         <div class="harga">Rp ${Number(item.price).toLocaleString('id-ID')}</div>
-                        <button class="tombol-beli" onclick="prosesCheckout('${item.id}', '${item.name}', ${item.price})">Beli</button>
+                        <button class="tombol-beli" onclick="prosesCheckout('${item.id}', '${item.title}', ${item.price})">Beli</button>
                     </div>
                 `;
             });
