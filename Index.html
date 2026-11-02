@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasar Kita - Marketplace</title>
+    
+    <!-- Memanggil Library Resmi Supabase agar bisa koding API di HP -->
+    <script src="https://jsdelivr.net"></script>
+
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
         header { background: #00aa5b; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
@@ -14,7 +18,8 @@
         .produk-kard { background: white; border-radius: 8px; width: 150px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
         .produk-kard img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; }
         .harga { color: #ff5722; font-weight: bold; margin: 8px 0; }
-        .tombol-beli { background: #00aa5b; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; cursor: pointer; }
+        .tombol-beli { background: #00aa5b; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .tombol-beli:hover { background: #008f4c; }
     </style>
 </head>
 <body>
@@ -28,37 +33,59 @@
 
     <div class="container">
         <h3>Produk Terbaru</h3>
-        <div class="produk-list">
-            <!-- Contoh Produk 1 -->
-            <div class="produk-kard" data-nama="sepatu keren">
-                <img src="https://unsplash.com" alt="Sepatu">
-                <h4>Sepatu Keren</h4>
-                <div class="harga">Rp 150.000</div>
-                <button class="tombol-beli">Beli</button>
-            </div>
-            <!-- Contoh Produk 2 -->
-            <div class="produk-kard" data-nama="jam tangan">
-                <img src="https://unsplash.com" alt="Jam">
-                <h4>Jam Tangan</h4>
-                <div class="harga">Rp 250.000</div>
-                <button class="tombol-beli">Beli</button>
-            </div>
-            <!-- Contoh Produk 3 -->
-            <div class="produk-kard" data-nama="baju kaos hitam">
-                <img src="https://unsplash.com" alt="Baju">
-                <h4>Baju Kaos Hitam</h4>
-                <div class="harga">Rp 85.000</div>
-                <button class="tombol-beli">Beli</button>
-            </div>
+        <!-- Kontainer tempat produk dari database Supabase akan muncul secara otomatis -->
+        <div class="produk-list" id="daftarProduk">
+            <p>Memuat produk dari database...</p>
         </div>
     </div>
 
-    <!-- Sistem Logika Pencarian -->
     <script>
+        // ==========================================
+        // 1. KONEKSI SUPABASE 
+        // Gantilah dengan URL dan Anon Key milik Anda dari dashboard Supabase
+        // ==========================================
+        const SUPABASE_URL = "https://GANTI_DENGAN_URL_PROYEK_ANDA.supabase.co";
+        const SUPABASE_ANON_KEY = "GANTI_DENGAN_ANON_KEY_ANDA";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==========================================
+        // 2. FUNGSI AMBIL DATA PRODUK DARI DATABASE
+        // ==========================================
+        async function muatProdukDariDatabase() {
+            let { data: produk, error } = await supabase
+                .from('products') // Pastikan nama tabel Anda di Supabase adalah 'products'
+                .select('*');
+                
+            if (error) {
+                console.error("Gagal memuat produk:", error);
+                document.getElementById('daftarProduk').innerHTML = "<p>Gagal memuat produk.</p>";
+                return;
+            }
+
+            let htmlKonten = "";
+            produk.forEach(item => {
+                htmlKonten += `
+                    <div class="produk-kard" data-nama="${item.name.toLowerCase()}">
+                        <img src="${item.image_url || 'https://placeholder.com'}" alt="${item.name}">
+                        <h4>${item.name}</h4>
+                        <div class="harga">Rp ${Number(item.price).toLocaleString('id-ID')}</div>
+                        <button class="tombol-beli" onclick="prosesCheckout('${item.id}', ${item.price})">Beli</button>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('daftarProduk').innerHTML = htmlKonten;
+        }
+
+        // Jalankan fungsi ambil data otomatis saat halaman selesai dimuat
+        window.onload = muatProdukDariDatabase;
+
+        // ==========================================
+        // 3. FUNGSI PENCARIAN LOKAL
+        // ==========================================
         function cariProduk() {
             let input = document.getElementById('cariInput').value.toLowerCase();
             let kartu = document.getElementsByClassName('produk-kard');
-            
             for (let i = 0; i < kartu.length; i++) {
                 let namaProduk = kartu[i].getAttribute('data-nama');
                 if (namaProduk.includes(input)) {
@@ -67,6 +94,14 @@
                     kartu[i].style.display = "none";
                 }
             }
+        }
+
+        // ==========================================
+        // 4. ALUR TRANSAKSI (INTEGRASI RAJAONGKIR & DOKU)
+        // ==========================================
+        async function prosesCheckout(idProduk, harga) {
+            alert("Memproses pesanan untuk produk ID: " + idProduk);
+            // Langkah ini nantinya memicu perhitungan RajaOngkir dan pembuatan invoice Doku
         }
     </script>
 
