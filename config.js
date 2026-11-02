@@ -1,4 +1,4 @@
 const SUPABASE_URL = "https://zgliygdpbaorutzttxlr.supabase.co/rest/v1/";
-const SUPABASE_ANON_KEY = "sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGl5Z2RwYmFvcnV0enR0eGxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxMjI0NjIsImV4cCI6MjEwNzY5ODQ2Mn0.wuFP2cn2pI3Slzm7nJjE5q0C22ILgrx00UKXLV9lcqU";
 window.SUPABASE_URL = SUPABASE_URL;
 window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
