@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasar Kita - Marketplace</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+        header { background: #00aa5b; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
+        .container { padding: 15px; }
+        .produk-list { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .produk-kard { background: white; border-radius: 8px; width: 150px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .produk-kard img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; }
+        .harga { color: #ff5722; font-weight: bold; margin: 8px 0; }
+        .tombol-beli { background: #00aa5b; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
 
+    <header>🛒 PASAR KITA MARKETPLACE</header>
+
+    <div class="container">
+        <h3>Produk Terbaru</h3>
+        <div class="produk-list">
+            <!-- Contoh Produk 1 -->
+            <div class="produk-kard">
+                <img src="https://unsplash.com" alt="Sepatu">
+                <h4>Sepatu Keren</h4>
+                <div class="harga">Rp 150.000</div>
+                <button class="tombol-beli">Beli</button>
+            </div>
+            <!-- Contoh Produk 2 -->
+            <div class="produk-kard">
+                <img src="https://unsplash.com" alt="Jam">
+                <h4>Jam Tangan</h4>
+                <div class="harga">Rp 250.000</div>
+                <button class="tombol-beli">Beli</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
