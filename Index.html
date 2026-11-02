@@ -99,9 +99,52 @@
         // ==========================================
         // 4. ALUR TRANSAKSI (INTEGRASI RAJAONGKIR & DOKU)
         // ==========================================
-        async function prosesCheckout(idProduk, harga) {
-            alert("Memproses pesanan untuk produk ID: " + idProduk);
-            // Langkah ini nantinya memicu perhitungan RajaOngkir dan pembuatan invoice Doku
+        // ==========================================
+// 4. ALUR TRANSAKSI OTOMATIS (RAJAONGKIR & DOKU)
+// ==========================================
+async function prosesCheckout(idProduk, harga) {
+    // A. Meminta Input Alamat Tujuan dari Pembeli
+    let kotaTujuan = prompt("Masukkan Kota Tujuan Pengiriman (Contoh: Kota Jakarta Selatan):");
+    if (!kotaTujuan) return alert("Pengiriman dibatalkan.");
+
+    alert("Sedang menghitung ongkos kirim ke " + kotaTujuan + "...");
+
+    try {
+        // B. Menembak API RajaOngkir melalui Edge Function Supabase agar aman
+        // (Kita akan membuat fungsi 'hitung-ongkir' ini di dashboard Supabase nanti)
+        let responOngkir = await supabase.functions.invoke('hitung-ongkir', {
+            body: { kota_tujuan: kotaTujuan, berat_gram: 1000 } // Contoh berat 1kg
+        });
+
+        if (responOngkir.error) throw new Error("Gagal hitung ongkir");
+        
+        let ongkir = responOngkir.data.total_ongkir;
+        let totalBayar = harga + ongkir;
+
+        alert(`Ongkir ditemukan: Rp ${ongkir.toLocaleString('id-ID')}\nTotal yang harus dibayar: Rp ${totalBayar.toLocaleString('id-ID')}`);
+        alert("Membuka halaman pembayaran Doku...");
+
+        // C. Membuat Invoice Resmi via API Doku
+        let responDoku = await supabase.functions.invoke('buat-pembayaran-doku', {
+            body: { 
+                amount: totalBayar, 
+                invoice_id: "INV-" + Date.now(),
+                item_name: "Pembelian Produk ID " + idProduk
+            }
+        });
+
+        if (responDoku.error) throw new Error("Gagal membuat link pembayaran");
+
+        // D. Mengarahkan Pembeli ke Halaman Pembayaran Doku (Bisa QRIS, VA Bank, dll)
+        let linkPembayaran = responDoku.data.payment_url;
+        window.location.href = linkPembayaran;
+
+    } catch (err) {
+        console.error(err);
+        alert("Terjadi kesalahan sistem: " + err.message);
+    }
+}
+
         }
     </script>
 
