@@ -1,12 +1,174 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PASAR KITA</title><script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-gray-100">
-<div class="bg-green-600 text-white p-3"><b>🛒 PASAR KITA - Toko 1 AKTIF</b><div id="s" class="text-xs bg-yellow-300 text-black px-2 py-1 rounded-full mt-1 inline-block">Menghubungkan...</div></div>
-<div class="p-3 grid grid-cols-2 gap-3" id="p"></div>
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/+esm'
-const supabase = createClient("https://zgliygdpbaorutzttxlr.supabase.co","sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84");
-const {data,error} = await supabase.from('products').select('*').eq('shop_id',1);
-document.getElementById('s').textContent = error ? 'Gagal: '+error.message : `✅ ${data.length} produk LIVE`;
-document.getElementById('p').innerHTML = (data||[]).map(x=>`<div class="bg-white p-3 rounded-xl"><div class="bg-green-50 h-20 rounded flex items-center justify-center">🌺</div><div class="font-bold text-sm mt-1">${x.title}</div><div class="text-red-600 font-bold">Rp${x.price}</div><div class="text-xs">shop_id=${x.shop_id} • ID ${x.id}</div></div>`).join('') || 'Belum ada produk shop_id=1';
-</script></body></html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KASAP_ID - Market Murah Belanja Enak</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
+body{background:#f2f2f2;padding-bottom:80px}
+.top{background:#00a651;color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:10}
+.top .row{display:flex;align-items:center;gap:10px}
+.logo{width:44px;height:44px;background:#fff;color:#00a651;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px}
+.top h1{font-size:20px;letter-spacing:.5px}
+.top .ic{margin-left:auto;display:flex;gap:8px}
+.top .ic span{width:36px;height:36px;background:#1cc56a;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.search{display:flex;background:#fff;border-radius:999px;margin-top:12px;overflow:hidden}
+.search input{flex:1;border:0;padding:12px 14px;outline:0}
+.search button{background:#067a3d;color:#fff;border:0;padding:0 18px;font-weight:700}
+.wallet{background:#00a651;color:#fff;padding:14px 16px 16px}
+.wallet .t{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+.saldo{background:#1cc56a;padding:5px 10px;border-radius:999px}
+.cards{display:flex;gap:10px;overflow-x:auto;padding-top:12px}
+.card{background:#fff;color:#111;min-width:160px;border-radius:16px;padding:12px}
+.card small{color:#666;display:block;margin:6px 0 2px}
+.card p{font-weight:800}
+.card button{background:#000;color:#fff;border:0;border-radius:999px;padding:8px 0;width:100%;margin-top:10px;font-weight:600}
+.hero{background:#00a651;color:#fff;margin:14px;border-radius:22px;padding:18px}
+.hero h2{font-size:28px;line-height:1.05}
+.hero p{color:#c8f5d8;font-size:13px;margin:10px 0 14px}
+.hero button{background:#fff;color:#00a651;border:0;border-radius:999px;padding:11px 18px;font-weight:800}
+.hero small{display:block;color:#a8e8c0;font-size:11px;margin-top:12px}
+.box{background:#fff;margin:14px;border-radius:20px;padding:16px}
+.box h3{display:flex;justify-content:space-between}
+.box h3 a{color:#00a651;font-size:14px;text-decoration:none}
+.ppob{display:flex;gap:12px;overflow-x:auto;margin-top:14px;text-align:center}
+.ppob div{min-width:76px}
+.ppob i{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;margin:auto}
+.tabs{display:flex;background:#fff;margin:14px;border-radius:999px;padding:4px}
+.tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:999px;font-weight:700}
+.tabs button.on{background:#00a651;color:#fff}
+.list{padding:0 14px}
+.item{background:#fff;border-radius:16px;padding:12px;margin-bottom:10px;display:flex;gap:10px;align-items:center}
+.item b{font-size:15px}.item p{color:#666;font-size:13px}.item span{font-weight:800;color:#00a651}
+.item button{margin-left:auto;background:#00a651;color:#fff;border:0;padding:8px 12px;border-radius:999px}
+.empty{background:#fff;border:1px dashed #ddd;border-radius:16px;padding:22px;text-align:center;color:#666}
+.empty button{background:#00a651;color:#fff;border:0;padding:10px 16px;border-radius:999px;font-weight:700;margin-top:10px}
+.field{width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin:6px 0}
+.btn{width:100%;background:#00a651;color:#fff;border:0;padding:13px;border-radius:999px;font-weight:800;margin-top:10px}
+.btn2{width:100%;background:#000;color:#fff;border:0;padding:12px;border-radius:999px;font-weight:700;margin-top:8px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:10px 0 12px;border-top:1px solid #eee}
+.nav div{text-align:center;font-size:11px;color:#888}
+.nav .on{color:#00a651;font-weight:700}
+.fab{position:fixed;right:14px;bottom:82px;width:56px;height:56px;background:#00c853;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="top"><div class="row"><div class="logo">K</div><h1>KASAP_ID</h1><div class="ic"><span>💬</span><span>🔔</span><span>⊞</span></div></div>
+<div class="search"><input id="q" placeholder="Cari tanaman hias, pot, PPOB..."><button onclick="cari()">Cari</button></div></div>
+
+<div id="page-beranda">
+<div class="wallet"><div class="t"><span>E-Wallet Saya • Untuk Belanja</span><span class="saldo" id="saldoTxt">Saldo Rp 0</span></div>
+<div class="cards" id="ewallets"></div></div>
+<div class="hero"><h2>MARKET MURAH<br>BELANJA ENAK</h2><p>Tanaman hias lengkap • PPOB instan • Android only</p><button onclick="showTab('produk')">Lihat Tanaman Hias →</button><small>Aksi: shopeepay pointer 1793682905004<br>E-Wallet shopeepay pointer 1793682905004</small></div>
+<div class="box"><h3>PPOB & Tagihan <a href="#" onclick="showPage('ppob');return false">Lihat Semua ></a></h3><div class="ppob">
+<div onclick="ppob('Pulsa')"><i style="background:#e0f2ff">📱</i><br>Pulsa</div>
+<div onclick="ppob('Paket Data')"><i style="background:#efe6ff">📶</i><br>Paket Data</div>
+<div onclick="ppob('Listrik')"><i style="background:#fff3cc">⚙️</i><br>Listrik</div>
+<div onclick="ppob('PDAM')"><i style="background:#dff3ff">💧</i><br>PDAM</div>
+</div></div>
+<div class="list" id="produk"><h3 style="margin:4px 4px 10px">Produk Terbaru • <span id="count">0 produk</span></h3><div id="list"></div>
+<div class="empty" id="emptyBox">Masih belum ada produk<br><small>Belum ada produk dari seller • Tambah di Akun Saya dulu</small><br><button onclick="showPage('akun')">+ Tambah Produk Dari Akun</button></div></div>
+</div>
+
+<div id="page-ppob" class="hidden"><div class="box"><h3>PPOB & Tagihan</h3><p style="color:#666;font-size:13px;margin-top:6px">Pulsa • Paket Data • Listrik • PDAM • BPJS — IAK • Tanpa riwayat dummy</p>
+<input class="field" id="ppobNo" placeholder="Nomor HP / ID Pelanggan">
+<select class="field" id="ppobJenis"><option>Pulsa 5000</option><option>Pulsa 10000</option><option>Pulsa 25000</option><option>Pulsa 50000</option><option>Pulsa 100000</option><option>Paket Data 1GB</option><option>Paket Data 5GB</option><option>Token Listrik 20000</option><option>Token Listrik 50000</option><option>PDAM</option></select>
+<button class="btn" onclick="beliPPOB()">Beli PPOB</button>
+<button class="btn2" onclick="showPage('beranda')">Kembali</button>
+<div id="ppobHist" style="margin-top:12px;color:#666;font-size:13px">Belum ada riwayat PPOB</div></div></div>
+
+<div id="page-chat" class="hidden"><div class="box"><h3>Chat</h3><p style="color:#666;font-size:13px;margin-top:6px">No HP / No Rekening / link luar diblokir • kata kasar jadi ******</p>
+<div id="chatBox" style="border:1px solid #eee;border-radius:12px;padding:10px;height:180px;overflow:auto;margin-top:10px">Belum ada chat</div>
+<input class="field" id="chatInput" placeholder="Ketik pesan...">
+<button class="btn" onclick="kirimChat()">Kirim</button>
+<button class="btn2" onclick="showPage('beranda')">Kembali</button></div></div>
+
+<div id="page-keranjang" class="hidden"><div class="box"><h3>Keranjang</h3><div id="cartList" style="margin-top:10px;color:#666">Keranjang kosong</div>
+<button class="btn" onclick="checkout()">Checkout</button><button class="btn2" onclick="showPage('beranda')">Kembali</button></div></div>
+
+<div id="page-pesanan" class="hidden"><div class="box"><h3>Pesanan Saya • Lacak Pesanan</h3>
+<input class="field" id="resiInput" placeholder="Masukkan No Resi TRK-...">
+<button class="btn" onclick="lacak()">Lacak di cekresi.com</button>
+<div id="orderList" style="margin-top:12px;color:#666">Belum ada pesanan</div>
+<button class="btn2" onclick="showPage('beranda')">Kembali</button></div></div>
+
+<div id="page-checkout" class="hidden"><div class="box"><h3>Checkout • Rincian Pembeli Otomatis</h3>
+<p style="color:#666;font-size:13px;margin-top:6px">Diisi otomatis dari Akun Saya — gak usah ketik manual</p>
+<input class="field" id="ckNama" placeholder="Nama">
+<input class="field" id="ckAlamat" placeholder="Alamat">
+<input class="field" id="ckHp" placeholder="No HP">
+<select class="field" id="ckBank"><option>BCA VA</option><option>BNI VA</option><option>BRI VA</option><option>Mandiri VA</option><option>Permata VA</option><option>CIMB VA</option><option>Danamon VA</option><option>BTN VA</option><option>BSI VA</option><option>LinkAja</option><option>GoPay</option><option>Visa</option><option>Mastercard</option><option>Alfamart</option><option>Indomaret</option></select>
+<select class="field" id="ckKurir"><option>JNE</option><option>POS</option><option>TIKI</option><option>J&T</option><option>SiCepat</option><option>AnterAja</option><option>Ninja</option><option>Wahana</option><option>Lion</option><option>ID Express</option><option>RPX</option><option>SAP</option></select>
+<div id="ckTotal" style="font-weight:800;margin-top:8px">Total: Rp 0</div>
+<button class="btn" onclick="bayar()">Bayar Sekarang</button>
+<button class="btn2" onclick="showPage('beranda')">Kembali</button></div></div>
+
+<div id="page-akun" class="hidden"><div class="box"><h3>Akun Saya</h3>
+<input class="field" id="akNama" placeholder="Nama">
+<input class="field" id="akAlamat" placeholder="Alamat">
+<input class="field" id="akHp" placeholder="No HP">
+<button class="btn" onclick="simpanAkun()">Simpan Akun Saya</button>
+<hr style="margin:14px 0">
+<h3>Tambah Produk (Seller)</h3>
+<input class="field" id="prNama" placeholder="Nama Produk">
+<input class="field" id="prHarga" type="number" placeholder="Harga">
+<input class="field" id="prStok" type="number" placeholder="Stok">
+<select class="field" id="prKat"><option>Tanaman Hias</option><option>Pot</option><option>Pupuk</option><option>Makanan</option><option>Fashion</option><option>Elektronik</option><option>Lainnya</option></select>
+<button class="btn" onclick="tambahProduk()">Tambah Produk</button>
+<div id="myProd" style="margin-top:12px;color:#666;font-size:13px">Belum ada produk saya</div>
+<button class="btn2" onclick="showPage('beranda')">Kembali</button></div></div>
+
+<div class="fab" onclick="showPage('chat')">💬</div>
+<div class="nav">
+<div class="on" onclick="showPage('beranda')">🏠<br>Beranda</div>
+<div onclick="showPage('ppob')">🎥<br>Live</div>
+<div onclick="showPage('chat')">💬<br>Chat</div>
+<div onclick="showPage('keranjang')">🛒<br>Keranjang</div>
+<div onclick="showPage('pesanan')">📦<br>Pesanan</div>
+<div onclick="showPage('akun')">👤<br>Akun</div>
+</div>
+<script>
+let products=JSON.parse(localStorage.getItem('kasap_real_products')||'[]');
+let cart=JSON.parse(localStorage.getItem('kasap_cart')||'[]');
+let orders=JSON.parse(localStorage.getItem('kasap_orders')||'[]');
+let ew=JSON.parse(localStorage.getItem('kasap_ewallet')||'{"Dana":0,"OVO":0,"ShopeePay":0}');
+function save(){localStorage.setItem('kasap_real_products',JSON.stringify(products));localStorage.setItem('kasap_cart',JSON.stringify(cart));localStorage.setItem('kasap_orders',JSON.stringify(orders));localStorage.setItem('kasap_ewallet',JSON.stringify(ew));}
+function render(){
+document.getElementById('count').textContent=products.length+' produk';
+let el=document.getElementById('list');el.innerHTML='';
+products.forEach((p,i)=>{el.innerHTML+='<div class="item"><div>📦</div><div><b>'+p.nama+'</b><p>'+p.kategori+' • '+p.seller+'</p><span>Rp '+Number(p.harga).toLocaleString('id-ID')+'</span></div><button onclick="addCart('+i+')">Beli</button></div>';});
+document.getElementById('emptyBox').style.display=products.length?'none':'block';
+let w=document.getElementById('ewallets');w.innerHTML='';
+['Dana','OVO','ShopeePay'].forEach(n=>{w.innerHTML+='<div class="card"><b>'+n+'</b><small>Belum terhubung</small><p>Rp '+Number(ew[n]||0).toLocaleString('id-ID')+'</p><button onclick="hub(\''+n+'\')">Hubungkan</button></div>';});
+let c=document.getElementById('cartList');c.innerHTML=cart.length?cart.map((x,i)=>'<div>'+x.nama+' - Rp '+Number(x.harga).toLocaleString('id-ID')+'</div>').join(''):'Keranjang kosong';
+let o=document.getElementById('orderList');o.innerHTML=orders.length?orders.map(x=>'<div style="background:#f9f9f9;padding:10px;border-radius:12px;margin-bottom:8px"><b>'+x.id+'</b> • '+x.nama+' • Rp '+Number(x.harga).toLocaleString('id-ID')+'<br>Resi: '+x.resi+' • <a href="https://cekresi.com/?noresi='+x.resi+'" target="_blank">Lacak</a> • <button onclick="terima(\''+x.id+'\')">Terima</button> <button onclick="retur(\''+x.id+'\')">Return</button></div>').join(''):'Belum ada pesanan';
+let m=document.getElementById('myProd');m.innerHTML=products.length?products.map((p,i)=>'<div>'+p.nama+' • Rp '+Number(p.harga).toLocaleString('id-ID')+' • <button onclick="hapusProd('+i+')">Hapus</button></div>').join(''):'Belum ada produk saya';
+document.getElementById('ckNama').value=localStorage.getItem('kasap_akun_nama')||'';
+document.getElementById('ckAlamat').value=localStorage.getItem('kasap_alamat')||'';
+document.getElementById('ckHp').value=localStorage.getItem('kasap_nomer_hp')||'';
+document.getElementById('akNama').value=localStorage.getItem('kasap_akun_nama')||'';
+document.getElementById('akAlamat').value=localStorage.getItem('kasap_alamat')||'';
+document.getElementById('akHp').value=localStorage.getItem('kasap_nomer_hp')||'';
+}
+function showPage(n){['beranda','ppob','chat','keranjang','pesanan','checkout','akun'].forEach(x=>{document.getElementById('page-'+x).classList.toggle('hidden',x!==n)});render();}
+function showTab(n){showPage('beranda');document.getElementById('produk').scrollIntoView({behavior:'smooth'});}
+function hub(n){let no=prompt('Nomor '+n+':');if(no){ew[n]=0;save();render();alert(n+' terhubung');}}
+function cari(){alert('Cari: '+document.getElementById('q').value);}
+function ppob(n){showPage('ppob');document.getElementById('ppobJenis').value=n==='Pulsa'?'Pulsa 10000':document.getElementById('ppobJenis').value;}
+function beliPPOB(){let no=document.getElementById('ppobNo').value;if(!no)return alert('Isi nomor dulu');document.getElementById('ppobHist').innerHTML='PPOB '+document.getElementById('ppobJenis').value+' ke '+no+' — Diproses';alert('PPOB diproses');}
+function tambahProduk(){let nama=document.getElementById('prNama').value,harga=document.getElementById('prHarga').value,stok=document.getElementById('prStok').value;if(!nama||!harga)return alert('Isi nama + harga');products.push({nama:nama,harga:harga,stok:stok,kategori:document.getElementById('prKat').value,seller:localStorage.getItem('kasap_akun_nama')||'achingshop@gmail.com'});save();render();alert('Produk ditambahkan — langsung tampil di Beranda');}
+function hapusProd(i){products.splice(i,1);save();render();}
+function addCart(i){cart.push(products[i]);save();render();alert('Ditambahkan ke keranjang');}
+function checkout(){if(!cart.length)return alert('Keranjang kosong');showPage('checkout');let t=cart.reduce((s,x)=>s+Number(x.harga),0);document.getElementById('ckTotal').textContent='Total: Rp '+t.toLocaleString('id-ID');}
+function bayar(){let t=cart.reduce((s,x)=>s+Number(x.harga),0);let resi='TRK-'+Date.now();cart.forEach(x=>{orders.push({id:'TRX-'+Date.now(),nama:x.nama,harga:x.harga,resi:resi})});cart=[];save();render();alert('Bayar berhasil — Resi '+resi);showPage('pesanan');}
+function lacak(){let r=document.getElementById('resiInput').value;if(!r)return alert('Isi resi');window.open('https://cekresi.com/?noresi='+r,'_blank');}
+function terima(id){alert('Pesanan '+id+' diterima — dana diteruskan ke seller');}
+function retur(id){let al=prompt('Alasan return:');if(al){alert('Return '+id+' diajukan — TRX-RET-'+Date.now());}}
+function simpanAkun(){localStorage.setItem('kasap_akun_nama',document.getElementById('akNama').value);localStorage.setItem('kasap_alamat',document.getElementById('akAlamat').value);localStorage.setItem('kasap_nomer_hp',document.getElementById('akHp').value);alert('Akun disimpan — Checkout otomatis pakai ini');render();}
+function kirimChat(){let v=document.getElementById('chatInput').value;if(!v)return;let bad=['anjing','bangsat','goblok','tai','bodong'];bad.forEach(b=>{v=v.split(b).join('******')});v=v.replace(/\d{9,}/g,'******').replace(/https?:\/\/\S+/g,'******');document.getElementById('chatBox').innerHTML+='<div>Anda: '+v+'</div>';document.getElementById('chatInput').value='';}
+render();
+</script>
+</body>
+</html>
