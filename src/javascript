@@ -3,5 +3,6 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // 👈 WAJIB tambahkan ini patek agar aset gambar dan skripnya tidak pecah atau blank
+  // Menetapkan base path agar sesuai dengan nama repositori sub-folder GitHub Anda
+  base: './', 
 })
