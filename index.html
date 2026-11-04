@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KASAP ID</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#EE4D2D">
 <style>
 body{margin:0;font-family:system-ui;background:#f5f5f5}
 header{background:#EE4D2D;color:#fff;padding:14px;text-align:center;font-weight:800}
@@ -49,6 +51,7 @@ async function tambah(){
   catch(e){alert("Gagal simpan, cek Policy INSERT di Supabase");}
 }
 muat();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}
 </script>
 </body>
 </html>
