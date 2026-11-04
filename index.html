@@ -1,33 +1,19 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pasar Kita - Aplikasi Etalase</title>
-  
-  <!-- Tailwind CSS CDN (Menggunakan versi standar yang stabil agar tidak bentrok) -->
-  <script src="https://tailwindcss.com"></script>
-  
-  <script>
-    // Konfigurasi tema Tailwind agar warna hijau aplikasi Anda pas patek
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brandGreen: '#00B464',
-          }
-        }
-      }
-    }
-  </script>
-</head>
-<body class="bg-gray-50 text-gray-900 antialiased font-sans">
-
-  <!-- Root element tempat aplikasi React/Vite Anda akan dirender oleh sistem -->
-  <div id="root"></div>
-
-  <!-- Skrip utama untuk menjalankan logika koneksi server Supabase Anda -->
-  <script type="module" src="/src/main.jsx"></script>
-
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kasap ID</title>
+    <!-- Tailwind CSS CDN tetap dipasang agar tampilan tidak rusak -->
+    <script src="https://tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900 antialiased">
+    
+    <!-- Wadah utama aplikasi Anda patek -->
+    <div id="root"></div>
+    
+    <!-- PENTING: Menggunakan titik (.) di depan agar jalurnya pas di GitHub Pages -->
+    <script type="module" src="./src/main.jsx"></script>
+    
+  </body>
 </html>
