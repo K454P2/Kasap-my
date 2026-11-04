@@ -1,29 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-// 1. Inisialisasi koneksi server Supabase menggunakan Key dari GitHub Secrets Anda
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL = "https://zgliygdpbaorutzttxlr.supabase.co";
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY = "sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
-export const supabase = createClient(supabaseUrl, supabaseKey)
-
-// 2. Fungsi kirim produk asli agar masuk ke tabel database server (Bukan Mode Lokal)
-async function tambahProdukKeServer(dataProduk) {
-  try {
-    const { data, error } = await supabase
-      .from('produk') // Pastikan nama tabel di Supabase Anda bernama 'produk'
-      .insert([
-        { 
-          nama_produk: dataProduk.nama, 
-          harga: dataProduk.harga, 
-          kategori: dataProduk.kategori,
-          stok: dataProduk.stok
-        }
-      ])
-
-    if (error) throw error
-    alert('Produk berhasil terkirim dan disimpan di server Supabase!')
-    return data
-  } catch (error) {
-    console.error('Koneksi ke server gagal patek:', error.message)
-    alert('Gagal mengirim ke server: ' + error.message)
-  }
-}
+export default defineConfig({
+  plugins: [react()],
+  base: './', // 👈 WAJIB tambahkan ini patek agar aset gambar dan skripnya tidak pecah atau blank
+})
