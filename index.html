@@ -5,19 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KASAP ID</title>
 <style>
-body{margin:0;font-family:system-ui;background:#f5f5f5;text-align:center}
-header{background:#EE4D2D;color:white;padding:16px;font-weight:800}
-.box{background:white;max-width:400px;margin:20px auto;padding:20px;border-radius:16px}
-button{background:#EE4D2D;color:white;border:0;padding:13px;width:100%;border-radius:12px;font-weight:800}
+body{margin:0;font-family:system-ui;background:#f5f5f5}
+header{background:#EE4D2D;color:#fff;padding:14px;text-align:center;font-weight:800}
+.wrap{max-width:480px;margin:auto;padding:14px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px}
+input,button{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin-top:8px;box-sizing:border-box}
+button{background:#EE4D2D;color:#fff;border:0;font-weight:800}
+.item{border-bottom:1px solid #eee;padding:10px 0}
 </style>
 </head>
 <body>
-<header>🛒 KASAP ID</header>
-<div class="box">
-<h2>TES HTML JALAN</h2>
-<p>Kalau tulisan ini muncul, HTML kamu berhasil.</p>
-<button onclick="document.getElementById('hasil').textContent='✅ TOMBOL JALAN!'">KLIK SAYA</button>
-<p id="hasil"></p>
+<header>🛒 KASAP ID - Marketplace</header>
+<div class="wrap">
+<div class="card"><div id="status">Menghubungkan...</div></div>
+<div class="card">
+<h3>+ Jual Produk</h3>
+<input id="nm" placeholder="Nama produk">
+<input id="hg" type="number" placeholder="Harga">
+<button onclick="tambah()">Simpan ke Supabase</button>
 </div>
+<div class="card"><h3>Daftar Produk</h3><div id="list">Memuat...</div></div>
+</div>
+<script>
+const URL="https://zgliygdpbaorutzttxlr.supabase.co";
+const KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
+async function api(path,opt={}){
+  const r=await fetch(URL+"/rest/v1/"+path,{...opt,headers:{apikey:KEY,Authorization:"Bearer "+KEY,"Content-Type":"application/json",Prefer:"return=representation"}});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function muat(){
+  try{
+    const data=await api("produk?select=*&order=created_at.desc");
+    document.getElementById("status").textContent="✅ Terhubung • "+data.length+" produk";
+    document.getElementById("list").innerHTML=data.length?data.map(p=>`<div class="item"><b>${p.nama}</b><br>Rp ${Number(p.harga).toLocaleString("id-ID")}</div>`).join(""):"Belum ada produk";
+  }catch(e){document.getElementById("status").textContent="❌ Gagal, cek Policy di Supabase";}
+}
+async function tambah(){
+  const nama=document.getElementById("nm").value.trim();
+  const harga=Number(document.getElementById("hg").value);
+  if(!nama||!harga) return alert("Isi nama & harga dulu");
+  try{await api("produk",{method:"POST",body:JSON.stringify({nama,harga})});document.getElementById("nm").value="";document.getElementById("hg").value="";muat();}
+  catch(e){alert("Gagal simpan, cek Policy INSERT di Supabase");}
+}
+muat();
+</script>
 </body>
 </html>
