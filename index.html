@@ -185,6 +185,20 @@ function terima(id){alert('Pesanan '+id+' diterima — dana diteruskan ke seller
 function retur(id){let al=prompt('Alasan return:');if(al)alert('Return '+id+' diajukan — TRX-RET-'+Date.now());}
 function simpanAkun(){localStorage.setItem('kasap_akun_nama',document.getElementById('akNama').value);localStorage.setItem('kasap_alamat',document.getElementById('akAlamat').value);localStorage.setItem('kasap_nomer_hp',document.getElementById('akHp').value);alert('Akun disimpan');render();}
 function kirimChat(){let v=document.getElementById('chatInput').value;if(!v)return;['anjing','bangsat','goblok','tai','bodong'].forEach(b=>{v=v.split(b).join('******')});v=v.replace(/\d{9,}/g,'******').replace(/https?:\/\/\S+/g,'******');document.getElementById('chatBox').innerHTML+='<div>Anda: '+v+'</div>';document.getElementById('chatInput').value='';}
+  const SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
+const SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
+async function loadDariSupabase(){
+  try{
+    const r=await fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+    const j=await r.json();
+    if(Array.isArray(j) && j.length>0){
+      products=j;
+      const c=document.getElementById("count"); if(c) c.textContent=j.length+" produk";
+      localStorage.setItem('kasap_products', JSON.stringify(j));
+    }
+  }catch(e){ console.log("Supabase gagal, pakai localStorage"); }
+}
+loadDariSupabase().then(()=>render());
 render();
 </script>
 </body>
