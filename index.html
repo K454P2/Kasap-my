@@ -2,101 +2,98 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KASAP ID</title>
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#EE4D2D">
+<link rel="manifest" href="manifest.json">
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#f5f5f5;padding-bottom:70px}
-header{background:#EE4D2D;color:#fff;padding:12px;position:sticky;top:0;z-index:10}
-.top{display:flex;align-items:center;gap:10px;max-width:520px;margin:auto}
-.top b{font-size:19px}.top input{flex:1;padding:10px;border-radius:10px;border:0}
-.top button{background:#fff;border:0;padding:9px 12px;border-radius:10px;font-weight:800}
-.banner{background:linear-gradient(135deg,#EE4D2D,#ff7a00);color:#fff;max-width:520px;margin:12px auto;padding:18px;border-radius:16px}
-.banner h2{margin:0}.banner p{margin:6px 0 12px;opacity:.9}.banner button{background:#fff;color:#EE4D2D;border:0;padding:10px 16px;border-radius:20px;font-weight:800}
-.wrap{max-width:520px;margin:auto;padding:0 12px}
-.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px}
-.cats{display:flex;gap:8px;overflow:auto;padding:4px 0}.cats button{white-space:nowrap;border:1px solid #ddd;background:#fff;padding:8px 14px;border-radius:20px}.cats button.on{background:#EE4D2D;color:#fff;border-color:#EE4D2D}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.pcard{background:#fff;border-radius:14px;overflow:hidden}.pimg{height:120px;background:#ffe8e0;display:flex;align-items:center;justify-content:center;font-size:48px}.pbody{padding:10px}.pbody b{display:block;min-height:36px}.price{color:#EE4D2D;font-weight:800;margin:6px 0}.pbody button{width:100%;background:#EE4D2D;color:#fff;border:0;padding:9px;border-radius:10px;font-weight:800}
-input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin-top:8px}
-.btn{width:100%;background:#EE4D2D;color:#fff;border:0;padding:12px;border-radius:10px;font-weight:800;margin-top:8px}
-.item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:10px;border-top:1px solid #eee}nav button{border:0;background:none;font-size:13px}nav button b{display:block;font-size:20px}
-.hidden{display:none}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#f5f5f5}
+header{background:#ee4d2d;color:#fff;padding:12px;position:sticky;top:0;z-index:10}
+header b{font-size:20px}header input{width:100%;padding:10px;border:none;border-radius:8px;margin-top:8px}
+.banner{background:linear-gradient(90deg,#ee4d2d,#ff7337);color:#fff;padding:16px;border-radius:12px;margin:12px}
+.cat{display:flex;gap:8px;overflow:auto;padding:0 12px}.cat button{white-space:nowrap;border:1px solid #ddd;background:#fff;padding:8px 12px;border-radius:20px}
+#grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
+.card{background:#fff;border-radius:12px;overflow:hidden}.card img{width:100%;height:140px;object-fit:cover;background:#eee}
+.card .p{padding:10px}.price{color:#ee4d2d;font-weight:800}.card button{width:100%;background:#ee4d2d;color:#fff;border:none;padding:9px;border-radius:8px;margin-top:8px}
+#cartBtn{position:fixed;bottom:16px;right:16px;background:#ee4d2d;color:#fff;border:none;padding:14px 18px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.3);z-index:20}
+#panel{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:30}#panel>div{background:#fff;max-width:480px;margin:0 auto;height:100%;padding:16px;overflow:auto}
+input,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd;border-radius:8px}
+.btn{background:#ee4d2d;color:#fff;border:none;padding:12px;border-radius:8px;width:100%;font-weight:700}
+.btn2{background:#111;color:#fff;border:none;padding:12px;border-radius:8px;width:100%;margin-top:8px}
 </style>
 </head>
 <body>
-<header><div class="top"><b>🛒 KASAP ID</b><input id="q" placeholder="Cari Bougenville..." oninput="render()"><button onclick="go('cart')">🛒 <span id="cartN">0</span></button></div></header>
+<header><b>KASAP ID</b> <span id="status">⏳ Menghubungkan...</span><input id="cari" placeholder="Cari Bougenville, tanaman..."></header>
+<div class="banner"><b>🌿 KASAP ID — Tanaman Hias Madura</b><br>Bougenville • Pengiriman JNE / JNT • Bayar Transfer / Doku</div>
+<div class="cat"><button>🌸 Semua</button><button>🌿 Bougenville</button><button>🌱 Bibit</button><button>🪴 Pot</button></div>
+<div id="grid"></div>
+<button id="cartBtn" onclick="bukaCart()">🛒 Keranjang (<span id="jml">0</span>)</button>
 
-<div id="page-home">
-<div class="banner"><h2>Gratis Ongkir Se-Indonesia</h2><p>Bougenville & Tanaman Hias Langsung dari Petani</p><button onclick="go('sell')">+ Jual Produk</button></div>
-<div class="wrap">
-<div class="card"><div id="status">Menghubungkan...</div>
-<div class="cats" id="cats"></div>
-</div>
-<div class="grid" id="grid"></div>
-<div class="card" id="empty" style="text-align:center">Memuat...</div>
-</div>
-</div>
-
-<div id="page-sell" class="hidden"><div class="wrap"><div class="card"><h3>+ Jual Produk Baru</h3><input id="nm" placeholder="Nama produk"><input id="hg" type="number" placeholder="Harga"><button class="btn" onclick="tambah()">Simpan ke Supabase</button><button class="btn" style="background:#eee;color:#111" onclick="go('home')">Kembali</button></div></div></div>
-
-<div id="page-cart" class="hidden"><div class="wrap"><div class="card"><h3>🛒 Keranjang</h3><div id="cartList"></div><div id="cartTotal" style="font-weight:800;margin-top:10px"></div><input id="buyer" placeholder="Nama pembeli"><input id="buyerWa" placeholder="No WA pembeli"><button class="btn" onclick="checkout()">Checkout via WA</button><button class="btn" style="background:#eee;color:#111" onclick="go('home')">Kembali Belanja</button></div></div></div>
-
-<nav><button onclick="go('home')"><b>🏠</b>Beranda</button><button onclick="go('sell')"><b>➕</b>Jual</button><button onclick="go('cart')"><b>🛒</b>Keranjang</button></nav>
+<div id="panel"><div>
+<h3>🛒 Keranjang</h3><div id="isiCart"></div>
+<h3>📦 Checkout</h3>
+<input id="nama" placeholder="Nama pembeli">
+<input id="wa" placeholder="No WA, contoh 0812...">
+<input id="alamat" placeholder="Alamat lengkap">
+<input id="kota" placeholder="Kota tujuan, contoh Surabaya" value="Surabaya">
+<input id="berat" type="number" value="1000" placeholder="Berat gram">
+<button class="btn" onclick="cekOngkir()">1. Cek Ongkir</button>
+<div id="hasilOngkir" style="margin:8px 0;font-weight:700"></div>
+<button class="btn2" onclick="checkout()">2. Buat Invoice & Checkout via WA</button>
+<button onclick="tutup()" style="margin-top:12px;width:100%;padding:10px">Tutup</button>
+</div></div>
 
 <script>
-const URL="https://zgliygdpbaorutzttxlr.supabase.co";
-const KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
-let all=[], cart=[], cat="Semua";
-const cats=["Semua","Bougenville","Tanaman","Lainnya"];
-document.getElementById("cats").innerHTML=cats.map(c=>`<button class="${c==='Semua'?'on':''}" onclick="setCat('${c}',this)">${c}</button>`).join("");
-function setCat(c,el){cat=c;document.querySelectorAll(".cats button").forEach(b=>b.classList.remove("on"));el.classList.add("on");render();}
-async function api(path,opt={}){
-  const r=await fetch(URL+"/rest/v1/"+path,{...opt,headers:{apikey:KEY,Authorization:"Bearer "+KEY,"Content-Type":"application/json",Prefer:"return=representation"}});
-  if(!r.ok) throw new Error(await r.text()); return r.json();
+const SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
+const SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
+let produk=[], cart=[];
+async function load(){
+  try{
+    const r=await fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+    produk=await r.json();
+    document.getElementById("status").textContent="✅ Terhubung • "+produk.length+" produk";
+    tampil();
+  }catch(e){document.getElementById("status").textContent="❌ Gagal, cek koneksi";}
 }
-function go(p){["home","sell","cart"].forEach(x=>document.getElementById("page-"+x).classList.toggle("hidden",x!==p));window.scrollTo(0,0);}
-async function muat(){
-  try{all=await api("produk?select=*&order=created_at.desc");document.getElementById("status").textContent="✅ Terhubung • "+all.length+" produk";render();}
-  catch(e){document.getElementById("status").textContent="❌ Gagal, cek Policy";}
+function tampil(){
+  const q=(document.getElementById("cari").value||"").toLowerCase();
+  document.getElementById("grid").innerHTML=produk.filter(p=>p.nama.toLowerCase().includes(q)).map(p=>`
+  <div class="card"><img src="https://via.placeholder.com/400x300?text=${encodeURIComponent(p.nama)}">
+  <div class="p"><b>${p.nama}</b><div class="price">Rp ${Number(p.harga).toLocaleString("id-ID")}</div>
+  <button onclick="tambah(${p.id})">+ Keranjang</button></div></div>`).join("")||"<p style='padding:12px'>Belum ada produk</p>";
 }
-function filtered(){
-  const q=(document.getElementById("q").value||"").toLowerCase();
-  return all.filter(p=>{
-    const okQ=!q||p.nama.toLowerCase().includes(q);
-    let okC=true; if(cat==="Bougenville") okC=p.nama.toLowerCase().includes("bougenville"); if(cat==="Tanaman") okC=!p.nama.toLowerCase().includes("bougenville");
-    return okQ&&okC;
-  });
+function tambah(id){const p=produk.find(x=>x.id===id);cart.push(p);document.getElementById("jml").textContent=cart.length;alert(p.nama+" masuk keranjang");}
+function bukaCart(){
+  document.getElementById("panel").style.display="block";
+  let total=cart.reduce((s,x)=>s+Number(x.harga),0);
+  document.getElementById("isiCart").innerHTML=cart.map(x=>`<div>${x.nama} - Rp ${Number(x.harga).toLocaleString("id-ID")}</div>`).join("")+`<b>Total barang: Rp ${total.toLocaleString("id-ID")}</b>`;
 }
-function render(){
-  const list=filtered();
-  document.getElementById("grid").innerHTML=list.map((p,i)=>`<div class="pcard"><div class="pimg">🌺</div><div class="pbody"><b>${p.nama}</b><div class="price">Rp ${Number(p.harga).toLocaleString("id-ID")}</div><button onclick="addCart(${all.indexOf(p)})">+ Keranjang</button></div></div>`).join("");
-  document.getElementById("empty").style.display=list.length?"none":"block";
-  document.getElementById("empty").textContent=list.length?"":"Belum ada produk di kategori ini";
+function tutup(){document.getElementById("panel").style.display="none";}
+let ongkirTerakhir=9000;
+async function cekOngkir(){
+  const kota=document.getElementById("kota").value||"Surabaya";
+  const berat=Number(document.getElementById("berat").value||1000);
+  document.getElementById("hasilOngkir").textContent="⏳ Menghitung ongkir...";
+  try{
+    const r=await fetch(SUPA_URL+"/rest/v1/rpc/hitung_ongkir_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({kota_tujuan:kota,berat_gram:berat})});
+    const d=await r.json();
+    ongkirTerakhir=d.ongkir||9000;
+    document.getElementById("hasilOngkir").textContent="🚚 Ongkir ke "+kota+" ("+berat+"g): Rp "+Number(ongkirTerakhir).toLocaleString("id-ID")+" • "+(d.mode||"");
+  }catch(e){document.getElementById("hasilOngkir").textContent="Ongkir manual: Rp 9.000 (offline)";}
 }
-function addCart(idx){cart.push(all[idx]);document.getElementById("cartN").textContent=cart.length;renderCart();alert("Masuk keranjang: "+all[idx].nama);}
-function renderCart(){
-  document.getElementById("cartList").innerHTML=cart.length?cart.map((p,i)=>`<div class="item"><span>${p.nama}</span><b>Rp ${Number(p.harga).toLocaleString("id-ID")}</b></div>`).join(""):"Keranjang kosong";
-  const total=cart.reduce((a,p)=>a+Number(p.harga),0);
-  document.getElementById("cartTotal").textContent="Total: Rp "+total.toLocaleString("id-ID");
-}
-async function tambah(){
-  const nama=document.getElementById("nm").value.trim(); const harga=Number(document.getElementById("hg").value);
-  if(!nama||!harga) return alert("Isi nama & harga dulu");
-  try{await api("produk",{method:"POST",body:JSON.stringify({nama,harga})});document.getElementById("nm").value="";document.getElementById("hg").value="";await muat();go("home");}
-  catch(e){alert("Gagal simpan");}
-}
-function checkout(){
-  if(!cart.length) return alert("Keranjang kosong");
-  const nama=document.getElementById("buyer").value||"Pembeli"; const wa=document.getElementById("buyerWa").value||"";
-  const total=cart.reduce((a,p)=>a+Number(p.harga),0);
-  const pesan="Halo KASAP ID, saya mau pesan:%0A"+cart.map(p=>"- "+p.nama+" Rp "+Number(p.harga).toLocaleString("id-ID")).join("%0A")+"%0A Total: Rp "+total.toLocaleString("id-ID")+"%0A Nama: "+nama+"%0A WA: "+wa;
+async function checkout(){
+  const nama=document.getElementById("nama").value, wa=document.getElementById("wa").value;
+  if(!nama||!wa) return alert("Isi nama + WA dulu bro");
+  let total=cart.reduce((s,x)=>s+Number(x.harga),0)+ongkirTerakhir;
+  const inv="INV-"+Date.now();
+  try{
+    await fetch(SUPA_URL+"/rest/v1/rpc/buat_invoice_doku_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({amount:total,invoice_id:inv})});
+  }catch(e){}
+  const pesan=encodeURIComponent("Halo KASAP ID, saya "+nama+" mau pesan:\n"+cart.map(x=>"- "+x.nama+" Rp "+Number(x.harga).toLocaleString("id-ID")).join("\n")+"\nOngkir: Rp "+ongkirTerakhir.toLocaleString("id-ID")+"\nTOTAL: Rp "+total.toLocaleString("id-ID")+"\nInvoice: "+inv+"\nAlamat: "+document.getElementById("alamat").value+" "+document.getElementById("kota").value);
   window.open("https://wa.me/6281234567890?text="+pesan,"_blank");
 }
-muat();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}
+document.getElementById("cari").oninput=tampil;
+load();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
 </html>
