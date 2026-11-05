@@ -4,38 +4,108 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KASAP ID</title>
-<style>body{margin:0;font-family:system-ui;background:#f2f2f2;padding:12px} .top{background:#00a651;color:#fff;padding:14px;border-radius:12px} .card{background:#fff;border-radius:12px;padding:12px;margin-top:12px} .price{color:#e65100;font-weight:800} input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px} .btn{background:#00a651;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700}</style>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#f2f2f2;padding-bottom:80px}
+.top{background:#00a651;color:#fff;padding:12px 12px 16px;position:sticky;top:0;z-index:10}
+.top b{font-size:20px}
+.search{display:flex;margin-top:10px;background:#fff;border-radius:999px;overflow:hidden}
+.search input{flex:1;border:none;padding:12px 14px;outline:none}
+.search button{background:#008a43;color:#fff;border:none;padding:0 20px;font-weight:700}
+.banner{background:#00a651;color:#fff;margin:14px;border-radius:20px;padding:20px}
+.banner h1{margin:0;font-size:32px;line-height:1.1}
+.box{background:#fff;margin:0 12px 12px;border-radius:20px;padding:16px}
+.box h2{margin:0 0 14px;font-size:20px}
+.ppob{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;text-align:center;gap:8px}
+.ppob div{cursor:pointer}.ppob span{font-size:28px}.ppob p{margin:4px 0 0;font-size:14px}
+#grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card2{background:#fff;border-radius:14px;overflow:hidden}
+.card2 img{width:100%;height:130px;object-fit:cover;background:#eee}
+.card2 .p{padding:10px}.price{color:#e65100;font-weight:800}
+.card2 button{width:100%;background:#00a651;color:#fff;border:none;padding:9px;border-radius:8px;margin-top:6px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;display:flex;border-top:1px solid #eee;z-index:20}
+.nav button{flex:1;background:none;border:none;padding:8px 2px;font-size:12px;color:#555}
+.nav button.active{color:#00a651;font-weight:700}
+.page{display:none}.page.active{display:block}
+input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px}
+.btn{background:#00a651;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700}
+</style>
 </head>
 <body>
-<div class="top"><b>KASAP ID</b><br><span id="status">Menghubungkan...</span></div>
-<div id="debug" style="background:#fff;padding:10px;margin-top:10px;border-radius:10px;font-size:13px;white-space:pre-wrap"></div>
-<div id="grid"></div>
-<div class="card"><h3>+ Tambah Produk</h3><input id="namaBaru" placeholder="Nama produk"><input id="hargaBaru" type="number" placeholder="Harga"><button class="btn" onclick="tambahProduk()">Simpan ke Supabase</button><p id="tambahHasil"></p></div>
+<div id="pg-beranda" class="page active">
+<div class="top"><b>KASAP ID</b> <span id="status" style="font-size:12px">Menghubungkan...</span><div class="search"><input id="cari" placeholder="Cari Bougenville..."><button onclick="tampil()">Cari</button></div></div>
+<div class="banner"><h1>MARKET MURAH<br>BELANJA ENAK</h1><p>Tanaman hias • PPOB instan • Ongkir Komerce</p></div>
+<div class="box"><h2>PPOB & Tagihan</h2><div class="ppob">
+<div onclick="ppob('Pulsa')"><span>📱</span><p>Pulsa</p></div>
+<div onclick="ppob('Paket Data')"><span>📶</span><p>Paket Data</p></div>
+<div onclick="ppob('Listrik')"><span>⚙️</span><p>Listrik</p></div>
+<div onclick="ppob('PDAM')"><span>💧</span><p>PDAM</p></div>
+<div onclick="ppob('BPJS')"><span>❤️</span><p>BPJS</p></div>
+<div onclick="ppob('Tiket')"><span>🎫</span><p>Tiket</p></div>
+<div onclick="ppob('Top Up')"><span>💳</span><p>Top Up</p></div>
+<div onclick="ppob('Voucher TV')"><span>📺</span><p>Voucher TV</p></div>
+</div><p id="ppobHasil" style="font-weight:700;margin-top:10px"></p></div>
+<div class="box"><h2>Produk Terbaru • <span id="count">0 produk</span></h2><div id="grid"></div>
+<h3 style="margin-top:16px">+ Tambah Produk</h3>
+<input id="namaBaru" placeholder="Nama produk"><input id="hargaBaru" type="number" placeholder="Harga"><button class="btn" onclick="tambahProduk()">Simpan ke Supabase</button><p id="tambahHasil"></p></div>
+</div>
+<div id="pg-keranjang" class="page"><div class="box"><h2>🛒 Keranjang</h2><div id="isiCart"></div>
+<input id="nama" placeholder="Nama pembeli"><input id="wa" placeholder="No WA"><input id="alamat" placeholder="Alamat lengkap"><input id="kota" placeholder="Kode kota, contoh 114" value="114"><input id="berat" type="number" value="1000">
+<button class="btn" onclick="cekOngkir()">1. Cek Ongkir (Komerce)</button><div id="hasilOngkir" style="font-weight:700;margin:8px 0"></div>
+<button class="btn" onclick="checkout()" style="background:#111">2. Buat Invoice & Checkout WA</button></div></div>
+<div id="pg-chat" class="page"><div class="box"><h2>💬 Chat</h2><button class="btn" onclick="window.open('https://wa.me/6281234567890?text=Halo KASAP ID','_blank')">Chat WA Admin</button></div></div>
+<div id="pg-pesanan" class="page"><div class="box"><h2>📦 Pesanan</h2><p>Cek di WA admin.</p></div></div>
+<div id="pg-akun" class="page"><div class="box"><h2>👤 Akun</h2><p><b>Nirwana Flora Sumekar</b><br>Toko: Sop Enak Sumekar<br>KASAP ID • Sumenep</p></div></div>
+<div id="pg-live" class="page"><div class="box"><h2>🔴 Live</h2><p>Live tiap sore.</p></div></div>
+<div class="nav">
+<button class="active" onclick="nav('beranda',this)">🏠<br>Beranda</button>
+<button onclick="nav('live',this)">🎥<br>Live</button>
+<button onclick="nav('chat',this)">💬<br>Chat</button>
+<button onclick="nav('keranjang',this)">🛒<br>Keranjang</button>
+<button onclick="nav('pesanan',this)">📦<br>Pesanan</button>
+<button onclick="nav('akun',this)">👤<br>Akun</button>
+</div>
 <script>
 var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
 var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
-var produk=[];
+var produk=[]; var cart=[]; var ongkirTerakhir=0;
+function nav(p,btn){
+  var pages=document.querySelectorAll('.page'); for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  document.getElementById('pg-'+p).classList.add('active');
+  var btns=document.querySelectorAll('.nav button'); for(var j=0;j<btns.length;j++) btns[j].classList.remove('active');
+  btn.classList.add('active');
+  if(p==='keranjang') renderCart();
+  window.scrollTo(0,0);
+}
 function load(){
-  document.getElementById("status").textContent="Menghubungkan ke Supabase...";
+  document.getElementById("status").textContent="Menghubungkan...";
   fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
-  .then(function(r){ document.getElementById("debug").textContent="HTTP Status: "+r.status; return r.json(); })
+  .then(function(r){ return r.json(); })
   .then(function(j){
-    document.getElementById("debug").textContent="Isi Supabase: "+JSON.stringify(j);
-    if(j && j.length!==undefined){ produk=j; }
-    else{ produk=[]; }
+    if(j && j.length!==undefined) produk=j; else produk=[];
     document.getElementById("status").textContent="Terhubung - "+produk.length+" produk";
-    var html="";
-    for(var i=0;i<produk.length;i++){
-      var p=produk[i];
-      html+='<div class="card"><b>'+p.nama+'</b><div class="price">Rp '+Number(p.harga).toLocaleString("id-ID")+'</div></div>';
-    }
-    if(produk.length===0) html='<div class="card">Belum ada produk di tabel produk</div>';
-    document.getElementById("grid").innerHTML=html;
+    document.getElementById("count").textContent=produk.length+" produk";
+    tampil();
   })
-  .catch(function(e){
-    document.getElementById("status").textContent="GAGAL: "+e.message;
-    document.getElementById("debug").textContent="Error: "+e.message;
-  });
+  .catch(function(e){ document.getElementById("status").textContent="Gagal: "+e.message; });
+}
+function tampil(){
+  var q=(document.getElementById("cari").value||"").toLowerCase();
+  var html="";
+  for(var i=0;i<produk.length;i++){
+    var p=produk[i];
+    if((p.nama||"").toLowerCase().indexOf(q)===-1) continue;
+    html+='<div class="card2"><img src="https://via.placeholder.com/400x300?text=Bougenville"><div class="p"><b>'+p.nama+'</b><div class="price">Rp '+Number(p.harga).toLocaleString("id-ID")+'</div><button onclick="tambah('+p.id+')">+ Keranjang</button></div></div>';
+  }
+  if(html==="") html="<p>Belum ada produk</p>";
+  document.getElementById("grid").innerHTML=html;
+}
+function tambah(id){ for(var i=0;i<produk.length;i++){ if(produk[i].id===id){ cart.push(produk[i]); break; } } renderCart(); alert("Masuk keranjang"); }
+function renderCart(){
+  var total=0; var html="";
+  for(var i=0;i<cart.length;i++){ total+=Number(cart[i].harga); html+="<div>"+cart[i].nama+" - Rp "+Number(cart[i].harga).toLocaleString("id-ID")+"</div>"; }
+  html+="<b>Total barang: Rp "+total.toLocaleString("id-ID")+"</b>";
+  document.getElementById("isiCart").innerHTML=html;
 }
 function tambahProduk(){
   var nama=document.getElementById("namaBaru").value;
@@ -43,14 +113,44 @@ function tambahProduk(){
   if(!nama||!harga){ alert("Isi nama + harga"); return; }
   document.getElementById("tambahHasil").textContent="Menyimpan...";
   fetch(SUPA_URL+"/rest/v1/produk",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({nama:nama,harga:harga})})
-  .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
-  .then(function(res){
-    if(res.ok){ document.getElementById("tambahHasil").textContent="Berhasil tersimpan!"; load(); }
-    else{ document.getElementById("tambahHasil").textContent="Gagal: "+JSON.stringify(res.j); }
-  })
+  .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
+  .then(function(res){ if(res.ok){ document.getElementById("tambahHasil").textContent="Berhasil!"; document.getElementById("namaBaru").value=""; document.getElementById("hargaBaru").value=""; load(); } else { document.getElementById("tambahHasil").textContent="Gagal: "+JSON.stringify(res.j); } })
   .catch(function(e){ document.getElementById("tambahHasil").textContent="Gagal: "+e.message; });
 }
+function cekOngkir(){
+  var kota=document.getElementById("kota").value||"114";
+  var berat=Number(document.getElementById("berat").value||1000);
+  document.getElementById("hasilOngkir").textContent="Menghitung ongkir Komerce...";
+  fetch(SUPA_URL+"/rest/v1/rpc/hitung_ongkir_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({kota_tujuan:kota,berat_gram:berat})})
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    var cost=20000;
+    if(d && d.data && d.data.length>0){
+      cost=d.data[0].cost;
+      for(var i=0;i<d.data.length;i++){ if(d.data[i].service==="REG") cost=d.data[i].cost; }
+    } else if(d && d.ongkir) cost=d.ongkir;
+    ongkirTerakhir=Number(cost);
+    document.getElementById("hasilOngkir").textContent="Ongkir ke "+kota+" ("+berat+"g): Rp "+Number(ongkirTerakhir).toLocaleString("id-ID")+" • JNE REG";
+  })
+  .catch(function(e){ document.getElementById("hasilOngkir").textContent="Ongkir manual: Rp 9.000"; ongkirTerakhir=9000; });
+}
+function ppob(jenis){ document.getElementById("ppobHasil").textContent="Kamu pilih "+jenis+" - nanti nyambung IAK otomatis, sekarang via WA dulu."; }
+function checkout(){
+  var nama=document.getElementById("nama").value; var wa=document.getElementById("wa").value;
+  if(!nama||!wa){ alert("Isi nama + WA dulu"); return; }
+  if(cart.length===0){ alert("Keranjang masih kosong"); return; }
+  var total=0; for(var i=0;i<cart.length;i++) total+=Number(cart[i].harga);
+  total+=ongkirTerakhir;
+  var inv="INV-"+Date.now();
+  fetch(SUPA_URL+"/rest/v1/rpc/buat_invoice_doku_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({amount:total,invoice_id:inv})}).catch(function(){});
+  var teks="Halo KASAP ID, saya "+nama+" mau pesan:\n";
+  for(var j=0;j<cart.length;j++) teks+="- "+cart[j].nama+" Rp "+Number(cart[j].harga).toLocaleString("id-ID")+"\n";
+  teks+="Ongkir: Rp "+ongkirTerakhir.toLocaleString("id-ID")+"\nTOTAL: Rp "+total.toLocaleString("id-ID")+"\nInvoice: "+inv;
+  window.open("https://wa.me/6281234567890?text="+encodeURIComponent(teks),"_blank");
+}
+document.getElementById("cari").oninput=tampil;
 load();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
 </body>
 </html>
