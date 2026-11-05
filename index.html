@@ -4,58 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KASAP ID</title>
-<link rel="manifest" href="manifest.json">
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#f2f2f2;padding-bottom:80px}
-.top{background:#00a651;color:#fff;padding:12px 12px 16px;position:sticky;top:0;z-index:10}
-.top b{font-size:20px}
-.search{display:flex;margin-top:10px;background:#fff;border-radius:999px;overflow:hidden}
-.search input{flex:1;border:none;padding:12px 14px;outline:none}
-.search button{background:#008a43;color:#fff;border:none;padding:0 20px;font-weight:700}
-.wallet{background:#00a651;color:#fff;padding:0 12px 14px}
-.wallet h3{margin:0 0 8px;font-weight:500}
-.ew{display:flex;gap:10px;overflow:auto}
-.ew .card{background:#fff;color:#111;min-width:140px;border-radius:16px;padding:12px}
-.ew .card b{font-size:17px}.ew .card small{color:#555}
-.ew .card button{width:100%;background:#111;color:#fff;border:none;padding:9px;border-radius:999px;margin-top:10px}
-.banner{background:#00a651;color:#fff;margin:14px;border-radius:20px;padding:20px}
-.banner h1{margin:0;line-height:1.1;font-size:32px}
-.banner p{opacity:.9}.banner a{display:inline-block;background:#fff;color:#00a651;text-decoration:none;padding:11px 18px;border-radius:999px;font-weight:700;margin-top:10px}
-.box{background:#fff;margin:0 12px 12px;border-radius:20px;padding:16px}
-.box h2{margin:0 0 14px;font-size:20px}
-.ppob{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;text-align:center;gap:8px}
-.ppob div{cursor:pointer}.ppob span{font-size:28px}.ppob p{margin:4px 0 0;font-size:14px}
-#grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card2{background:#fff;border-radius:14px;overflow:hidden}
-.card2 img{width:100%;height:130px;object-fit:cover;background:#eee}
-.card2 .p{padding:10px}.price{color:#e65100;font-weight:800}
-.card2 button{width:100%;background:#00a651;color:#fff;border:none;padding:9px;border-radius:8px;margin-top:6px}
-.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;display:flex;border-top:1px solid #eee;z-index:20}
-.nav button{flex:1;background:none;border:none;padding:8px 2px;font-size:12px;color:#555}
-.nav button.active{color:#00a651;font-weight:700}
-.page{display:none}.page.active{display:block}
-input,select{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px}
-.btn{background:#00a651;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700}
-</style>
+<style>body{margin:0;font-family:system-ui;background:#f2f2f2;padding:12px} .top{background:#00a651;color:#fff;padding:14px;border-radius:12px} .card{background:#fff;border-radius:12px;padding:12px;margin-top:12px} .price{color:#e65100;font-weight:800} input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px} .btn{background:#00a651;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700}</style>
 </head>
 <body>
-<div id="pg-beranda" class="page active">
-<div class="top"><b>KASAP ID</b> <span id="status" style="font-size:12px">⏳ Menghubungkan...</span><div class="search"><input id="cari" placeholder="Cari Bougenville..."><button onclick="tampil()">Cari</button></div></div>
-<div class="wallet"><h3>E-Wallet Saya</h3><div class="ew">
-<div class="card"><b>Dana</b><br><small>Memuat...</small><br>Rp 0<br><button>Detail</button></div>
-<div class="card"><b>OVO</b><br><small>Memuat...</small><br>Rp 0<br><button>Detail</button></div>
-<div class="card"><b>ShopeePay</b><br><small>Memuat...</small><br>Rp 0<br><button>Detail</button></div>
-</div></div>
-<div class="banner"><h1>MARKET MURAH<br>BELANJA ENAK</h1><p>Tanaman hias • PPOB instan • Ongkir Komerce</p><a href="#" onclick="document.getElementById('grid').scrollIntoView({behavior:'smooth'})">Lihat Tanaman Hias →</a></div>
-<div class="box"><h2>PPOB & Tagihan</h2><div class="ppob">
-<div onclick="ppob('Pulsa')"><span>📱</span><p>Pulsa</p></div>
-<div onclick="ppob('Paket Data')"><span>📶</span><p>Paket Data</p></div>
-<div onclick="ppob('Listrik')"><span>⚙️</span><p>Listrik</p></div>
-<div onclick="ppob('PDAM')"><span>💧</span><p>PDAM</p></div>
-</div><p id="ppobHasil" style="font-weight:700;margin-top:10px"></p></div>
-<div class="box"><h2>Produk Terbaru • <span id="count">0 produk</span></h2><div id="grid"></div>
-<h3 style="margin-top:16px">+ Tambah Produk (Seller)</h3>
-<input id="namaBaru" placeholder="Nama produk, contoh: Bougenville citra silver">
-<input id="hargaBaru" type="number" placeholder="Harga - contoh: 350000">
-<input id="stokBaru" type="number" placeholder="Stok - contoh: 10" value="10">
-<button class="btn" onclick="tambahProduk()">
+<div class="top"><b>KASAP ID</b><br><span id="status">Menghubungkan...</span></div>
+<div id="debug" style="background:#fff;padding:10px;margin-top:10px;border-radius:10px;font-size:13px;white-space:pre-wrap"></div>
+<div id="grid"></div>
+<div class="card"><h3>+ Tambah Produk</h3><input id="namaBaru" placeholder="Nama produk"><input id="hargaBaru" type="number" placeholder="Harga"><button class="btn" onclick="tambahProduk()">Simpan ke Supabase</button><p id="tambahHasil"></p></div>
+<script>
+var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
+var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
+var produk=[];
+function load(){
+  document.getElementById("status").textContent="Menghubungkan ke Supabase...";
+  fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
+  .then(function(r){ document.getElementById("debug").textContent="HTTP Status: "+r.status; return r.json(); })
+  .then(function(j){
+    document.getElementById("debug").textContent="Isi Supabase: "+JSON.stringify(j);
+    if(j && j.length!==undefined){ produk=j; }
+    else{ produk=[]; }
+    document.getElementById("status").textContent="Terhubung - "+produk.length+" produk";
+    var html="";
+    for(var i=0;i<produk.length;i++){
+      var p=produk[i];
+      html+='<div class="card"><b>'+p.nama+'</b><div class="price">Rp '+Number(p.harga).toLocaleString("id-ID")+'</div></div>';
+    }
+    if(produk.length===0) html='<div class="card">Belum ada produk di tabel produk</div>';
+    document.getElementById("grid").innerHTML=html;
+  })
+  .catch(function(e){
+    document.getElementById("status").textContent="GAGAL: "+e.message;
+    document.getElementById("debug").textContent="Error: "+e.message;
+  });
+}
+function tambahProduk(){
+  var nama=document.getElementById("namaBaru").value;
+  var harga=Number(document.getElementById("hargaBaru").value||0);
+  if(!nama||!harga){ alert("Isi nama + harga"); return; }
+  document.getElementById("tambahHasil").textContent="Menyimpan...";
+  fetch(SUPA_URL+"/rest/v1/produk",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({nama:nama,harga:harga})})
+  .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+  .then(function(res){
+    if(res.ok){ document.getElementById("tambahHasil").textContent="Berhasil tersimpan!"; load(); }
+    else{ document.getElementById("tambahHasil").textContent="Gagal: "+JSON.stringify(res.j); }
+  })
+  .catch(function(e){ document.getElementById("tambahHasil").textContent="Gagal: "+e.message; });
+}
+load();
+</script>
+</body>
+</html>
