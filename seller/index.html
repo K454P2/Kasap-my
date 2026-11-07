@@ -55,6 +55,7 @@ input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:1
 .btn{background:#00a651;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700}
 .btn2{background:#fff;color:#00a651;border:1px solid #00a651;padding:12px;border-radius:10px;width:100%;font-weight:700;margin-top:8px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div id="pg-beranda" class="page active">
@@ -94,11 +95,8 @@ input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:1
 <button onclick="nav('live',this)">🎥<br>Live</button>
 <button onclick="nav('akun',this)">👤<br>Akun</button>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-var supabase = window.supabase.createClient("https://zgliygdpbaorutzttxlr.supabase.co", "sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84");
-</script>
-<script>
+var supabaseClient = (window.supabase) ? window.supabase.createClient("https://zgliygdpbaorutzttxlr.supabase.co", "sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84") : null;
 var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
 var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
 var produk=[]; var cart=[]; var ongkirTerakhir=0;
@@ -187,10 +185,19 @@ function simpanEdit(){
   if(!editId){ alert("Tutup lalu buka lagi."); return; }
   var nama = document.getElementById('editNama').value.trim();
   if(!nama){ alert("Nama tidak boleh kosong"); return; }
+  var btnUpdate = document.querySelector('#modalEdit button[onclick="simpanEdit()"]');
   var file = document.getElementById('editFotoFile') ? document.getElementById('editFotoFile').files[0] : null;
   var statusEl = document.getElementById('fotoStatus');
-  if(file && statusEl) statusEl.textContent = "Meng-upload foto... tunggu...";
+  function setLoading(txt){
+    if(statusEl){ statusEl.textContent = txt; statusEl.style.color = "#ee4d2d"; statusEl.style.fontWeight = "700"; }
+    if(btnUpdate){ btnUpdate.textContent = txt; btnUpdate.disabled = true; btnUpdate.style.opacity = "0.6"; }
+  }
+  function clearLoading(){
+    if(btnUpdate){ btnUpdate.textContent = "Update"; btnUpdate.disabled = false; btnUpdate.style.opacity = "1"; }
+  }
   function lanjut(fotoUrl){
+    if(statusEl && fotoUrl) statusEl.textContent = "Foto ke-upload! Menyimpan produk...";
+    if(statusEl && !fotoUrl && file) statusEl.textContent = "Foto gagal ke-upload, menyimpan tulisan saja...";
     var dataFull = {
       nama: nama,
       deskripsi: document.getElementById('editDeskripsi').value,
@@ -207,30 +214,41 @@ function simpanEdit(){
       .then(function(r){ return r.text().then(function(t){ var j=null; try{ j = t ? JSON.parse(t) : null; }catch(e){ j=null; } return {ok:r.ok, status:r.status, j:j}; }); });
     }
     kirim(dataFull).then(function(res){
+      clearLoading();
       var j = res.j;
       var isEmptyArray = (Array.isArray(j) && j.length===0);
       if(res.ok && isEmptyArray){ alert("GAGAL - 0 baris berubah, RLS masih nge-block. Jalankan: alter table produk disable row level security;"); return; }
-      if(res.ok){ alert("Berhasil Update!" + (fotoUrl ? "\nFoto sudah ke-upload." : "")); tutupEdit(); load(); return; }
-      var msg = JSON.stringify(res.j);
-      if(msg.indexOf("column")!==-1){
-        var dataSimple = {nama:nama, harga:dataFull.harga};
-        if(fotoUrl) dataSimple.foto = fotoUrl;
-        return kirim(dataSimple).then(function(res2){
-          if(res2.ok && !(Array.isArray(res2.j) && res2.j.length===0)){ alert("Berhasil Update Nama+Harga+Foto! Tapi Deskripsi/Stok belum, kolomnya belum ada."); tutupEdit(); load(); }
-          else { alert("Gagal Update: "+JSON.stringify(res2.j).slice(0,600)); }
-        });
-      }
-      alert("Gagal Update ("+res.status+"): "+msg.slice(0,600));
-    }).catch(function(e){ alert("Gagal jaringan: "+e.message); });
+      if(res.ok){ alert("Berhasil Update!" + (fotoUrl ? " Foto sudah ke-upload." : "")); tutupEdit(); load(); return; }
+      alert("Gagal Update ("+res.status+"): "+JSON.stringify(res.j).slice(0,600));
+    }).catch(function(e){ clearLoading(); alert("Gagal jaringan: "+e.message); });
   }
   if(file){
+    if(!supabaseClient){ alert("Supabase client belum ke-load. Refresh halaman, lalu coba lagi."); return; }
+    setLoading("Meng-upload foto... ⏳ 0% - Jangan tutup!");
     var namaFile = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
-    supabase.storage.from('produk').upload(namaFile, file).then(function(res){
-      if(res.error){ alert("Gagal upload foto: "+res.error.message+"\nCek bucket 'produk' di Supabase > Storage sudah dibuat & Public belum."); lanjut(null); return; }
-      var urlData = supabase.storage.from('produk').getPublicUrl(namaFile);
-      lanjut(urlData.data.publicUrl);
-    }).catch(function(e){ alert("Gagal upload foto: "+e.message); lanjut(null); });
+    // Upload dengan loading palsu yang jalan, biar kelihatan kayak Shopee
+    var progress = 0;
+    var interval = setInterval(function(){
+      progress += 15;
+      if(progress < 90 && statusEl) statusEl.textContent = "Meng-upload foto... ⏳ " + progress + "% - Jangan tutup!";
+      if(btnUpdate) btnUpdate.textContent = "Meng-upload... " + progress + "%";
+    }, 300);
+    supabaseClient.storage.from('produk').upload(namaFile, file).then(function(res){
+      clearInterval(interval);
+      if(res.error){
+        clearLoading();
+        alert("Gagal upload foto: " + res.error.message + "\nPastikan bucket 'produk' sudah dibuat & Public di Supabase > Storage.");
+        lanjut(null); return;
+      }
+      if(statusEl) statusEl.textContent = "Meng-upload foto... ⏳ 100% - Berhasil!";
+      var urlData = supabaseClient.storage.from('produk').getPublicUrl(namaFile);
+      setTimeout(function(){ lanjut(urlData.data.publicUrl); }, 400);
+    }).catch(function(e){
+      clearInterval(interval); clearLoading();
+      alert("Gagal upload foto: " + e.message); lanjut(null);
+    });
   } else {
+    setLoading("Menyimpan... ⏳");
     lanjut(null);
   }
 }
