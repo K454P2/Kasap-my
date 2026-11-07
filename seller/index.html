@@ -128,7 +128,7 @@ function tampil(){
     var p=produk[i];
     if((p.nama||"").toLowerCase().indexOf(q)===-1) continue;
     var img = p.foto || p.gambar || p.image_url || "https://via.placeholder.com/400x300?text=Bougenville";
-    html+='<div class="card2"><img src="'+img+'"><div class="p"><b>'+p.nama+'</b><div class="price">Rp '+Number(p.harga).toLocaleString("id-ID")+'</div><button onclick="editProduk('+p.id+')">✏️ Edit Harga</button><button class="hapus" onclick="hapusProduk('+p.id+')">🗑️ Hapus</button></div></div>';
+    html+='<div class="card2"><img src="'+img+'"><div class="p"><b>'+p.nama+'</b><div class="price">Rp '+Number(p.harga).toLocaleString("id-ID")+'</div><button onclick="editProduk('+p.id+')">✏️ Ubah Produk</button><button class="hapus" onclick="hapusProduk('+p.id+')">🗑️ Hapus</button></div></div>';
   }
   if(html==="") html="<p>Belum ada produk</p>";
   document.getElementById("grid").innerHTML=html;
@@ -155,12 +155,58 @@ function hapusProduk(id){
   fetch(SUPA_URL+"/rest/v1/produk?id=eq."+id,{method:"DELETE",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
   .then(function(){ load(); }).catch(function(e){ alert("Gagal hapus: "+e.message); });
 }
+
+var editId=null;
 function editProduk(id){
-  var baru=prompt("Harga baru (angka saja, contoh: 80000)");
-  if(!baru) return;
-  fetch(SUPA_URL+"/rest/v1/produk?id=eq."+id,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({harga:Number(baru)})})
-  .then(function(){ load(); }).catch(function(e){ alert("Gagal edit: "+e.message); });
+  var p=null; for(var i=0;i<produk.length;i++){ if(produk[i].id===id){ p=produk[i]; break; } }
+  if(!p) return;
+  editId=id;
+  document.getElementById('editFotoPreview').src = p.foto || p.gambar || p.image_url || "https://via.placeholder.com/400x300?text=Bougenville";
+  document.getElementById('editNama').value = p.nama||"";
+  document.getElementById('editDeskripsi').value = p.deskripsi||"";
+  document.getElementById('editKategori').value = p.kategori||"Tanaman";
+  document.getElementById('editHarga').value = p.harga||0;
+  document.getElementById('editStok').value = (p.stok!==undefined && p.stok!==null) ? p.stok : 3;
+  document.getElementById('editMin').value = (p.min_beli!==undefined && p.min_beli!==null) ? p.min_beli : 1;
+  document.getElementById('editBerat').value = (p.berat!==undefined && p.berat!==null) ? p.berat : 1000;
+  document.getElementById('editKondisi').value = p.kondisi||"Baru";
+  document.getElementById('editHasil').textContent="";
+  document.getElementById('modalEdit').style.display='block';
+  window.scrollTo(0,0);
 }
+function tutupEdit(){ document.getElementById('modalEdit').style.display='none'; }
+function previewEditFoto(event){
+  var f=event.target.files[0]; if(!f) return;
+  document.getElementById('editFotoPreview').src=URL.createObjectURL(f);
+}
+function simpanEdit(){
+  if(!editId) return;
+  var data={
+    nama: document.getElementById('editNama').value,
+    deskripsi: document.getElementById('editDeskripsi').value,
+    kategori: document.getElementById('editKategori').value,
+    harga: Number(document.getElementById('editHarga').value||0),
+    stok: Number(document.getElementById('editStok').value||0),
+    min_beli: Number(document.getElementById('editMin').value||1),
+    berat: Number(document.getElementById('editBerat').value||1000),
+    kondisi: document.getElementById('editKondisi').value
+  };
+  document.getElementById('editHasil').textContent="Menyimpan...";
+  fetch(SUPA_URL+"/rest/v1/produk?id=eq."+editId,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify(data)})
+  .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
+  .then(function(res){
+    if(res.ok){ document.getElementById('editHasil').textContent="Berhasil Update!"; setTimeout(function(){ tutupEdit(); load(); },600); }
+    else{ document.getElementById('editHasil').textContent="Gagal: "+JSON.stringify(res.j).slice(0,300)+"\nKalau ada tulisan 'column does not exist', jalankan SQL tambah kolom di Supabase dulu (lihat bawah)."; }
+  })
+  .catch(function(e){ document.getElementById('editHasil').textContent="Gagal: "+e.message; });
+}
+function arsipkanProduk(){
+  if(!editId) return;
+  if(!confirm("Arsipkan produk ini? Produk tidak akan muncul di Buyer.")) return;
+  fetch(SUPA_URL+"/rest/v1/produk?id=eq."+editId,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({aktif:false})})
+  .then(function(){ tutupEdit(); load(); }).catch(function(e){ alert("Gagal arsip: "+e.message); });
+}
+
 function cekOngkir(){
   var kota=document.getElementById("kota").value||"114";
   var berat=Number(document.getElementById("berat").value||1000);
@@ -189,5 +235,45 @@ document.getElementById("cari").oninput=tampil;
 load();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
+
+<!-- MODAL UBAH PRODUK ALA SHOPEE -->
+<div id="modalEdit" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#fff; z-index:999; overflow:auto; padding-bottom:90px;">
+  <div style="display:flex; align-items:center; gap:12px; padding:14px; border-bottom:1px solid #eee; position:sticky; top:0; background:#fff;">
+    <button onclick="tutupEdit()" style="background:none; border:none; font-size:24px; color:#ee4d2d;">←</button>
+    <b style="font-size:20px;">Ubah Produk</b>
+  </div>
+
+  <div style="background:#fff; padding:14px; border-bottom:8px solid #f2f2f2;">
+    <div style="display:flex; justify-content:space-between;"><b>Foto Produk *</b><span style="color:#888;">Foto 1:1 ›</span></div>
+    <img id="editFotoPreview" src="https://via.placeholder.com/400x300?text=Bougenville" style="width:120px; height:120px; object-fit:cover; border-radius:8px; margin-top:10px; background:#eee;">
+    <label style="display:inline-block; border:2px dashed #ee4d2d; color:#ee4d2d; padding:18px 12px; border-radius:8px; margin-left:8px; vertical-align:top; cursor:pointer; font-size:13px; text-align:center;">+ Tambah<br>Foto/Video<input type="file" accept="image/*" style="display:none;" onchange="previewEditFoto(event)"></label>
+    <p style="font-size:12px; color:#888;">Foto baru di-preview dulu. Untuk simpan foto ke Supabase Storage, pakai tombol di halaman Produk.</p>
+  </div>
+
+  <div style="padding:14px; border-bottom:8px solid #f2f2f2;">
+    <div style="display:flex; justify-content:space-between;"><b>Nama Produk *</b><span id="countNama" style="color:#aaa;">0/255</span></div>
+    <input id="editNama" placeholder="tanaman bougenville poetri" oninput="document.getElementById('countNama').textContent=this.value.length+'/255'">
+  </div>
+
+  <div style="padding:14px; border-bottom:8px solid #f2f2f2;">
+    <div style="display:flex; justify-content:space-between;"><b>Deskripsi Produk *</b><span style="color:#aaa;">Isi deskripsi</span></div>
+    <textarea id="editDeskripsi" rows="3" placeholder="silahkan diorder bugenfilnya bolo" style="width:100%; padding:11px; margin-top:8px; border:1px solid #ddd; border-radius:10px; font-family:inherit;"></textarea>
+  </div>
+
+  <div style="padding:14px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span>📋 Kategori *</span><select id="editKategori" style="border:none; text-align:right; font-size:15px;"><option>Tanaman</option><option>Bougenville</option><option>Tanaman Hias</option><option>Pupuk</option><option>Pot</option></select></div>
+  <div style="padding:14px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span>🏷️ Harga *</span><span>Rp <input id="editHarga" type="number" style="width:120px; display:inline-block; text-align:right;"></span></div>
+  <div style="padding:14px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span>📦 Stok *</span><input id="editStok" type="number" style="width:80px; text-align:right;"></div>
+  <div style="padding:14px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span>📦 Min. Jumlah Pembelian *</span><input id="editMin" type="number" style="width:80px; text-align:right;"></div>
+  <div style="padding:14px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span>🚚 Ongkos Kirim (Berat / gram) *</span><input id="editBerat" type="number" style="width:100px; text-align:right;"></div>
+  <div style="padding:14px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span>ℹ️ Kondisi</span><select id="editKondisi" style="border:none; font-size:15px;"><option>Baru</option><option>Bekas</option></select></div>
+
+  <p id="editHasil" style="padding:0 14px; font-weight:700;"></p>
+
+  <div style="position:fixed; bottom:0; left:0; right:0; background:#fff; display:flex; gap:10px; padding:12px; border-top:1px solid #eee;">
+    <button onclick="arsipkanProduk()" style="flex:1; background:#fff; color:#ee4d2d; border:1px solid #ee4d2d; padding:14px; border-radius:10px; font-weight:700;">Arsipkan</button>
+    <button onclick="simpanEdit()" style="flex:1; background:#ee4d2d; color:#fff; border:none; padding:14px; border-radius:10px; font-weight:700;">Update</button>
+  </div>
+</div>
+
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
