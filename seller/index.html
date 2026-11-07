@@ -58,6 +58,36 @@ input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:1
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<script>
+// MATIKAN alert() bawaan Chrome - biar tidak muncul 'k454p2.github.io menyatakan'
+(function(){
+  function toast(msg, ok){
+    var t = document.getElementById('toast');
+    if(!t){
+      // kalau toast belum ada, buat dulu
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.style.cssText = 'position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#111;color:#fff;padding:14px 22px;border-radius:999px;font-weight:700;font-size:15px;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.3);';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.background = ok ? '#00a651' : '#ee4d2d';
+    t.style.opacity = '1';
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(function(){ t.style.opacity='0'; }, 2200);
+  }
+  window.alert = function(msg){
+    msg = String(msg||"");
+    if(msg.indexOf("Sukses")!==-1 || msg.indexOf("Berhasil")!==-1) toast("Sukses Update", true);
+    else if(msg.indexOf("Foto")!==-1) toast("Gagal Upload Foto", false);
+    else if(msg.indexOf("Gagal")!==-1) toast("Gagal Update", false);
+    else toast(msg.slice(0,40), true);
+  };
+  window.showToast = function(m, ok){ toast(m, ok); };
+})();
+</script>
+
 <div id="pg-beranda" class="page active">
 <div class="top"><b>KASAP ID</b> <small>SELLER</small> <span id="status" style="font-size:12px">Menghubungkan...</span><div class="search"><input id="cari" placeholder="Cari produk toko saya..."><button onclick="tampil()">Cari</button></div></div>
 <div class="banner"><h1>DASHBOARD<br>SELLER</h1><p>Toko: KASAP ID • Gapura, Sumenep<br>Kelola produk, pesanan & live dari sini.</p></div>
@@ -224,7 +254,7 @@ function simpanEdit(){
   }
   if(file){
     if(!supabaseClient){ showToast("Gagal Update", false); return; }
-    setLoading("Meng-upload foto... ⏳ 0% - Jangan tutup!");
+    setLoading("Meng-upload foto... - Jangan tutup!");
     var namaFile = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
     // Upload dengan loading palsu yang jalan, biar kelihatan kayak Shopee
     var progress = 0;
