@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KASAP ID - Admin</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#f5f5f5;padding-bottom:90px}
+.top{background:#00a651;color:#fff;padding:14px;position:sticky;top:0;z-index:10}
+.top b{font-size:22px}.top span{font-size:12px;background:#007a3f;padding:4px 10px;border-radius:999px}
+.box{background:#fff;margin:10px;padding:14px;border-radius:14px}
+.btn{width:100%;background:#00a651;color:#fff;border:none;padding:12px;border-radius:10px;font-weight:800;margin-top:8px}
+.btn2{background:#fff;color:#00a651;border:1px solid #00a651;padding:8px 10px;border-radius:8px;font-weight:800}
+.btnDel{background:#fff;color:#e53935;border:1px solid #e53935;padding:8px 10px;border-radius:8px;font-weight:800}
+input,select{width:100%;padding:11px;border:1px solid #ddd;border-radius:10px;margin:6px 0;box-sizing:border-box}
+.page{display:none}.page.active{display:block}
+.page:target{display:block}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #eee;z-index:99}
+.nav button{flex:1;background:none;border:none;padding:8px 2px;font-size:11px}
+.nav button.active{color:#00a651;font-weight:800}
+.stat{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center}
+.stat div{background:#e8f5ee;border-radius:12px;padding:10px}
+.stat b{font-size:18px;display:block;color:#00a651}
+.card{border:1px solid #eee;border-radius:12px;padding:10px;margin-bottom:8px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid #eee;padding:8px 4px;text-align:left}
+.badge{background:#00a651;color:#fff;padding:2px 8px;border-radius:999px;font-size:11px}
+.badge2{background:#ff9800;color:#fff;padding:2px 8px;border-radius:999px;font-size:11px}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:999px;display:none;z-index:999}
+</style></head><body>
+<div class="top"><b>KASAP ID - ADMIN</b> <span id="conn">Menghubungkan...</span><div style="font-size:12px;margin-top:4px">Nirwana Flora Sumekar • Gapura, Sumenep • Pantau Seller + Buyer</div></div>
+
+<!-- DASHBOARD -->
+<div id="pg-dash" class="page active">
+<div class="box"><b>Dashboard Hari Ini</b><div class="stat" style="margin-top:10px">
+<div><b id="sProduk">0</b>Produk</div><div><b id="sPesanan">0</b>Pesanan</div>
+<div><b id="sOmset">Rp 0</b>Omset</div><div><b id="sChat">0</b>Chat</div></div>
+<button class="btn" onclick="muatSemua()">🔄 Refresh Semua Data</button></div>
+<div class="box"><b>Pesanan Terbaru</b><div id="dashPesanan"></div></div>
+<div class="box"><b>Chat Terbaru (Perlu Dibalas)</b><div id="dashChat"></div></div>
+</div>
+
+<!-- PRODUK -->
+<div id="pg-produk" class="page"><div class="box"><b>Produk • <span id="countProduk">0</span></b><div id="listProduk"></div></div>
+<div class="box"><b>+ Tambah Produk Baru</b><input id="pNama" placeholder="Nama, contoh: Bougenville Poetri"><input id="pHarga" type="number" placeholder="Harga, contoh 75000"><input id="pStok" type="number" placeholder="Stok, contoh 10"><input id="pFoto" placeholder="Link foto (boleh kosong)"><button class="btn" onclick="tambahProduk()">Simpan Produk</button></div></div>
+
+<!-- PESANAN + RINCIAN -->
+<div id="pg-pesanan" class="page"><div class="box"><b>Semua Pesanan</b><div style="display:flex;gap:6px;margin-top:8px;overflow-x:auto"><button class="btn2" onclick="filterPesanan('')">Semua</button><button class="btn2" onclick="filterPesanan('Perlu Dikirim')">Perlu Dikirim</button><button class="btn2" onclick="filterPesanan('Dikirim')">Dikirim</button><button class="btn2" onclick="filterPesanan('Selesai')">Selesai</button></div><div id="listPesanan" style="margin-top:10px"></div></div>
+<div id="rincianBox" style="display:none" class="box">
+<b style="font-size:17px">Rincian Pesanan</b> <span onclick="document.getElementById('rincianBox').style.display='none'" style="float:right;cursor:pointer">✕ Tutup</span><hr>
+<b>📍 Alamat Pengiriman</b><div id="rNama" style="margin-top:8px">-</div><div id="rHP">-</div><div id="rAlamat">-</div><hr>
+<b>🚚 Status Pengiriman</b> <span style="color:#00a651;font-weight:800">Lacak</span><div id="rResi" style="margin-top:8px">Pos Reguler: -</div><div><b id="rStatus" style="color:#00a651">-</b><div id="rTanggal" style="font-size:12px;color:#888">-</div></div><hr>
+<b>💰 Informasi Pembayaran</b>
+<div style="font-size:14px;color:#555;margin-top:8px">
+<div style="display:flex;justify-content:space-between;padding:4px 0"><span>Subtotal Pesanan</span><span id="rSubtotal">Rp 0</span></div>
+<div style="display:flex;justify-content:space-between;padding:4px 0"><span>Ongkos Kirim</span><span id="rOngkir">Rp 0</span></div>
+<div style="display:flex;justify-content:space-between;padding:4px 0"><span>Biaya Platform (5%)</span><span id="rPlatform">-Rp 0</span></div>
+<div style="display:flex;justify-content:space-between;padding:4px 0"><span>Biaya Layanan</span><span id="rLayanan">-Rp 3600</span></div>
+<div style="display:flex;justify-content:space-between;padding:4px 0"><span>Pajak</span><span id="rPajak">-Rp 400</span></div></div><hr>
+<div style="display:flex;justify-content:space-between"><b>Lihat Rincian Penghasilan</b><b id="rHasil" style="color:#00a651">Rp 0</b></div>
+<div style="display:flex;justify-content:space-between;margin-top:10px"><b>Penghasilan Akhir</b><b id="rAkhir" style="color:#00a651">Rp 0</b></div>
+<div style="display:flex;justify-content:space-between;margin-top:10px"><b>Pembayaran Pembeli</b><b id="rBayar">Rp 0</b></div>
+<input id="inputResi" placeholder="Isi No Resi, contoh SHPE..."><button class="btn" onclick="simpanResi()">Simpan Resi + Ubah ke Dikirim</button>
+<button class="btn" onclick="ubahStatus('Selesai')" style="background:#fff;color:#00a651;border:1px solid #00a651">Tandai Selesai / Tiba</button>
+<button class="btn" onclick="hubungiPembeli()" style="background:#fff;color:#00a651;border:1px solid #00a651">Hubungi Pembeli (Chat)</button>
+</div></div>
+
+<!-- CHAT -->
+<div id="pg-chat" class="page"><div class="box"><b>Chat Pembeli → Seller</b><div id="listChat"></div></div>
+<div class="box"><b>Balas Chat</b><input id="balasNama" placeholder="Nama Pembeli yang dibalas"><input id="balasPesan" placeholder="Tulis balasan..."><button class="btn" onclick="balasChat()">Kirim Balasan</button></div></div>
+
+<!-- PENGGUNA -->
+<div id="pg-user" class="page"><div class="box"><b>Pengguna Terdaftar (Daftar / Login)</b><div id="listUser"></div></div>
+<div class="box"><b>Live Sesi</b><div id="listLive"></div><input id="judulLive" placeholder="Judul Live, contoh: Live Bougenville Poetri"><button class="btn" onclick="mulaiLive()">Mulai Live (Admin)</button><button class="btn" onclick="stopLive()" style="background:#fff;color:#111;border:1px solid #ddd">Stop Live</button></div></div>
+
+<!-- KEUANGAN -->
+<div id="pg-uang" class="page"><div class="box" style="border:2px solid #00a651"><b>🏦 Saldo Potongan 5% (Uang KASAP ID)</b><div style="font-size:28px;font-weight:900;color:#00a651;margin-top:8px" id="saldoPotongan">Rp 0</div><div style="font-size:12px;color:#666;margin-top:4px">Ini total uang hasil potongan Biaya Layanan 5% dari SEMUA penjualan Seller.<br>Tersimpan di Supabase tabel <b>penjualan</b> kolom <b>biaya_layanan</b> + <b>penghasilan_akhir</b>.<br>Bukan di HP, bukan di layar doang. Kalau refresh, tetap ada.</div><div style="display:flex;gap:8px;margin-top:10px"><div style="flex:1;background:#e8f5ee;padding:10px;border-radius:10px;text-align:center"><b id="totalPotonganList">Rp 0</b><div style="font-size:11px">Total Potongan Terkumpul</div></div><div style="flex:1;background:#e8f5ee;padding:10px;border-radius:10px;text-align:center"><b id="totalBersihSeller">Rp 0</b><div style="font-size:11px">Total Masuk ke Seller</div></div></div></div>
+<div class="box"><b>💰 Keuangan</b><div class="stat" style="margin-top:10px"><div><b id="kOmset">Rp 0</b>Omset</div><div><b id="kBersih">Rp 0</b>Bersih</div><div><b id="kPPOB">0</b>PPOB</div><div><b id="kTarik">Rp 0</b>Tarik Dana</div></div></div>
+<div class="box"><b>PPOB Terakhir (Pulsa / PLN / PDAM / TV)</b><div id="listPPOB"></div></div>
+<div class="box"><b>Penarikan Dana</b><div id="listTarik"></div><input id="tarikNominal" type="number" placeholder="Nominal tarik, contoh 50000"><select id="tarikBank"><option value="DANA">DANA</option><option value="OVO">OVO</option><option value="ShopeePay">ShopeePay</option><option value="BCA">BCA</option><option value="BRI">BRI</option></select><input id="tarikNo" placeholder="No HP / No Rekening"><button class="btn" onclick="ajukanTarik()">Ajukan Penarikan via Doku</button></div></div>
+
+<div class="nav" style="display:flex">
+<a href="#pg-dash" onclick="nav('dash')" style="flex:1;text-align:center;text-decoration:none;color:#00a651;font-weight:800;font-size:11px;padding:8px 2px">📊<br>Dashboard</a>
+<a href="#pg-produk" onclick="nav('produk')" style="flex:1;text-align:center;text-decoration:none;color:#111;font-size:11px;padding:8px 2px">🌺<br>Produk</a>
+<a href="#pg-pesanan" onclick="nav('pesanan')" style="flex:1;text-align:center;text-decoration:none;color:#111;font-size:11px;padding:8px 2px">📦<br>Pesanan</a>
+<a href="#pg-chat" onclick="nav('chat')" style="flex:1;text-align:center;text-decoration:none;color:#111;font-size:11px;padding:8px 2px">💬<br>Chat</a>
+<a href="#pg-user" onclick="nav('user')" style="flex:1;text-align:center;text-decoration:none;color:#111;font-size:11px;padding:8px 2px">👥<br>Pengguna</a>
+<a href="#pg-uang" onclick="nav('uang')" style="flex:1;text-align:center;text-decoration:none;color:#111;font-size:11px;padding:8px 2px">💰<br>Keuangan</a>
+</div>
+<div id="toast"></div>
+<script>
+var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
+var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
+var H={apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"};
+var allPesanan=[], curPesanan=null, filterStatus="";
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(function(){t.style.display="none"},2200)}
+function nav(p){try{var pages=document.querySelectorAll(".page");for(var i=0;i<pages.length;i++)pages[i].classList.remove("active");var pg=document.getElementById("pg-"+p);if(pg)pg.classList.add("active");var btns=document.querySelectorAll(".nav button");for(var j=0;j<btns.length;j++)btns[j].classList.remove("active");var idx={dash:0,produk:1,pesanan:2,chat:3,user:4,uang:5}[p];if(btns[idx])btns[idx].classList.add("active");window.scrollTo(0,0);try{location.hash='pg-'+p}catch(e){}}catch(e){}}
+function get(t){return fetch(SUPA_URL+"/rest/v1/"+t,{headers:H}).then(function(r){return r.json()}).catch(function(){return []})}
+function fmt(n){return "Rp "+Number(n||0).toLocaleString("id-ID")}
+async function muatSemua(){
+  document.getElementById("conn").textContent="Menghubungkan...";
+  var produk=await get("produk?select=*&order=created_at.desc");
+  var pesanan=await get("penjualan?select=*&order=created_at.desc");
+  var chat=await get("chat_pembeli?select=*&order=created_at.desc&limit=20");
+  var users=await get("pengguna?select=*&order=created_at.desc");
+  var ppob=await get("ppob_transaksi?select=*&order=created_at.desc&limit=20");
+  var tarik=await get("penarikan_dana?select=*&order=created_at.desc");
+  var live=await get("live_sesi?select=*&order=created_at.desc&limit=5");
+  if(Array.isArray(produk)){document.getElementById("conn").textContent="Terhubung • "+produk.length+" produk";}else{document.getElementById("conn").textContent="Gagal - Cek RLS Supabase";}
+  allPesanan=Array.isArray(pesanan)?pesanan:[];
+  var totPot=0, totBersih=0;
+  allPesanan.forEach(function(pp){ var s=Number(pp.total||0); var b=Number(pp.biaya_layanan||Math.round(s*0.05)); totPot+=b; totBersih+=Number(pp.penghasilan_akhir||(s-b)); });
+  var _s=document.getElementById("saldoPotongan");if(_s)_s.textContent=fmt(totPot);
+  var _t=document.getElementById("totalPotonganList");if(_t)_t.textContent=fmt(totPot);
+  var _b=document.getElementById("totalBersihSeller");if(_b)_b.textContent=fmt(totBersih);
+  var omset=allPesanan.reduce(function(a,b){return a+Number(b.total||0)},0);
+  document.getElementById("sProduk").textContent=produk.length;
+  document.getElementById("sPesanan").textContent=allPesanan.length;
+  document.getElementById("sOmset").textContent=fmt(omset);
+  document.getElementById("sChat").textContent=chat.length;
+  document.getElementById("kOmset").textContent=fmt(omset);
+  document.getElementById("kBersih").textContent=fmt(Math.round(omset*0.95));
+  document.getElementById("kPPOB").textContent=ppob.length;
+  document.getElementById("kTarik").textContent=fmt(tarik.reduce(function(a,b){return a+Number(b.nominal||b.jumlah||0)},0));
+  // produk
+  document.getElementById("countProduk").textContent=produk.length;
+  document.getElementById("listProduk").innerHTML=produk.map(function(p){return '<div class="card"><b>'+(p.nama||"")+'</b> • '+fmt(p.harga)+' • Stok '+(p.stok||0)+'<div style="margin-top:8px;display:flex;gap:6px"><button class="btn2" onclick="ubahStok('+p.id+','+(p.stok||0)+')">+ Stok</button><button class="btnDel" onclick="hapusProduk('+p.id+')">Hapus</button></div></div>'}).join("")||"<p>Belum ada produk.</p>";
+  // pesanan
+  renderPesanan();
+  document.getElementById("dashPesanan").innerHTML=allPesanan.slice(0,3).map(function(p){return '<div class="card" onclick="bukaRincian('+p.id+')"><b>'+(p.nama_produk||"")+'</b> • '+fmt(p.total)+' • <span class="badge">'+(p.status||"")+'</span></div>'}).join("")||"<p>Belum ada pesanan.</p>";
+  document.getElementById("dashChat").innerHTML=chat.slice(0,3).map(function(c){return '<div style="padding:8px 0;border-bottom:1px solid #eee"><b>'+(c.nama_pembeli||"")+'</b>: '+(c.pesan||"")+'</div>'}).join("")||"<p>Belum ada chat.</p>";
+  document.getElementById("listChat").innerHTML=chat.map(function(c){return '<div style="padding:10px 0;border-bottom:1px solid #eee"><b>'+(c.nama_pembeli||"")+'</b> <span style="font-size:11px;color:#888">'+(c.created_at?new Date(c.created_at).toLocaleString("id-ID"):"")+'</span><div>'+(c.pesan||"")+'</div><button class="btn2" style="margin-top:6px" onclick="document.getElementById(\'balasNama\').value=\''+(c.nama_pembeli||"")+'\';nav(\'chat\')">Balas</button></div>'}).join("")||"<p>Belum ada chat.</p>";
+  document.getElementById("listUser").innerHTML=users.map(function(u){return '<div style="padding:8px 0;border-bottom:1px solid #eee"><b>'+(u.nama||"")+'</b> • '+(u.nama_toko||"-")+'<div style="font-size:12px;color:#666">'+(u.email||"")+' • '+(u.no_hp||"")+' • '+(u.role||"buyer")+'</div></div>'}).join("")||"<p>Belum ada pengguna.</p>";
+  document.getElementById("listLive").innerHTML=live.map(function(l){return '<div style="padding:8px 0;border-bottom:1px solid #eee"><b>'+(l.judul||"Live")+'</b> • '+(l.status||"")+'</div>'}).join("")||"<p>Belum ada Live.</p>";
+  document.getElementById("listPPOB").innerHTML=ppob.map(function(x){return '<div style="padding:8px 0;border-bottom:1px solid #eee"><b>'+(x.jenis||"")+' - '+(x.provider||"")+'</b> • '+(x.nomor||"")+' • '+fmt(x.nominal)+' • <span class="badge2">'+(x.status||"")+'</span>'+(x.sn?" • SN: "+x.sn:"")+'</div>'}).join("")||"<p>Belum ada PPOB.</p>";
+  document.getElementById("listTarik").innerHTML=tarik.map(function(x){return '<div style="padding:8px 0;border-bottom:1px solid #eee"><b>'+fmt(x.nominal||x.jumlah||0)+'</b> • '+(x.bank||x.metode||"")+' '+(x.nomor||"")+' • '+(x.status||"")+'</div>'}).join("")||"<p>Belum ada penarikan.</p>";
+}
+function renderPesanan(){var list=allPesanan.filter(function(p){return !filterStatus||p.status===filterStatus});document.getElementById("listPesanan").innerHTML=list.map(function(p){return '<div class="card" onclick="bukaRincian('+p.id+')"><b>'+(p.nama_produk||"")+'</b> • '+fmt(p.total)+'<div style="font-size:12px;color:#666;margin-top:4px">Status: '+(p.status||"")+(p.resi?" • Resi: "+p.resi:"")+' • Klik untuk Rincian Sejelas Shopee ›</div></div>'}).join("")||"<p>Belum ada pesanan.</p>"}
+function filterPesanan(s){filterStatus=s;renderPesanan()}
+function bukaRincian(id){var p=allPesanan.find(function(x){return x.id===id});if(!p)return;curPesanan=p;var sub=Number(p.total||0);var ong=Number(p.ongkir||0);var lay=Math.round(sub*0.05);var akhir=sub+ong-lay;if(akhir<0)akhir=sub;
+document.getElementById("rNama").textContent=p.nama_pembeli||p.nama||"Pembeli";document.getElementById("rHP").textContent=p.no_hp||"-";document.getElementById("rAlamat").textContent=p.alamat||"Alamat belum diisi";document.getElementById("rResi").textContent="Pos Reguler: "+(p.resi||"- Belum ada resi -");document.getElementById("rStatus").textContent=p.status==="Selesai"?"Pesanan tiba di alamat tujuan.":p.status==="Dikirim"?"Pesanan sedang dikirim.":"Pesanan Baru - "+(p.nama_produk||"");document.getElementById("rTanggal").textContent=p.created_at?new Date(p.created_at).toLocaleString("id-ID"):"-";document.getElementById("rSubtotal").textContent=fmt(sub);document.getElementById("rOngkir").textContent=fmt(ong);document.getElementById("rLayanan").textContent="-"+fmt(lay);document.getElementById("rHasil").textContent=fmt(akhir);document.getElementById("rAkhir").textContent=fmt(akhir);document.getElementById("rBayar").textContent=fmt(sub+ong);document.getElementById("inputResi").value=p.resi||"";document.getElementById("rincianBox").style.display="block";document.getElementById("rincianBox").scrollIntoView();nav("pesanan");
+  fetch(SUPA_URL+"/rest/v1/penjualan?id=eq."+p.id,{method:"PATCH",headers:H,body:JSON.stringify({biaya_layanan:lay,penghasilan_akhir:akhir})}).then(function(){ /* potongan 5% tersimpan di Supabase */ });
+function simpanResi(){if(!curPesanan)return;var resi=document.getElementById("inputResi").value.trim();if(!resi){toast("Isi resi dulu");return}fetch(SUPA_URL+"/rest/v1/penjualan?id=eq."+curPesanan.id,{method:"PATCH",headers:H,body:JSON.stringify({resi:resi,status:"Dikirim"})}).then(function(){toast("Resi disimpan, status jadi Dikirim");muatSemua()})}
+function ubahStatus(s){if(!curPesanan)return;fetch(SUPA_URL+"/rest/v1/penjualan?id=eq."+curPesanan.id,{method:"PATCH",headers:H,body:JSON.stringify({status:s})}).then(function(){toast("Status jadi "+s);muatSemua()})}
+function hubungiPembeli(){if(curPesanan)document.getElementById("balasNama").value=curPesanan.nama_pembeli||"";nav("chat");toast("Balas di Chat")}
+function tambahProduk(){var n=document.getElementById("pNama").value.trim();var h=Number(document.getElementById("pHarga").value);var s=Number(document.getElementById("pStok").value||0);var f=document.getElementById("pFoto").value.trim();if(!n||!h){toast("Isi nama + harga");return}fetch(SUPA_URL+"/rest/v1/produk",{method:"POST",headers:H,body:JSON.stringify({nama:n,harga:h,stok:s,foto:f})}).then(function(){toast("Produk ditambah");muatSemua()})}
+function hapusProduk(id){if(!confirm("Hapus produk ini?"))return;fetch(SUPA_URL+"/rest/v1/produk?id=eq."+id,{method:"DELETE",headers:H}).then(function(){toast("Produk dihapus");muatSemua()})}
+function ubahStok(id,stok){var b=prompt("Stok baru:",stok);if(b===null)return;fetch(SUPA_URL+"/rest/v1/produk?id=eq."+id,{method:"PATCH",headers:H,body:JSON.stringify({stok:Number(b)})}).then(function(){toast("Stok diubah");muatSemua()})}
+function balasChat(){var n=document.getElementById("balasNama").value.trim();var p=document.getElementById("balasPesan").value.trim();if(!n||!p){toast("Isi nama + pesan");return}fetch(SUPA_URL+"/rest/v1/chat_pembeli",{method:"POST",headers:H,body:JSON.stringify({nama_pembeli:"Admin KASAP ID",pesan:"Balas ke "+n+": "+p,status:"Dibalas"})}).then(function(){toast("Balasan terkirim");document.getElementById("balasPesan").value="";muatSemua()})}
+function mulaiLive(){var j=document.getElementById("judulLive").value.trim()||"Live Bougenville";fetch(SUPA_URL+"/rest/v1/live_sesi",{method:"POST",headers:H,body:JSON.stringify({judul:j,status:"live",penonton:0})}).then(function(){toast("Live dimulai");muatSemua()})}
+function stopLive(){fetch(SUPA_URL+"/rest/v1/live_sesi?status=eq.live",{method:"PATCH",headers:H,body:JSON.stringify({status:"selesai"})}).then(function(){toast("Live dihentikan");muatSemua()})}
+function ajukanTarik(){var nom=Number(document.getElementById("tarikNominal").value);var bank=document.getElementById("tarikBank").value;var no=document.getElementById("tarikNo").value.trim();if(!nom||!no){toast("Isi nominal + nomor");return}fetch(SUPA_URL+"/rest/v1/penarikan_dana",{method:"POST",headers:H,body:JSON.stringify({nominal:nom,bank:bank,nomor:no,status:"PENDING"})}).then(function(){toast("Pengajuan tarik dana terkirim");muatSemua()})}
+try{if(location.hash){var h=location.hash.replace('#pg-','');if(h)nav(h)}}catch(e){}
+try{muatSemua()}catch(e){var c=document.getElementById('conn');if(c)c.textContent='JS Error: '+e.message}
+</script></body></html>
