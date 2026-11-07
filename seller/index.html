@@ -116,7 +116,89 @@ window.showToast = function(m, ok){ toast(m, ok); };
 <button class="btn" onclick="cekOngkir()">Cek Ongkir (Komerce)</button><div id="hasilOngkir" style="font-weight:700;margin:8px 0"></div></div></div>
 
 <div id="pg-chat" class="page"><div class="box"><h2>💬 Chat Buyer</h2><button class="btn" onclick="window.open('https://wa.me/6281234567890?text=Halo KASAP ID','_blank')">Buka WA Admin</button><p>Chat buyer masuk via WA.</p></div></div>
-<div id="pg-akun" class="page"><div class="box"><h2>👤 Akun Seller</h2><p><b>Nirwana Flora Sumekar</b><br>Toko: Sop Enak Sumekar<br>KASAP ID • Sumenep</p><button class="btn2" onclick="window.location.href='../index.html'">🛒 Balik ke Mode Buyer</button></div></div>
+<div id="pg-akun" class="page"><div class="box" style="padding:0; overflow:hidden;">
+<div style="padding:16px;">
+  <b style="font-size:16px;">Data Performa Toko</b>
+  <div style="display:flex; gap:10px; margin-top:12px;">
+    <div onclick="showToastSafe('Kesehatan Toko: ' + produk.length + ' produk aktif')" style="flex:1; border:1px solid #00a651; border-radius:12px; padding:12px; cursor:pointer;">
+      <div style="font-size:13px; color:#555;">Kesehatan Toko ›</div>
+      <div id="kesehatanToko" style="font-size:18px; font-weight:800; margin-top:6px;">Memuat...</div>
+      <div id="kesehatanSub" style="font-size:12px; color:#888;">Produk aktif dari Supabase</div>
+    </div>
+    <div onclick="showToastSafe('Pesanan masuk: cek di halaman Pesanan')" style="flex:1; border:1px solid #eee; border-radius:12px; padding:12px; cursor:pointer;">
+      <div style="font-size:13px; color:#555;">Pesanan ›</div>
+      <div id="pesananAkun" style="font-size:18px; font-weight:800; margin-top:6px;">0</div>
+      <div style="font-size:12px; color:#888;">Pesanan masuk</div>
+    </div>
+  </div>
+</div>
+
+<div style="padding:16px; border-top:8px solid #f2f2f2;">
+  <b>Kontak &amp; Pusat Bantuan</b>
+  <div onclick="bukaFeedback()" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; cursor:pointer; border-bottom:1px solid #f2f2f2;"><span>📝 Feedback</span><span>›</span></div>
+  <div id="feedbackBox" style="display:none; padding:10px 0;">
+    <textarea id="feedbackText" rows="3" placeholder="Tulis masukan untuk KASAP ID..." style="width:100%; padding:11px; border:1px solid #ddd; border-radius:10px;"></textarea>
+    <button class="btn" onclick="kirimFeedback()">Kirim Feedback via WA</button>
+  </div>
+</div>
+
+<div style="padding:16px; border-top:8px solid #f2f2f2;">
+  <b>Pengaturan</b>
+  <div onclick="toggleSet('setAkun')" style="display:flex; justify-content:space-between; padding:14px 0; cursor:pointer; border-bottom:1px solid #f2f2f2;"><span>👤 Akun &amp; Keamanan</span><span>›</span></div>
+  <div id="setAkun" style="display:none; padding:8px 0;">
+    <div style="font-size:14px;"><b>Nirwana Flora Sumekar</b><br><span id="emailAkun">Toko: KASAP ID • Gapura, Sumenep</span></div>
+    <input id="namaTokoSet" placeholder="Nama Toko" value="KASAP ID">
+    <input id="waTokoSet" placeholder="No WA Toko, contoh: 6281234567890">
+    <button class="btn" onclick="simpanAkun()">Simpan Akun</button>
+  </div>
+
+  <div onclick="toggleSet('setKirim')" style="display:flex; justify-content:space-between; padding:14px 0; cursor:pointer; border-bottom:1px solid #f2f2f2;"><span>🚚 Pengaturan Pengiriman</span><span>›</span></div>
+  <div id="setKirim" style="display:none; padding:8px 0;">
+    <label style="font-size:13px;">Asal Pengiriman (Kota ID Komerce)</label>
+    <input id="asalKirimSet" placeholder="5746 = Gapura / Sumenep" value="5746">
+    <label style="font-size:13px;">Kurir Utama</label>
+    <select id="kurirSet" style="width:100%; padding:11px; border:1px solid #ddd; border-radius:10px;"><option value="jne">JNE</option><option value="jnt">JNT</option><option value="pos">POS</option><option value="sicepat">SiCepat</option></select>
+    <button class="btn" onclick="simpanKirim()">Simpan Pengiriman</button>
+  </div>
+
+  <div onclick="toggleSet('setNotif')" style="display:flex; justify-content:space-between; padding:14px 0; cursor:pointer; border-bottom:1px solid #f2f2f2;"><span>🔔 Pengaturan Notifikasi</span><span>›</span></div>
+  <div id="setNotif" style="display:none; padding:8px 0;">
+    <label><input type="checkbox" id="notifPesanan" checked> Notifikasi Pesanan Baru</label><br>
+    <label><input type="checkbox" id="notifChat" checked> Notifikasi Chat Buyer</label><br>
+    <label><input type="checkbox" id="notifPromo"> Notifikasi Promo</label><br>
+    <button class="btn" onclick="simpanNotif()">Simpan Notifikasi</button>
+  </div>
+
+  <div onclick="toggleSet('setChat')" style="display:flex; justify-content:space-between; padding:14px 0; cursor:pointer; border-bottom:1px solid #f2f2f2;"><span>💬 Pengaturan Chat</span><span>›</span></div>
+  <div id="setChat" style="display:none; padding:8px 0;">
+    <textarea id="pesanOtomatis" rows="2" placeholder="Pesan otomatis: Halo, terima kasih sudah chat KASAP ID..." style="width:100%; padding:11px; border:1px solid #ddd; border-radius:10px;"></textarea>
+    <button class="btn" onclick="simpanChat()">Simpan Chat</button>
+  </div>
+
+  <div onclick="toggleSet('setPrivasi')" style="display:flex; justify-content:space-between; padding:14px 0; cursor:pointer; border-bottom:1px solid #f2f2f2;"><span>🛡️ Pengaturan Privasi</span><span>›</span></div>
+  <div id="setPrivasi" style="display:none; padding:8px 0;">
+    <label><input type="checkbox" id="privasiWa" checked> Tampilkan No WA ke Buyer</label><br>
+    <label><input type="checkbox" id="privasiAlamat"> Sembunyikan Alamat Lengkap</label><br>
+    <button class="btn" onclick="simpanPrivasi()">Simpan Privasi</button>
+  </div>
+
+  <div onclick="toggleSet('setBahasa')" style="display:flex; justify-content:space-between; padding:14px 0; cursor:pointer; border-bottom:1px solid #f2f2f2;"><span>🌐 Bahasa</span><span><span id="bahasaLabel">Bahasa Indonesia</span> ›</span></div>
+  <div id="setBahasa" style="display:none; padding:8px 0;">
+    <select id="bahasaSet" style="width:100%; padding:11px; border:1px solid #ddd; border-radius:10px;"><option value="id">Bahasa Indonesia</option><option value="en">English</option></select>
+    <button class="btn" onclick="simpanBahasa()">Simpan Bahasa</button>
+  </div>
+
+  <div onclick="toggleSet('setTentang')" style="display:flex; justify-content:space-between; padding:14px 0; cursor:pointer;"><span>❓ Tentang</span><span>›</span></div>
+  <div id="setTentang" style="display:none; padding:8px 0; font-size:14px; line-height:1.6;">
+    <b>KASAP ID v1.0</b><br>Toko Bougenville + PPOB + E-Wallet<br>Gapura, Sumenep - Jawa Timur<br>Ongkir: Komerce (asli) • Bayar: Doku Payment Link • PPOB: IAK<br><button class="btn" onclick="window.open('https://wa.me/6281234567890?text=Halo KASAP ID','_blank')">Hubungi Admin</button>
+  </div>
+</div>
+
+<div style="padding:0 16px 16px;">
+  <button onclick="logoutAkun()" style="width:100%; background:#fff; border:1px solid #ddd; padding:14px; border-radius:12px; font-size:16px;">Log out</button>
+  <button onclick="window.location.href='../index.html'" style="width:100%; background:#00a651; color:#fff; border:none; padding:14px; border-radius:12px; font-size:16px; margin-top:10px; font-weight:700;">🛒 Balik ke Mode Buyer</button>
+</div>
+</div></div>
 <div id="pg-live" class="page"><div class="box"><h2>🔴 Live Seller</h2><p>Live tiap sore. Siapkan produk yang mau dijual live.</p><button class="btn" onclick="showToast("Sukses", true)">📺 Mulai Live</button></div></div>
 
 <div class="nav">
@@ -381,6 +463,87 @@ function showToast(msg, isOk){
 function toastSukses(){ showToast("Sukses Update", true); }
 function toastGagal(){ showToast("Gagal Update", false); }
 function toastGagalFoto(){ showToast("Gagal Upload Foto", false); }
+</script>
+
+
+<script>
+function toggleSet(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  var isHidden = (el.style.display === 'none' || el.style.display === '');
+  // tutup semua dulu
+  ['setAkun','setKirim','setNotif','setChat','setPrivasi','setBahasa','setTentang','feedbackBox'].forEach(function(x){ var e=document.getElementById(x); if(e) e.style.display='none'; });
+  el.style.display = isHidden ? 'block' : 'none';
+  if(el.style.display==='block') el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function bukaFeedback(){ toggleSet('feedbackBox'); }
+function kirimFeedback(){
+  var t = document.getElementById('feedbackText').value.trim();
+  if(!t){ showToastSafe('Tulis feedback dulu'); return; }
+  window.open('https://wa.me/6281234567890?text=' + encodeURIComponent('Feedback KASAP ID: ' + t), '_blank');
+  showToastSafe('Sukses Kirim Feedback');
+  document.getElementById('feedbackText').value='';
+}
+function simpanAkun(){
+  localStorage.setItem('kasap_nama_toko', document.getElementById('namaTokoSet').value);
+  localStorage.setItem('kasap_wa_toko', document.getElementById('waTokoSet').value);
+  showToastSafe('Sukses Simpan Akun');
+}
+function simpanKirim(){
+  localStorage.setItem('kasap_asal_kirim', document.getElementById('asalKirimSet').value);
+  localStorage.setItem('kasap_kurir', document.getElementById('kurirSet').value);
+  showToastSafe('Sukses Simpan Pengiriman');
+}
+function simpanNotif(){
+  localStorage.setItem('kasap_notif_pesanan', document.getElementById('notifPesanan').checked ? '1':'0');
+  localStorage.setItem('kasap_notif_chat', document.getElementById('notifChat').checked ? '1':'0');
+  localStorage.setItem('kasap_notif_promo', document.getElementById('notifPromo').checked ? '1':'0');
+  showToastSafe('Sukses Simpan Notifikasi');
+}
+function simpanChat(){
+  localStorage.setItem('kasap_pesan_otomatis', document.getElementById('pesanOtomatis').value);
+  showToastSafe('Sukses Simpan Chat');
+}
+function simpanPrivasi(){
+  localStorage.setItem('kasap_privasi_wa', document.getElementById('privasiWa').checked ? '1':'0');
+  localStorage.setItem('kasap_privasi_alamat', document.getElementById('privasiAlamat').checked ? '1':'0');
+  showToastSafe('Sukses Simpan Privasi');
+}
+function simpanBahasa(){
+  var v = document.getElementById('bahasaSet').value;
+  localStorage.setItem('kasap_bahasa', v);
+  document.getElementById('bahasaLabel').textContent = (v==='en' ? 'English' : 'Bahasa Indonesia');
+  showToastSafe('Sukses Simpan Bahasa');
+}
+function logoutAkun(){
+  try{ if(window.supabaseClient) supabaseClient.auth.signOut(); }catch(e){}
+  localStorage.removeItem('kasap_session');
+  showToastSafe('Sukses Log out');
+  setTimeout(function(){ window.location.href = '../index.html'; }, 800);
+}
+// Update Kesehatan Toko dari data asli Supabase setiap load
+var _origLoad = load;
+load = function(){
+  _origLoad();
+  setTimeout(function(){
+    var el = document.getElementById('kesehatanToko');
+    if(el){
+      var total = 0; for(var i=0;i<produk.length;i++) total += Number(produk[i].harga||0);
+      el.textContent = produk.length + ' Produk • Rp ' + total.toLocaleString('id-ID');
+      var sub = document.getElementById('kesehatanSub');
+      if(sub) sub.textContent = produk.length > 0 ? 'Toko sehat, produk aktif' : 'Belum ada produk';
+    }
+    // restore settings dari localStorage
+    try{
+      var nt = localStorage.getItem('kasap_nama_toko'); if(nt) document.getElementById('namaTokoSet').value = nt;
+      var wa = localStorage.getItem('kasap_wa_toko'); if(wa) document.getElementById('waTokoSet').value = wa;
+      var asal = localStorage.getItem('kasap_asal_kirim'); if(asal) document.getElementById('asalKirimSet').value = asal;
+      var kur = localStorage.getItem('kasap_kurir'); if(kur) document.getElementById('kurirSet').value = kur;
+      var bah = localStorage.getItem('kasap_bahasa'); if(bah){ document.getElementById('bahasaSet').value = bah; document.getElementById('bahasaLabel').textContent = (bah==='en'?'English':'Bahasa Indonesia'); }
+      var po = localStorage.getItem('kasap_pesan_otomatis'); if(po) document.getElementById('pesanOtomatis').value = po;
+    }catch(e){}
+  }, 800);
+};
 </script>
 
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
