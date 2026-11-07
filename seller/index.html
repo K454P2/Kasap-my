@@ -86,7 +86,7 @@ input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:1
 
 <div id="pg-chat" class="page"><div class="box"><h2>💬 Chat Buyer</h2><button class="btn" onclick="window.open('https://wa.me/6281234567890?text=Halo KASAP ID','_blank')">Buka WA Admin</button><p>Chat buyer masuk via WA.</p></div></div>
 <div id="pg-akun" class="page"><div class="box"><h2>👤 Akun Seller</h2><p><b>Nirwana Flora Sumekar</b><br>Toko: Sop Enak Sumekar<br>KASAP ID • Sumenep</p><button class="btn2" onclick="window.location.href='../index.html'">🛒 Balik ke Mode Buyer</button></div></div>
-<div id="pg-live" class="page"><div class="box"><h2>🔴 Live Seller</h2><p>Live tiap sore. Siapkan produk yang mau dijual live.</p><button class="btn" onclick="alert('Siapkan HP kedua / tripod, lalu mulai Live di TikTok / Shopee, tempel link-nya di sini.')">📺 Mulai Live</button></div></div>
+<div id="pg-live" class="page"><div class="box"><h2>🔴 Live Seller</h2><p>Live tiap sore. Siapkan produk yang mau dijual live.</p><button class="btn" onclick="showToast("Sukses", true)">📺 Mulai Live</button></div></div>
 
 <div class="nav">
 <button class="active" onclick="nav('beranda',this)">🏠<br>Dashboard</button>
@@ -136,7 +136,7 @@ function tampil(){
   document.getElementById("grid").innerHTML=html;
   var g2=document.getElementById("grid2"); if(g2) g2.innerHTML=html;
 }
-function tambah(id){ alert("Ini APK Seller. Tombol + Keranjang sudah dipindah ke APK Buyer."); }
+function tambah(id){ showToast("Ini APK Seller", true); }
 function renderCart(){}
 function previewFoto(event){
   var file=event.target.files[0]; if(!file) return;
@@ -145,7 +145,7 @@ function previewFoto(event){
 function tambahProduk(){
   var nama=document.getElementById("namaBaru").value;
   var harga=Number(document.getElementById("hargaBaru").value||0);
-  if(!nama||!harga){ alert("Isi nama + harga"); return; }
+  if(!nama||!harga){ showToast("Isi nama + harga", false); return; }
   document.getElementById("tambahHasil").textContent="Menyimpan...";
   fetch(SUPA_URL+"/rest/v1/produk",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({nama:nama,harga:harga})})
   .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
@@ -153,9 +153,9 @@ function tambahProduk(){
   .catch(function(e){ document.getElementById("tambahHasil").textContent="Gagal: "+e.message; });
 }
 function hapusProduk(id){
-  if(!confirm("Hapus produk ini?")) return;
+  
   fetch(SUPA_URL+"/rest/v1/produk?id=eq."+id,{method:"DELETE",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
-  .then(function(){ load(); }).catch(function(e){ alert("Gagal Hapus"); });
+  .then(function(){ load(); }).catch(function(e){ showToast("Gagal Hapus", false); });
 }
 
 var editId=null;
@@ -182,9 +182,9 @@ function previewEditFoto(event){
   document.getElementById('editFotoPreview').src=URL.createObjectURL(f);
 }
 function simpanEdit(){
-  if(!editId){ alert("Tutup lalu buka lagi."); return; }
+  if(!editId){ showToast("Gagal Update", false); return; }
   var nama = document.getElementById('editNama').value.trim();
-  if(!nama){ alert("Nama tidak boleh kosong"); return; }
+  if(!nama){ showToast("Nama tidak boleh kosong", false); return; }
   var btnUpdate = document.querySelector('#modalEdit button[onclick="simpanEdit()"]');
   var file = document.getElementById('editFotoFile') ? document.getElementById('editFotoFile').files[0] : null;
   var statusEl = document.getElementById('fotoStatus');
@@ -196,7 +196,7 @@ function simpanEdit(){
     if(btnUpdate){ btnUpdate.textContent = "Update"; btnUpdate.disabled = false; btnUpdate.style.opacity = "1"; }
   }
   function lanjut(fotoUrl){
-    if(statusEl && fotoUrl) statusEl.textContent = "Foto berhasil, menyimpan...";
+    if(statusEl && fotoUrl) statusEl.textContent = "";
     if(statusEl && !fotoUrl && file) statusEl.textContent = "Gagal Upload Foto";
     var dataFull = {
       nama: nama,
@@ -217,13 +217,13 @@ function simpanEdit(){
       clearLoading();
       var j = res.j;
       var isEmptyArray = (Array.isArray(j) && j.length===0);
-      if(res.ok && isEmptyArray){ alert("Gagal Update"); return; }
-      if(res.ok){ alert("Sukses Update"); tutupEdit(); load(); return; }
-      alert("Gagal Update");
-    }).catch(function(e){ clearLoading(); alert("Gagal Update"); });
+      if(res.ok && isEmptyArray){ showToast("Gagal Update", false); return; }
+      if(res.ok){ showToast("Sukses Update", true); tutupEdit(); load(); return; }
+      showToast("Gagal Update", false);
+    }).catch(function(e){ clearLoading(); showToast("Gagal Update", false); });
   }
   if(file){
-    if(!supabaseClient){ alert("Gagal Update"); return; }
+    if(!supabaseClient){ showToast("Gagal Update", false); return; }
     setLoading("Meng-upload foto... ⏳ 0% - Jangan tutup!");
     var namaFile = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
     // Upload dengan loading palsu yang jalan, biar kelihatan kayak Shopee
@@ -237,7 +237,7 @@ function simpanEdit(){
       clearInterval(interval);
       if(res.error){
         clearLoading();
-        alert("Gagal Upload Foto");
+        showToast("Gagal Upload Foto", false);
         lanjut(null); return;
       }
       if(statusEl) statusEl.textContent = "Sukses Upload Foto";
@@ -245,7 +245,7 @@ function simpanEdit(){
       setTimeout(function(){ lanjut(urlData.data.publicUrl); }, 400);
     }).catch(function(e){
       clearInterval(interval); clearLoading();
-      alert("Gagal Upload Foto"); lanjut(null);
+      showToast("Gagal Upload Foto", false); lanjut(null);
     });
   } else {
     setLoading("Menyimpan... ⏳");
@@ -254,9 +254,9 @@ function simpanEdit(){
 }
 function arsipkanProduk(){
   if(!editId) return;
-  if(!confirm("Arsipkan produk ini? Produk tidak akan muncul di Buyer.")) return;
+  
   fetch(SUPA_URL+"/rest/v1/produk?id=eq."+editId,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({aktif:false})})
-  .then(function(){ tutupEdit(); load(); }).catch(function(e){ alert("Gagal Arsip"); });
+  .then(function(){ tutupEdit(); load(); }).catch(function(e){ showToast("Gagal Arsip", false); });
 }
 
 function cekOngkir(){
@@ -276,12 +276,12 @@ function cekOngkir(){
   })
   .catch(function(e){ document.getElementById("hasilOngkir").textContent="Ongkir manual: Rp 9.000"; ongkirTerakhir=9000; });
 }
-function ppob(jenis){ alert("Sukses"); }
+function ppob(jenis){ showToast("Sukses", true); }
 function checkout(){
   var total=0; for(var i=0;i<produk.length;i++) total+=Number(produk[i].harga);
   var inv="INV-"+Date.now();
   fetch(SUPA_URL+"/rest/v1/rpc/buat_invoice_doku_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({amount:total,invoice_id:inv})}).catch(function(){});
-  alert("Sukses");
+  showToast("Sukses", true);
 }
 document.getElementById("cari").oninput=tampil;
 load();
@@ -326,6 +326,31 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
     <button onclick="simpanEdit()" style="flex:1; background:#ee4d2d; color:#fff; border:none; padding:14px; border-radius:10px; font-weight:700;">Update</button>
   </div>
 </div>
+
+
+<!-- TOAST BERSIH - Tanpa k454p2.github.io menyatakan -->
+<style>
+#toast{position:fixed; left:50%; bottom:90px; transform:translateX(-50%) translateY(20px); background:#111; color:#fff; padding:14px 22px; border-radius:999px; font-weight:700; font-size:15px; z-index:99999; opacity:0; pointer-events:none; transition:all .3s; box-shadow:0 8px 24px rgba(0,0,0,.3); white-space:nowrap;}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+#toast.ok{background:#00a651;}
+#toast.err{background:#ee4d2d;}
+</style>
+<div id="toast"></div>
+<script>
+function showToast(msg, isOk){
+  var t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.className = isOk ? 'ok' : 'err';
+  // force reflow
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+function toastSukses(){ showToast("Sukses Update", true); }
+function toastGagal(){ showToast("Gagal Update", false); }
+function toastGagalFoto(){ showToast("Gagal Upload Foto", false); }
+</script>
 
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
