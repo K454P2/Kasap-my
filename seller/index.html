@@ -36,16 +36,16 @@
 .search button{background:#008a43;color:#fff;border:none;padding:0 20px;font-weight:700}
 .banner{background:#00a651;color:#fff;margin:14px;border-radius:20px;padding:20px}
 .banner h1{margin:0;font-size:28px;line-height:1.1}
-.box{background:#fff;margin:0 12px 12px;border-radius:20px;padding:16px}
+.box{background:#fff;margin:0 12px 12px;border-radius:20px;padding:16px;border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
 .box h2{margin:0 0 14px;font-size:20px}
 .stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
 .stat div{background:#f2f2f2;border-radius:12px;padding:10px}
 .stat b{font-size:18px;display:block}
 #grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card2{background:#fff;border-radius:14px;overflow:hidden}
-.card2 img{width:100%;height:130px;object-fit:cover;background:#eee}
-.card2 .p{padding:10px}.price{color:#e65100;font-weight:800}
-.card2 button{width:100%;background:#00a651;color:#fff;border:none;padding:9px;border-radius:8px;margin-top:6px}
+.card2{background:#fff;border-radius:14px;overflow:hidden;border:2px solid #00a651;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.card2 img{width:100%;height:150px;object-fit:cover;background:#ffe0b2;border-bottom:2px solid #00a651;display:block}
+.card2 .p{padding:12px;background:#fff;color:#111}.price{color:#ee4d2d;font-weight:900;font-size:16px;margin:4px 0}
+.card2 button{width:100%;background:#00a651;color:#fff;border:none;padding:10px;border-radius:8px;margin-top:6px;font-weight:700;font-size:14px}
 .card2 button.hapus{background:#fff;color:#d32f2f;border:1px solid #d32f2f}
 .nav{position:fixed;left:0;right:0;bottom:0;background:#fff;display:flex;border-top:1px solid #eee;z-index:20}
 .nav button{flex:1;background:none;border:none;padding:8px 2px;font-size:12px;color:#555}
@@ -127,7 +127,7 @@ function tampil(){
   for(var i=0;i<produk.length;i++){
     var p=produk[i];
     if((p.nama||"").toLowerCase().indexOf(q)===-1) continue;
-    var img = p.foto || p.gambar || p.image_url || "https://via.placeholder.com/400x300?text=Bougenville";
+    var img = p.foto || p.gambar || p.image_url || "https://via.placeholder.com/400x300/00a651/ffffff?text=" + encodeURIComponent(p.nama || "Bougenville");
     html+='<div class="card2"><img src="'+img+'"><div class="p"><b>'+p.nama+'</b><div class="price">Rp '+Number(p.harga).toLocaleString("id-ID")+'</div><button onclick="editProduk('+p.id+')">✏️ Ubah Produk</button><button class="hapus" onclick="hapusProduk('+p.id+')">🗑️ Hapus</button></div></div>';
   }
   if(html==="") html="<p>Belum ada produk</p>";
@@ -196,7 +196,13 @@ function simpanEdit(){
   var dataSimple = { nama: nama, harga: dataFull.harga };
   function kirim(data){
     return fetch(SUPA_URL + "/rest/v1/produk?id=eq." + editId, {method:"PATCH", headers:{apikey:SUPA_KEY, Authorization:"Bearer "+SUPA_KEY, "Content-Type":"application/json", "Prefer":"return=representation"}, body: JSON.stringify(data)})
-    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, status:r.status, j:j}; }); });
+    .then(function(r){
+      return r.text().then(function(t){
+        var j = null;
+        try{ j = t ? JSON.parse(t) : {message:"OK - balasan kosong, tapi Update berhasil (204)"}; }catch(e){ j = {message:"OK - balasan kosong"}; }
+        return {ok: r.ok, status: r.status, j: j};
+      });
+    });
   }
   kirim(dataFull).then(function(res){
     if(res.ok){ alert("Berhasil Update!"); tutupEdit(); load(); return; }
