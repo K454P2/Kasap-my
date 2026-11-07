@@ -1,156 +1,70 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KASAP ID</title>
-<link rel="manifest" href="manifest.json">
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#f2f2f2;padding-bottom:80px}
-.top{background:#00a651;color:#fff;padding:12px 12px 16px;position:sticky;top:0;z-index:10}
-.top b{font-size:20px}
-.search{display:flex;margin-top:10px;background:#fff;border-radius:999px;overflow:hidden}
-.search input{flex:1;border:none;padding:12px 14px;outline:none}
-.search button{background:#008a43;color:#fff;border:none;padding:0 20px;font-weight:700}
-.banner{background:#00a651;color:#fff;margin:14px;border-radius:20px;padding:20px}
-.banner h1{margin:0;font-size:32px;line-height:1.1}
-.box{background:#fff;margin:0 12px 12px;border-radius:20px;padding:16px}
-.box h2{margin:0 0 14px;font-size:20px}
-.ppob{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;text-align:center;gap:8px}
-.ppob div{cursor:pointer}.ppob span{font-size:28px}.ppob p{margin:4px 0 0;font-size:14px}
-#grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card2{background:#fff;border-radius:14px;overflow:hidden}
-.card2 img{width:100%;height:130px;object-fit:cover;background:#eee}
-.card2 .p{padding:10px}.price{color:#e65100;font-weight:800}
-.card2 button{width:100%;background:#00a651;color:#fff;border:none;padding:9px;border-radius:8px;margin-top:6px}
-.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;display:flex;border-top:1px solid #eee;z-index:20}
-.nav button{flex:1;background:none;border:none;padding:8px 2px;font-size:12px;color:#555}
-.nav button.active{color:#00a651;font-weight:700}
-.page{display:none}.page.active{display:block}
-input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px}
-.btn{background:#00a651;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700}
-</style>
-</head>
-<body>
-<div id="pg-beranda" class="page active">
-<div class="top"><b>KASAP ID</b> <span id="status" style="font-size:12px">Menghubungkan...</span><div class="search"><input id="cari" placeholder="Cari Bougenville..."><button onclick="tampil()">Cari</button></div></div>
-<div class="banner"><h1>MARKET MURAH<br>BELANJA ENAK</h1><p>Tanaman hias • PPOB instan • Ongkir Komerce</p></div>
-<div class="box"><h2>PPOB & Tagihan</h2><div class="ppob">
-<div onclick="ppob('Pulsa')"><span>📱</span><p>Pulsa</p></div>
-<div onclick="ppob('Paket Data')"><span>📶</span><p>Paket Data</p></div>
-<div onclick="ppob('Listrik')"><span>⚙️</span><p>Listrik</p></div>
-<div onclick="ppob('PDAM')"><span>💧</span><p>PDAM</p></div>
-<div onclick="ppob('BPJS')"><span>❤️</span><p>BPJS</p></div>
-<div onclick="ppob('Tiket')"><span>🎫</span><p>Tiket</p></div>
-<div onclick="ppob('Top Up')"><span>💳</span><p>Top Up</p></div>
-<div onclick="ppob('Voucher TV')"><span>📺</span><p>Voucher TV</p></div>
-</div><p id="ppobHasil" style="font-weight:700;margin-top:10px"></p></div>
-<div class="box"><h2>Produk Terbaru • <span id="count">0 produk</span></h2><div id="grid"></div>
-<h3 style="margin-top:16px">+ Tambah Produk</h3>
-<input id="namaBaru" placeholder="Nama produk"><input id="hargaBaru" type="number" placeholder="Harga"><button class="btn" onclick="tambahProduk()">Simpan ke Supabase</button><p id="tambahHasil"></p></div>
-</div>
-<div id="pg-keranjang" class="page"><div class="box"><h2>🛒 Keranjang</h2><div id="isiCart"></div>
-<input id="nama" placeholder="Nama pembeli"><input id="wa" placeholder="No WA"><input id="alamat" placeholder="Alamat lengkap"><input id="kota" placeholder="Kode kota, contoh 114" value="114"><input id="berat" type="number" value="1000">
-<button class="btn" onclick="cekOngkir()">1. Cek Ongkir (Komerce)</button><div id="hasilOngkir" style="font-weight:700;margin:8px 0"></div>
-<button class="btn" onclick="checkout()" style="background:#111">2. Buat Invoice & Checkout WA</button></div></div>
-<div id="pg-chat" class="page"><div class="box"><h2>💬 Chat</h2><button class="btn" onclick="window.open('https://wa.me/6281234567890?text=Halo KASAP ID','_blank')">Chat WA Admin</button></div></div>
-<div id="pg-pesanan" class="page"><div class="box"><h2>📦 Pesanan</h2><p>Cek di WA admin.</p></div></div>
-<div id="pg-akun" class="page"><div class="box"><h2>👤 Akun</h2><p><b>Nirwana Flora Sumekar</b><br>Toko: Sop Enak Sumekar<br>KASAP ID • Sumenep</p></div></div>
-<div id="pg-live" class="page"><div class="box"><h2>🔴 Live</h2><p>Live tiap sore.</p></div></div>
-<div class="nav">
-<button class="active" onclick="nav('beranda',this)">🏠<br>Beranda</button>
-<button onclick="nav('live',this)">🎥<br>Live</button>
-<button onclick="nav('chat',this)">💬<br>Chat</button>
-<button onclick="nav('keranjang',this)">🛒<br>Keranjang</button>
-<button onclick="nav('pesanan',this)">📦<br>Pesanan</button>
-<button onclick="nav('akun',this)">👤<br>Akun</button>
-</div>
+<!DOCTYPE html><html lang="id"><head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KASAP ID - Buyer</title><style>body{margin:0;font-family:sans-serif;background:#f5f5f5;padding-bottom:80px}.top{background:#00a651;color:#fff;padding:14px}.top b{font-size:22px}.box{background:#fff;margin:10px;padding:14px;border-radius:14px}.btn{width:100%;background:#ee4d2d;color:#fff;border:none;padding:13px;border-radius:10px;font-weight:800;margin-top:8px}input,select,textarea{width:100%;padding:11px;border:1px solid #ddd;border-radius:10px;margin:6px 0;box-sizing:border-box}.page{display:none}.page.active{display:block}.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #eee;z-index:9999}.nav button{flex:1;background:none;border:none;padding:8px 2px;font-size:12px}.nav button.active{color:#00a651;font-weight:800}.card{border:1px solid #eee;border-radius:12px;padding:10px;margin:8px 0}.price{color:#ee4d2d;font-weight:800}</style></head><body>
+<div id="pg-beranda" class="page active"><div class="top"><b>KASAP ID</b> <span id="status" style="font-size:12px">Menghubungkan...</span><div style="display:flex;margin-top:10px"><input id="cari" placeholder="Cari Bougenville..." style="margin:0;border-radius:999px 0 0 999px"><button onclick="tampil()" style="background:#007a3f;color:#fff;border:none;padding:0 18px;border-radius:0 999px 999px 0;font-weight:800">Cari</button></div></div>
+<div class="box"><div style="display:flex;gap:10px;overflow-x:auto"><button onclick="nav('live')" style="background:#ee4d2d;color:#fff;border:none;padding:10px 14px;border-radius:999px;font-weight:800">🔴 Live KASAP ID</button><button onclick="nav('chat')" style="background:#fff;border:1px solid #00a651;color:#00a651;padding:10px 14px;border-radius:999px">💬 Chat Seller</button></div><p style="font-size:12px;color:#666">Bougenville langsung dari Gapura, Sumenep. Ongkir asli dari Komerce, bayar via Doku.</p></div>
+<div class="box"><h2>Produk • <span id="count">0 produk</span></h2><div id="grid"></div></div></div>
+
+<div id="pg-live" class="page" style="padding:0;background:#000"><div style="position:relative;width:100%;max-width:480px;margin:0 auto;background:#000;min-height:100vh"><div style="position:relative;width:100%;aspect-ratio:9/16;background:#111;overflow:hidden"><video id="liveVideoBuyer" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:none"></video><div id="liveVideoText" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#fff"><div style="font-size:64px">🎥</div><div id="liveVideoSub" style="font-size:13px">Seller belum Live.<br>Nanti Live-nya muncul di sini.</div></div>
+<div style="position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start"><div style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.6);padding:6px 10px 6px 6px;border-radius:999px"><div style="width:36px;height:36px;background:#00a651;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px">K</div><div style="line-height:1.2"><div style="color:#fff;font-size:13px;font-weight:800">KASAP ID ✓</div><div style="color:#ddd;font-size:11px">Nirwana Flora Sumekar</div><div id="liveStatusDot" style="color:#ff5252;font-size:11px;font-weight:800">● Belum Live</div></div><button onclick="toast('Mengikuti KASAP ID')" style="background:#ee4d2d;color:#fff;border:none;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;margin-left:4px">Ikuti</button></div><div id="livePenonton" style="background:rgba(0,0,0,0.6);color:#fff;padding:6px 12px;border-radius:999px;font-size:12px">0 penonton</div></div>
+<div style="position:absolute;top:70px;left:12px"><button onclick="toggleProdukLive()" style="background:rgba(255,255,255,0.9);border:1px dashed #999;padding:10px;border-radius:10px;font-size:11px">➕<br>Klik untuk<br>tampilkan<br>produk</button></div>
+<div id="liveProdukOverlay" style="display:none;position:absolute;left:12px;right:12px;bottom:90px;background:rgba(255,255,255,0.95);border-radius:12px;padding:10px;max-height:220px;overflow:auto"><b>Produk di Live</b><div id="liveProdukList"></div></div>
+<div style="position:absolute;left:12px;right:12px;bottom:90px;max-height:140px;overflow:auto"><div id="liveChatList" style="color:#fff;font-size:13px"><p>Belum ada komentar.</p></div></div>
+<div style="position:absolute;bottom:14px;left:12px;right:12px;display:flex;gap:10px;justify-content:space-between;align-items:center"><button onclick="toggleProdukLive()" style="background:#ee4d2d;color:#fff;border:none;width:52px;height:52px;border-radius:14px;font-size:22px">🛒</button><button onclick="toggleKomentarLive()" style="background:rgba(0,0,0,0.6);color:#fff;border:none;width:52px;height:52px;border-radius:50%;font-size:20px">💬</button><button onclick="toast('Filter wajah aktif')" style="background:rgba(0,0,0,0.6);color:#fff;border:none;padding:8px 10px;border-radius:999px;font-size:11px">Filter wajah</button><button onclick="tapLove()" style="background:rgba(0,0,0,0.6);color:#fff;border:none;padding:8px 10px;border-radius:999px;font-size:11px">❤️ Tap love</button></div><div id="liveLove" style="position:absolute;right:18px;bottom:90px;font-size:28px;display:none">❤️</div></div>
+<div style="background:#000;padding:12px"><div id="liveKomentarBox" style="display:none"><input id="liveChatInput" placeholder="Tulis komentar..." style="background:#222;color:#fff;border:1px solid #333"><button class="btn" onclick="kirimLiveChatBuyer()" style="background:#ee4d2d">Kirim Komentar</button></div><button class="btn" onclick="cekLive()" style="background:#fff;color:#111">Cek Live Seller</button><p style="color:#fff;font-size:12px;text-align:center">Live ini dari Seller KASAP ID, bukan dari TikTok / Shopee.</p></div></div></div>
+
+<div id="pg-chat" class="page"><div class="top"><b>Chat dengan Seller</b></div><div class="box"><b>Chat Baru ke Seller</b><input id="chatNama" placeholder="Nama kamu"><input id="chatPesan" placeholder="Pesan ke Seller, contoh: Kak, poetri masih ada?"><button class="btn" onclick="tambahChat()" style="background:#00a651">Kirim Chat di Aplikasi</button><p style="font-size:12px">Chat ini di dalam aplikasi KASAP ID, bukan WA.</p></div><div class="box"><h2>Riwayat Chat</h2><div id="listChat"></div></div></div>
+
+<div id="pg-keranjang" class="page"><div class="top"><b>Keranjang</b></div><div class="box"><div id="cartList"></div><input id="kotaTujuan" placeholder="Kode kota tujuan, contoh 74945 = Surabaya"><input id="namaPembeli" placeholder="Nama Pembeli"><button class="btn" onclick="cekOngkirBuyer()" style="background:#00a651">Cek Ongkir (Komerce)</button><div id="hasilOngkir" style="font-weight:800;margin:8px 0"></div><div id="totalBayar" style="font-weight:900;font-size:18px"></div><button class="btn" onclick="checkout()">Checkout via Doku</button><p id="checkoutHasil" style="font-size:13px"></p></div></div>
+
+<div id="pg-pesanan" class="page"><div class="top"><b>Pesanan Saya</b></div><div class="box"><div id="listPesanan"></div></div></div>
+
+<div id="pg-akun" class="page"><div class="top"><b>Akun Saya</b></div><div class="box"><b>KASAP ID Buyer</b><br><span style="font-size:13px">Gapura, Sumenep - Jawa Timur</span><br><button class="btn" onclick="window.location.href='seller/'" style="background:#00a651">Pindah ke Mode Seller</button><button class="btn" onclick="toast('Sukses Log out');setTimeout(function(){window.location.href='login.html'},800)" style="background:#fff;color:#111;border:1px solid #ddd">Log out</button></div></div>
+
+<div class="nav"><button class="active" onclick="nav('beranda')">🏠<br>Beranda</button><button onclick="nav('live')">🎥<br>Live</button><button onclick="nav('chat')">💬<br>Chat</button><button onclick="nav('keranjang')">🛒<br>Keranjang <span id="cartCount">0</span></button><button onclick="nav('pesanan')">📦<br>Pesanan</button><button onclick="nav('akun')">👤<br>Akun</button></div>
+<div id="toast" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:999px;display:none;z-index:99999"></div>
 <script>
-var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
-var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
-var produk=[]; var cart=[]; var ongkirTerakhir=0;
-function nav(p,btn){
-  var pages=document.querySelectorAll('.page'); for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
-  document.getElementById('pg-'+p).classList.add('active');
-  var btns=document.querySelectorAll('.nav button'); for(var j=0;j<btns.length;j++) btns[j].classList.remove('active');
-  btn.classList.add('active');
-  if(p==='keranjang') renderCart();
-  window.scrollTo(0,0);
-}
-function load(){
-  document.getElementById("status").textContent="Menghubungkan...";
-  fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
-  .then(function(r){ return r.json(); })
-  .then(function(j){
-    if(j && j.length!==undefined) produk=j; else produk=[];
-    document.getElementById("status").textContent="Terhubung - "+produk.length+" produk";
-    document.getElementById("count").textContent=produk.length+" produk";
-    tampil();
-  })
-  .catch(function(e){ document.getElementById("status").textContent="Gagal: "+e.message; });
-}
-function tampil(){
-  var q=(document.getElementById("cari").value||"").toLowerCase();
-  var html="";
-  for(var i=0;i<produk.length;i++){
-    var p=produk[i];
-    if((p.nama||"").toLowerCase().indexOf(q)===-1) continue;
-    html+='<div class="card2"><img src="https://via.placeholder.com/400x300?text=Bougenville"><div class="p"><b>'+p.nama+'</b><div class="price">Rp '+Number(p.harga).toLocaleString("id-ID")+'</div><button onclick="tambah('+p.id+')">+ Keranjang</button></div></div>';
-  }
-  if(html==="") html="<p>Belum ada produk</p>";
-  document.getElementById("grid").innerHTML=html;
-}
-function tambah(id){ for(var i=0;i<produk.length;i++){ if(produk[i].id===id){ cart.push(produk[i]); break; } } renderCart(); alert("Masuk keranjang"); }
-function renderCart(){
-  var total=0; var html="";
-  for(var i=0;i<cart.length;i++){ total+=Number(cart[i].harga); html+="<div>"+cart[i].nama+" - Rp "+Number(cart[i].harga).toLocaleString("id-ID")+"</div>"; }
-  html+="<b>Total barang: Rp "+total.toLocaleString("id-ID")+"</b>";
-  document.getElementById("isiCart").innerHTML=html;
-}
-function tambahProduk(){
-  var nama=document.getElementById("namaBaru").value;
-  var harga=Number(document.getElementById("hargaBaru").value||0);
-  if(!nama||!harga){ alert("Isi nama + harga"); return; }
-  document.getElementById("tambahHasil").textContent="Menyimpan...";
-  fetch(SUPA_URL+"/rest/v1/produk",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({nama:nama,harga:harga})})
-  .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
-  .then(function(res){ if(res.ok){ document.getElementById("tambahHasil").textContent="Berhasil!"; document.getElementById("namaBaru").value=""; document.getElementById("hargaBaru").value=""; load(); } else { document.getElementById("tambahHasil").textContent="Gagal: "+JSON.stringify(res.j); } })
-  .catch(function(e){ document.getElementById("tambahHasil").textContent="Gagal: "+e.message; });
-}
-function cekOngkir(){
-  var kota=document.getElementById("kota").value||"114";
-  var berat=Number(document.getElementById("berat").value||1000);
-  document.getElementById("hasilOngkir").textContent="Menghitung ongkir Komerce...";
-  fetch(SUPA_URL+"/rest/v1/rpc/hitung_ongkir_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({kota_tujuan:kota,berat_gram:berat})})
-  .then(function(r){ return r.json(); })
-  .then(function(d){
-    var cost=20000;
-    if(d && d.data && d.data.length>0){
-      cost=d.data[0].cost;
-      for(var i=0;i<d.data.length;i++){ if(d.data[i].service==="REG") cost=d.data[i].cost; }
-    } else if(d && d.ongkir) cost=d.ongkir;
-    ongkirTerakhir=Number(cost);
-    document.getElementById("hasilOngkir").textContent="Ongkir ke "+kota+" ("+berat+"g): Rp "+Number(ongkirTerakhir).toLocaleString("id-ID")+" • JNE REG";
-  })
-  .catch(function(e){ document.getElementById("hasilOngkir").textContent="Ongkir manual: Rp 9.000"; ongkirTerakhir=9000; });
-}
-function ppob(jenis){ document.getElementById("ppobHasil").textContent="Kamu pilih "+jenis+" - nanti nyambung IAK otomatis, sekarang via WA dulu."; }
-function checkout(){
-  var nama=document.getElementById("nama").value; var wa=document.getElementById("wa").value;
-  if(!nama||!wa){ alert("Isi nama + WA dulu"); return; }
-  if(cart.length===0){ alert("Keranjang masih kosong"); return; }
-  var total=0; for(var i=0;i<cart.length;i++) total+=Number(cart[i].harga);
-  total+=ongkirTerakhir;
-  var inv="INV-"+Date.now();
-  fetch(SUPA_URL+"/rest/v1/rpc/buat_invoice_doku_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({amount:total,invoice_id:inv})}).catch(function(){});
-  var teks="Halo KASAP ID, saya "+nama+" mau pesan:\n";
-  for(var j=0;j<cart.length;j++) teks+="- "+cart[j].nama+" Rp "+Number(cart[j].harga).toLocaleString("id-ID")+"\n";
-  teks+="Ongkir: Rp "+ongkirTerakhir.toLocaleString("id-ID")+"\nTOTAL: Rp "+total.toLocaleString("id-ID")+"\nInvoice: "+inv;
-  window.open("https://wa.me/6281234567890?text="+encodeURIComponent(teks),"_blank");
-}
-document.getElementById("cari").oninput=tampil;
-load();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
-</script>
-</body>
-</html>
+var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";var produk=[];var cart=[];var chatList=[];var liveSesiId=null;var livePenonton=0;var ongkirTerakhir=0;
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(function(){t.style.display="none"},2000)}
+function setText(id,txt){var e=document.getElementById(id);if(e)e.textContent=txt}
+function nav(p){var ps=document.querySelectorAll(".page");for(var i=0;i<ps.length;i++)ps[i].classList.remove("active");document.getElementById("pg-"+p).classList.add("active");var bs=document.querySelectorAll(".nav button");for(var j=0;j<bs.length;j++)bs[j].classList.remove("active");var idx={beranda:0,live:1,chat:2,keranjang:3,pesanan:4,akun:5}[p];if(idx!==undefined)bs[idx].classList.add("active");if(p==="live")cekLive();if(p==="keranjang")renderCart();if(p==="pesanan")loadPesanan();window.scrollTo(0,0)}
+function loadProduk(){setText("status","Menghubungkan...");fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t)}catch(e){return[]}})}).then(function(j){produk=Array.isArray(j)?j:[];setText("status","Terhubung - "+produk.length+" produk");setText("count",produk.length+" produk");tampil()}).catch(function(){setText("status","Terhubung - "+produk.length+" produk")})}
+function tampil(){var q=(document.getElementById("cari").value||"").toLowerCase();var h="";for(var i=0;i<produk.length;i++){var p=produk[i];if((p.nama||"").toLowerCase().indexOf(q)===-1)continue;var img=p.foto||"";h+='<div class="card">'+(img?'<img src="'+img+'" style="width:100%;border-radius:10px">':"")+'<b>'+(p.nama||"")+'</b><div class="price">Rp '+Number(p.harga||0).toLocaleString("id-ID")+'</div><div style="font-size:12px">'+(p.deskripsi||"")+' • Stok '+(p.stok||0)+'</div><div style="display:flex;gap:8px;margin-top:8px"><button onclick="beliLangsung('+p.id+')" style="flex:1;background:#ee4d2d;color:#fff;border:none;padding:12px;border-radius:10px;font-weight:800">Beli</button><button onclick="tambahKeranjang('+p.id+')" style="flex:1;background:#fff;color:#00a651;border:1px solid #00a651;padding:12px;border-radius:10px;font-weight:800">Masuk Keranjang</button></div></div>'}document.getElementById("grid").innerHTML=h||"<p>Belum ada produk.</p>"}
+function tambahKeranjang(id){var p=null;for(var i=0;i<produk.length;i++)if(produk[i].id===id)p=produk[i];if(!p)return;cart.push(p);setText("cartCount",cart.length);toast("Masuk Keranjang: "+p.nama);renderCart()}
+function beliLangsung(id){tambahKeranjang(id);nav("keranjang")}
+function renderCart(){var el=document.getElementById("cartList");if(cart.length===0){el.innerHTML="<p>Keranjang masih kosong.</p>";setText("totalBayar","");return}var h="";var tot=0;for(var i=0;i<cart.length;i++){tot+=Number(cart[i].harga||0);h+='<div class="card"><b>'+cart[i].nama+'</b> - Rp '+Number(cart[i].harga||0).toLocaleString("id-ID")+' <button onclick="hapusCart('+i+')" style="float:right">Hapus</button></div>'}el.innerHTML=h;setText("totalBayar","Total Produk: Rp "+tot.toLocaleString("id-ID")+" + Ongkir Rp "+ongkirTerakhir.toLocaleString("id-ID")+" = Rp "+(tot+ongkirTerakhir).toLocaleString("id-ID"))}
+function hapusCart(i){cart.splice(i,1);setText("cartCount",cart.length);renderCart()}
+function cekOngkirBuyer(){var kota=document.getElementById("kotaTujuan").value.trim();if(!kota){toast("Isi kode kota tujuan dulu");return}document.getElementById("hasilOngkir").textContent="Menghitung ongkir Komerce...";fetch(SUPA_URL+"/rest/v1/rpc/hitung_ongkir_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({kota_tujuan:kota,berat_gram:1000})}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t)}catch(e){return{}}})}).then(function(j){var teks="";if(j&&j.cost)teks="Ongkir: Rp "+Number(j.cost).toLocaleString("id-ID")+" - "+(j.service||"REG")+" - "+(j.etd||"");else if(j&&j.data&&j.data.length)teks="Ongkir: Rp "+Number(j.data[0].cost).toLocaleString("id-ID");else teks="Gagal hitung ongkir, coba lagi. Pastikan kota pakai ID District, contoh Surabaya 74945.";document.getElementById("hasilOngkir").textContent=teks;var m=teks.match(/Rp ([0-9.]+)/);if(m)ongkirTerakhir=Number(m[1].replace(/\./g,"")||0);renderCart()}).catch(function(){document.getElementById("hasilOngkir").textContent="Gagal hitung ongkir."})}
+function checkout(){if(cart.length===0){toast("Keranjang masih kosong");return}var tot=0;for(var i=0;i<cart.length;i++)tot+=Number(cart[i].harga||0);var grand=tot+ongkirTerakhir;var nama=document.getElementById("namaPembeli").value.trim()||"Buyer KASAP";fetch(SUPA_URL+"/rest/v1/penjualan",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify({nama_produk:cart.map(function(c){return c.nama}).join(", "),total:grand,status:"Perlu Dikirim"})}).then(function(r){return r.text().then(function(t){return{ok:r.ok}})}).then(function(res){if(res.ok){document.getElementById("checkoutHasil").textContent="Pesanan dibuat Rp "+grand.toLocaleString("id-ID")+". Lanjutkan bayar via Doku Payment Link di dashboard Doku (sementara manual, karena Doku Sandbox maintenance).";toast("Sukses Buat Pesanan");cart=[];setText("cartCount",0);renderCart();loadPesanan()}else{toast("Gagal Buat Pesanan")}})}
+function loadChat(){fetch(SUPA_URL+"/rest/v1/chat_pembeli?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t)}catch(e){return[]}})}).then(function(j){chatList=Array.isArray(j)?j:[];renderChat()})}
+function renderChat(){var el=document.getElementById("listChat");if(chatList.length===0){el.innerHTML="<p>Belum ada chat.</p>";return}var h="";for(var i=0;i<chatList.length;i++){var c=chatList[i];var bal=c.balasan?'<div style="background:#e8f5e9;padding:8px;border-radius:8px;margin:6px 0"><b>Seller:</b> '+c.balasan+'</div>':"";h+='<div class="card"><b>'+(c.nama_pembeli||"")+'</b> - '+(c.status||"")+'<div>'+(c.pesan||"")+'</div>'+bal+'</div>'}el.innerHTML=h}
+function tambahChat(){var nama=document.getElementById("chatNama").value.trim();var pesan=document.getElementById("chatPesan").value.trim();if(!nama||!pesan){toast("Isi nama + pesan");return}fetch(SUPA_URL+"/rest/v1/chat_pembeli",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify({nama_pembeli:nama,pesan:pesan,status:"Untuk Dibalas Manual"})}).then(function(){toast("Sukses Kirim Chat");document.getElementById("chatNama").value="";document.getElementById("chatPesan").value="";loadChat()})}
+function loadPesanan(){fetch(SUPA_URL+"/rest/v1/penjualan?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t)}catch(e){return[]}})}).then(function(j){var el=document.getElementById("listPesanan");if(!Array.isArray(j)||j.length===0){el.innerHTML="<p>Belum ada pesanan.</p>";return}var h="";for(var i=0;i<j.length;i++){var p=j[i];h+='<div class="card"><b>'+(p.nama_produk||"")+'</b> - Rp '+Number(p.total||0).toLocaleString("id-ID")+' - '+(p.status||"")+(p.resi?'<br><b>No Resi:</b> <span style="color:#ee4d2d">'+p.resi+'</span>':"")+'</div>'}el.innerHTML=h})}
+function cekLive(){fetch(SUPA_URL+"/rest/v1/live_sesi?select=*&status=eq.live&order=created_at.desc&limit=1",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t)}catch(e){return[]}})}).then(function(j){var s=Array.isArray(j)?j[0]:null;if(s){liveSesiId=s.id;setText("liveStatusDot","● LIVE - "+(s.judul||"");setText("livePenonton",(s.penonton||0)+" penonton");document.getElementById("liveVideoSub").textContent="Seller sedang Live. Tonton di aplikasi ini.";loadLiveChatBuyer();loadLiveProduk()}else{setText("liveStatusDot","● Belum Live");setText("livePenonton","0 penonton");document.getElementById("liveVideoSub").textContent="Seller belum Live."}})}
+function loadLiveProduk(){var el=document.getElementById("liveProdukList");if(!el)return;if(!produk||produk.length===0){el.innerHTML="<p>Belum ada produk.</p>";return}var h="";for(var i=0;i<produk.length;i++){var p=produk[i];h+='<div class="card"><b>'+(p.nama||"")+'</b> - Rp '+Number(p.harga||0).toLocaleString("id-ID")+' <button class="btn" onclick="tambahKeranjang('+p.id+');toast(\'Masuk Keranjang dari Live\')">Beli dari Live</button></div>'}el.innerHTML=h}
+function toggleProdukLive(){var o=document.getElementById("liveProdukOverlay");if(o)o.style.display=o.style.display==="none"?"block":"none";if(o&&o.style.display==="block")loadLiveProduk()}
+function toggleKomentarLive(){var b=document.getElementById("liveKomentarBox");if(b)b.style.display=b.style.display==="none"?"block":"none"}
+function tapLove(){var l=document.getElementById("liveLove");if(l){l.style.display="block";setTimeout(function(){l.style.display="none"},800)}livePenonton++;setText("livePenonton",livePenonton+" penonton • ❤️")}
+function loadLiveChatBuyer(){if(!liveSesiId)return;fetch(SUPA_URL+"/rest/v1/live_chat?live_id=eq."+liveSesiId+"&order=created_at.asc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t)}catch(e){return[]}})}).then(function(j){var el=document.getElementById("liveChatList");if(!el)return;if(!Array.isArray(j)||j.length===0){el.innerHTML="<p>Belum ada komentar.</p>";return}var h="";for(var i=0;i<j.length;i++)h+='<div style="background:rgba(0,0,0,0.5);padding:6px 8px;border-radius:8px;margin:4px 0"><b>'+(j[i].nama||"Buyer")+":</b> "+(j[i].pesan||"")+'</div>';el.innerHTML=h})}
+function kirimLiveChatBuyer(){var inp=document.getElementById("liveChatInput");var t=inp?inp.value.trim():"";if(!t){toast("Tulis komentar dulu");return}if(!liveSesiId){toast("Seller belum Live");return}fetch(SUPA_URL+"/rest/v1/live_chat",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify({live_id:liveSesiId,nama:"Buyer",pesan:t})}).then(function(){if(inp)inp.value="";loadLiveChatBuyer();toast("Sukses Kirim Komentar")})}
+loadProduk();loadChat();loadPesanan();
+</script><script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
