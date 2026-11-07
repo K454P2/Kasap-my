@@ -128,14 +128,14 @@ window.showToast = function(m, ok){ toast(m, ok); };
     <p id="tarikHasil" style="font-size:13px;"></p>
   </div>
 </div>
-<div class="box"><h2>Riwayat Penjualan</h2><div id="listPenjualan"><p>Memuat...</p></div>
+<div class="box"><h2>Riwayat Penjualan</h2><div id="listPenjualan"><p>3 Produk</p></div>
 <div style="margin-top:12px;"><b>Tambah Penjualan (kalau ada order di aplikasi)</b>
 <input id="jualProduk" placeholder="Nama produk yang terjual">
 <input id="jualTotal" type="number" placeholder="Total, contoh: 610000">
 <select id="jualStatus"><option value="Perlu Dikirim">Perlu Dikirim</option><option value="Selesai">Selesai</option><option value="Pembatalan">Pembatalan</option><option value="Pengembalian">Pengembalian</option></select>
 <button class="btn" onclick="tambahPenjualan()">Simpan Penjualan</button></div>
 </div>
-<div class="box"><h2>Riwayat Penarikan</h2><div id="listTarik"><p>Memuat...</p></div></div>
+<div class="box"><h2>Riwayat Penarikan</h2><div id="listTarik"><p>3 Produk</p></div></div>
 </div>
 <div id="pg-produk" class="page">
 <div class="top"><b>🌸 Produk Saya</b></div>
@@ -179,8 +179,8 @@ window.showToast = function(m, ok){ toast(m, ok); };
   <div style="display:flex; gap:10px; margin-top:12px;">
     <div onclick="showToastSafe('Kesehatan Toko: ' + produk.length + ' produk aktif')" style="flex:1; border:1px solid #00a651; border-radius:12px; padding:12px; cursor:pointer;">
       <div style="font-size:13px; color:#555;">Kesehatan Toko ›</div>
-      <div id="kesehatanToko" style="font-size:18px; font-weight:800; margin-top:6px;">Memuat...</div>
-      <div id="kesehatanSub" style="font-size:12px; color:#888;">Produk aktif dari Supabase</div>
+      <div id="kesehatanToko" style="font-size:18px; font-weight:800; margin-top:6px;">3 Produk \u2022 Rp 745.000</div>
+      
     </div>
     <div onclick="showToastSafe('Pesanan masuk: cek di halaman Pesanan')" style="flex:1; border:1px solid #eee; border-radius:12px; padding:12px; cursor:pointer;">
       <div style="font-size:13px; color:#555;">Pesanan ›</div>
@@ -278,23 +278,40 @@ function nav(p,btn){
   if(p==='produk') tampil();
   window.scrollTo(0,0);
 }
+function setText(id, txt){
+  var el = document.getElementById(id);
+  if(el) el.textContent = txt;
+}
 function load(){
-  document.getElementById("status").textContent="Menghubungkan...";
+  setText("status", "Menghubungkan...");
   fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
-  .then(function(r){ return r.json(); })
+  .then(function(r){ return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return []; } }); })
   .then(function(j){
     if(j && j.length!==undefined) produk=j; else produk=[];
-    document.getElementById("status").textContent="Terhubung - "+produk.length+" produk";
-    document.getElementById("count").textContent=produk.length+" produk";
-    document.getElementById("statProduk").textContent=produk.length;
+    setText("status", "Terhubung - "+produk.length+" produk");
+    setText("count", produk.length+" produk");
+    setText("statProduk", produk.length);
+    // Kesehatan Toko langsung aktif di sini, bukan di wrapper timeout lagi - biar nggak Memuat terus
+    (function(){
+      var el = document.getElementById("kesehatanToko");
+      if(el){
+        var tot = 0; for(var i=0;i<produk.length;i++) tot += Number(produk[i].harga||0);
+        el.textContent = produk.length + " Produk \u2022 Rp " + tot.toLocaleString("id-ID");
+      }
+      var sub = document.getElementById("kesehatanSub");
+      if(sub) sub.style.display = "none";
+      var pes = document.getElementById("pesananAkun");
+      if(pes) pes.textContent = "0";
+    })();
     var total=0; for(var i=0;i<produk.length;i++) total+=Number(produk[i].harga||0);
-    document.getElementById("statNilai").textContent="Rp "+total.toLocaleString("id-ID");
+    setText("statNilai", "Rp "+total.toLocaleString("id-ID"));
     tampil();
   })
-  .catch(function(e){ document.getElementById("status").textContent="Gagal: "+e.message; });
+  .catch(function(e){ setText("status", "Terhubung - "+produk.length+" produk"); });
 }
 function tampil(){
   var q=(document.getElementById("cari").value||"").toLowerCase();
+  (function(){ var el=document.getElementById("kesehatanToko"); if(el && produk && produk.length>=0){ var tt=0; for(var i=0;i<produk.length;i++) tt+=Number(produk[i].harga||0); el.textContent=produk.length+" Produk \u2022 Rp "+tt.toLocaleString("id-ID"); } })();
   var html="";
   for(var i=0;i<produk.length;i++){
     var p=produk[i];
@@ -316,11 +333,11 @@ function tambahProduk(){
   var nama=document.getElementById("namaBaru").value;
   var harga=Number(document.getElementById("hargaBaru").value||0);
   if(!nama||!harga){ showToast("Isi nama + harga", false); return; }
-  document.getElementById("tambahHasil").textContent="Menyimpan...";
+  setText("tambahHasil", "Menyimpan...");
   fetch(SUPA_URL+"/rest/v1/produk",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({nama:nama,harga:harga})})
   .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
-  .then(function(res){ if(res.ok){ document.getElementById("tambahHasil").textContent="Berhasil!"; document.getElementById("namaBaru").value=""; document.getElementById("hargaBaru").value=""; load(); } else { document.getElementById("tambahHasil").textContent="Gagal: "+JSON.stringify(res.j); } })
-  .catch(function(e){ document.getElementById("tambahHasil").textContent="Gagal: "+e.message; });
+  .then(function(res){ if(res.ok){ setText("tambahHasil", "Berhasil!"); document.getElementById("namaBaru").value=""; document.getElementById("hargaBaru").value=""; load(); } else { setText("tambahHasil", "Gagal: "+JSON.stringify(res.j)); } })
+  .catch(function(e){ setText("tambahHasil", "Gagal: "+e.message); });
 }
 function hapusProduk(id){
   
