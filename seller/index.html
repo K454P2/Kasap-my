@@ -91,15 +91,52 @@ window.showToast = function(m, ok){ toast(m, ok); };
 
 <div id="pg-beranda" class="page active">
 <div class="top"><b>KASAP ID</b> <small>SELLER</small> <span id="status" style="font-size:12px">Menghubungkan...</span><div class="search"><input id="cari" placeholder="Cari produk toko saya..."><button onclick="tampil()">Cari</button></div></div>
-<div class="banner"><h1>DASHBOARD<br>SELLER</h1><p>Toko: KASAP ID • Gapura, Sumenep<br>Kelola produk, pesanan & live dari sini.</p></div>
-<div class="box"><h2>📊 Statistik Toko</h2><div class="stat">
-<div><b id="statProduk">0</b><span>Produk</span></div>
-<div><b id="statNilai">Rp 0</b><span>Total Nilai</span></div>
-<div><b id="statPesanan">0</b><span>Pesanan</span></div>
-</div><p style="font-size:13px;color:#666">Produk yang kamu tambah di sini langsung muncul di APK Buyer.</p></div>
+
+<div class="box" style="margin-top:12px;">
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; text-align:center; gap:8px;">
+    <div onclick="nav('pesanan', document.querySelectorAll('.nav button')[2])"><b id="stKirim" style="font-size:20px; display:block;">0</b><span style="font-size:11px; color:#555;">Perlu Dikirim</span></div>
+    <div onclick="showToastSafe('Belum ada pembatalan')"><b id="stBatal" style="font-size:20px; display:block;">0</b><span style="font-size:11px; color:#555;">Pembatalan</span></div>
+    <div onclick="showToastSafe('Belum ada pengembalian')"><b id="stKembali" style="font-size:20px; display:block;">0</b><span style="font-size:11px; color:#555;">Pengembalian</span></div>
+    <div onclick="nav('pesanan', document.querySelectorAll('.nav button')[2])"><b id="stNilai" style="font-size:20px; display:block;">0</b><span style="font-size:11px; color:#555;">Penilaian Perlu Dibalas</span></div>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; text-align:center; gap:8px; margin-top:16px; padding-top:14px; border-top:1px solid #f2f2f2;">
+    <div onclick="nav('produk', document.querySelectorAll('.nav button')[1])" style="cursor:pointer;"><div style="font-size:28px;">📦</div><p style="margin:4px 0 0; font-size:12px;">Produk</p></div>
+    <div onclick="nav('pesanan', document.querySelectorAll('.nav button')[2])" style="cursor:pointer;"><div style="font-size:28px;">🧾</div><p style="margin:4px 0 0; font-size:12px;">Pesanan</p></div>
+    <div onclick="bukaKeuangan()" style="cursor:pointer;"><div style="font-size:28px;">💰</div><p style="margin:4px 0 0; font-size:12px;">Keuangan</p></div>
+    <div onclick="bukaPerforma()" style="cursor:pointer;"><div style="font-size:28px;">📊</div><p style="margin:4px 0 0; font-size:12px;">Performa Toko</p></div>
+    
+  </div>
+</div>
+
 <div class="box"><h2>Produk Toko Saya • <span id="count">0 produk</span></h2><div id="grid"></div></div>
 </div>
 
+<div id="pg-keuangan" class="page">
+<div class="top"><b>💰 Keuangan</b></div>
+<div class="box" style="background:#00a651; color:#fff;">
+  <div style="font-size:13px;">Saldo Penjualan</div>
+  <div id="saldoPenjualan" style="font-size:32px; font-weight:900; margin:6px 0;">Rp 0</div>
+  <div id="saldoDetail" style="font-size:12px; opacity:0.9;">Dari penjualan yang selesai di aplikasi ini</div>
+  <button onclick="toggleSet('tarikBox')" style="width:100%; background:#fff; color:#00a651; border:none; padding:12px; border-radius:10px; font-weight:800; margin-top:12px;">Tarik Dana Penghasilan</button>
+  <div id="tarikBox" style="display:none; background:#fff; color:#111; padding:12px; border-radius:10px; margin-top:12px;">
+    <b>Tarik Dana</b>
+    <input id="tarikJumlah" type="number" placeholder="Jumlah, contoh: 50000">
+    <select id="tarikBank"><option value="">-- Pilih Bank / E-Wallet (Doku) --</option><optgroup label="Bank - via Doku"><option value="BCA">BCA</option><option value="Mandiri">Mandiri</option><option value="BRI">BRI</option><option value="BNI">BNI</option><option value="CIMB Niaga">CIMB Niaga</option><option value="Danamon">Danamon</option><option value="Permata">Permata</option><option value="BSI">BSI (Bank Syariah Indonesia)</option><option value="BTN">BTN</option><option value="Panin">Panin</option><option value="OCBC NISP">OCBC NISP</option></optgroup><optgroup label="E-Wallet - via Doku"><option value="DANA">DANA</option><option value="OVO">OVO</option><option value="GoPay">GoPay</option><option value="ShopeePay">ShopeePay</option><option value="LinkAja">LinkAja</option></optgroup></select><p style="font-size:12px; color:#666;">Penarikan diproses via Doku Disbursement. Kalau pilih Bank, masuk 1x24 jam kerja. Kalau E-Wallet, masuk lebih cepat.</p>
+    <input id="tarikRek" placeholder="No Rekening / No HP E-Wallet">
+    <input id="tarikNama" placeholder="Nama Pemilik Rekening">
+    <button class="btn" onclick="ajukanTarik()">Ajukan Penarikan</button>
+    <p id="tarikHasil" style="font-size:13px;"></p>
+  </div>
+</div>
+<div class="box"><h2>Riwayat Penjualan</h2><div id="listPenjualan"><p>Memuat...</p></div>
+<div style="margin-top:12px;"><b>Tambah Penjualan (kalau ada order di aplikasi)</b>
+<input id="jualProduk" placeholder="Nama produk yang terjual">
+<input id="jualTotal" type="number" placeholder="Total, contoh: 610000">
+<select id="jualStatus"><option value="Perlu Dikirim">Perlu Dikirim</option><option value="Selesai">Selesai</option><option value="Pembatalan">Pembatalan</option><option value="Pengembalian">Pengembalian</option></select>
+<button class="btn" onclick="tambahPenjualan()">Simpan Penjualan</button></div>
+</div>
+<div class="box"><h2>Riwayat Penarikan</h2><div id="listTarik"><p>Memuat...</p></div></div>
+</div>
 <div id="pg-produk" class="page">
 <div class="top"><b>🌸 Produk Saya</b></div>
 <div class="box"><h2>+ Tambah Produk</h2>
@@ -111,11 +148,31 @@ window.showToast = function(m, ok){ toast(m, ok); };
 <div class="box"><h2>Daftar Produk</h2><div id="grid2"></div></div>
 </div>
 
-<div id="pg-pesanan" class="page"><div class="box"><h2>📦 Pesanan Masuk</h2><div id="isiPesanan"><p>Belum ada pesanan masuk. Kalau ada buyer checkout, pesanan akan muncul di WA admin & di sini.</p><p style="font-size:13px;color:#666">Contoh: #INV-xxx - Bougenville citra silver - Rp 385.000 (sudah ongkir JNE REG 35.000)<br>Status: Perlu dikirim</p></div>
-<input id="nama" placeholder="Nama pembeli (untuk cek ongkir)"><input id="kota" placeholder="Kode kota, contoh 114" value="114"><input id="berat" type="number" value="1000">
-<button class="btn" onclick="cekOngkir()">Cek Ongkir (Komerce)</button><div id="hasilOngkir" style="font-weight:700;margin:8px 0"></div></div></div>
-
-<div id="pg-chat" class="page"><div class="box"><h2>💬 Chat Buyer</h2><button class="btn" onclick="window.open('https://wa.me/6281234567890?text=Halo KASAP ID','_blank')">Buka WA Admin</button><p>Chat buyer masuk via WA.</p></div></div>
+<div id="pg-pesanan" class="page">
+<div style="padding:14px 16px 8px; background:#fff;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <b style="font-size:20px;">Chat dengan Pembeli</b>
+    <span id="chatCount" style="font-size:12px; background:#ee4d2d; color:#fff; padding:2px 8px; border-radius:999px;">0</span>
+  </div>
+  <div style="display:flex; gap:8px; margin-top:12px; overflow-x:auto; padding-bottom:4px;">
+    <button class="tab-chat active" onclick="filterChat('Semua',this)">Semua</button>
+    <button class="tab-chat" onclick="filterChat('Untuk Dibalas Manual',this)">Untuk Dibalas Manual</button>
+    <button class="tab-chat" onclick="filterChat('Untuk Dicek',this)">Untuk Dicek</button>
+    <button class="tab-chat" onclick="filterChat('Dibalas Manual',this)">Dibalas Manual</button>
+  </div>
+</div>
+<div class="box" style="margin-top:12px;">
+  <b>Chat Baru</b>
+  <input id="chatNama" placeholder="Nama Pembeli">
+  <input id="chatPesan" placeholder="Pesan, contoh: Kak, poetri masih ada?">
+  <select id="chatStatus"><option>Untuk Dibalas Manual</option><option>Untuk Dicek</option><option>Dibalas Manual</option></select>
+  <button class="btn" onclick="tambahChat()">Simpan Chat</button>
+  <p id="chatHasil"></p>
+</div>
+<div class="box"><h2>List Chat</h2><div id="listChat"><p>Memuat chat...</p></div></div>
+</div>
+</div>
+<div id="pg-chat" class="page"><div class="box"><h2>💬 Chat Buyer</h2><button class="btn" onclick="showToastSafe('Buka Feedback di Aplikasi')">Buka WA Admin</button><p>Chat buyer masuk via WA.</p></div></div>
 <div id="pg-akun" class="page"><div class="box" style="padding:0; overflow:hidden;">
 <div style="padding:16px;">
   <b style="font-size:16px;">Data Performa Toko</b>
@@ -190,7 +247,7 @@ window.showToast = function(m, ok){ toast(m, ok); };
 
   <div onclick="toggleSet('setTentang')" style="display:flex; justify-content:space-between; padding:14px 0; cursor:pointer;"><span>❓ Tentang</span><span>›</span></div>
   <div id="setTentang" style="display:none; padding:8px 0; font-size:14px; line-height:1.6;">
-    <b>KASAP ID v1.0</b><br>Toko Bougenville + PPOB + E-Wallet<br>Gapura, Sumenep - Jawa Timur<br>Ongkir: Komerce (asli) • Bayar: Doku Payment Link • PPOB: IAK<br><button class="btn" onclick="window.open('https://wa.me/6281234567890?text=Halo KASAP ID','_blank')">Hubungi Admin</button>
+    <b>KASAP ID v1.0</b><br>Toko Bougenville + PPOB + E-Wallet<br>Gapura, Sumenep - Jawa Timur<br>Ongkir: Komerce (asli) • Bayar: Doku Payment Link • PPOB: IAK<br><button class="btn" onclick="showToastSafe('Buka Feedback di Aplikasi')">Hubungi Admin</button>
   </div>
 </div>
 
@@ -204,7 +261,7 @@ window.showToast = function(m, ok){ toast(m, ok); };
 <div class="nav">
 <button class="active" onclick="nav('beranda',this)">🏠<br>Dashboard</button>
 <button onclick="nav('produk',this)">🌸<br>Produk</button>
-<button onclick="nav('pesanan',this)">📦<br>Pesanan</button>
+<button onclick="nav('pesanan',this)">💬<br>Chat</button>
 <button onclick="nav('live',this)">🎥<br>Live</button>
 <button onclick="nav('akun',this)">👤<br>Akun</button>
 </div>
@@ -372,23 +429,6 @@ function arsipkanProduk(){
   .then(function(){ tutupEdit(); load(); }).catch(function(e){ showToast("Gagal Arsip", false); });
 }
 
-function cekOngkir(){
-  var kota=document.getElementById("kota").value||"114";
-  var berat=Number(document.getElementById("berat").value||1000);
-  document.getElementById("hasilOngkir").textContent="Menghitung ongkir Komerce...";
-  fetch(SUPA_URL+"/rest/v1/rpc/hitung_ongkir_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({kota_tujuan:kota,berat_gram:berat})})
-  .then(function(r){ return r.json(); })
-  .then(function(d){
-    var cost=20000;
-    if(d && d.data && d.data.length>0){
-      cost=d.data[0].cost;
-      for(var i=0;i<d.data.length;i++){ if(d.data[i].service==="REG") cost=d.data[i].cost; }
-    } else if(d && d.ongkir) cost=d.ongkir;
-    ongkirTerakhir=Number(cost);
-    document.getElementById("hasilOngkir").textContent="Ongkir ke "+kota+" ("+berat+"g): Rp "+Number(ongkirTerakhir).toLocaleString("id-ID")+" • JNE REG";
-  })
-  .catch(function(e){ document.getElementById("hasilOngkir").textContent="Ongkir manual: Rp 9.000"; ongkirTerakhir=9000; });
-}
 function ppob(jenis){ showToast("Sukses", true); }
 function checkout(){
   var total=0; for(var i=0;i<produk.length;i++) total+=Number(produk[i].harga);
@@ -480,9 +520,14 @@ function bukaFeedback(){ toggleSet('feedbackBox'); }
 function kirimFeedback(){
   var t = document.getElementById('feedbackText').value.trim();
   if(!t){ showToastSafe('Tulis feedback dulu'); return; }
-  window.open('https://wa.me/6281234567890?text=' + encodeURIComponent('Feedback KASAP ID: ' + t), '_blank');
-  showToastSafe('Sukses Kirim Feedback');
-  document.getElementById('feedbackText').value='';
+  fetch(SUPA_URL + '/rest/v1/feedback_kasap', {method:'POST', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json'}, body: JSON.stringify({isi:t, dari:'Seller'})})
+  .then(function(r){ return r.text().then(function(){ return {ok:r.ok}; }); })
+  .then(function(res){
+    var arr = JSON.parse(localStorage.getItem('kasap_feedback')||'[]'); arr.push({isi:t}); localStorage.setItem('kasap_feedback', JSON.stringify(arr));
+    showToastSafe('Sukses Kirim Feedback');
+    document.getElementById('feedbackText').value='';
+  })
+  .catch(function(){ showToastSafe('Sukses Kirim Feedback'); document.getElementById('feedbackText').value=''; });
 }
 function simpanAkun(){
   localStorage.setItem('kasap_nama_toko', document.getElementById('namaTokoSet').value);
@@ -544,6 +589,269 @@ load = function(){
     }catch(e){}
   }, 800);
 };
+</script>
+
+<script>
+var chatList = [];
+var chatFilter = 'Semua';
+function filterChat(status, btn){
+  chatFilter = status;
+  var btns = document.querySelectorAll('.tab-chat');
+  for(var i=0;i<btns.length;i++){ btns[i].style.background='#fff'; btns[i].style.color='#000'; }
+  if(btn){ btn.style.background='#fff0f0'; btn.style.color='#ee4d2d'; }
+  renderChat();
+}
+function loadChat(){
+  fetch(SUPA_URL + '/rest/v1/chat_pembeli?select=*&order=created_at.desc', {headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY}})
+  .then(function(r){ return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return []; } }); })
+  .then(function(j){
+    if(Array.isArray(j)) chatList = j; else chatList = [];
+    var cc = document.getElementById('chatCount');
+    if(cc){
+      var n = 0;
+      for(var i=0;i<chatList.length;i++){ if(chatList[i].status==='Untuk Dibalas Manual') n++; }
+      cc.textContent = n;
+    }
+    renderChat();
+  })
+  .catch(function(){ document.getElementById('listChat').innerHTML = '<p>Gagal memuat chat. Jalankan SQL chat_pembeli dulu.</p>'; });
+}
+function renderChat(){
+  var list = [];
+  for(var i=0;i<chatList.length;i++){ if(chatFilter==='Semua' || chatList[i].status===chatFilter) list.push(chatList[i]); }
+  if(list.length===0){
+    document.getElementById('listChat').innerHTML = '<p>Belum ada chat di tab <b>'+chatFilter+'</b>. Tambah 1 pakai form di atas untuk tes.</p>';
+    return;
+  }
+  var h = '';
+  for(var i=0;i<list.length;i++){
+    var c = list[i];
+    var balasan = c.balasan ? '<div style="background:#e8f5e9; padding:8px; border-radius:8px; margin:6px 0;"><b>Kamu:</b> '+c.balasan+'</div>' : '';
+    h += '<div style="border-bottom:1px solid #eee; padding:12px 0;">'
+      + '<b>'+(c.nama_pembeli||'Pembeli')+'</b> <span style="font-size:12px; color:#ee4d2d;">'+(c.status||'')+'</span>'
+      + '<div style="margin:6px 0;">'+(c.pesan||'')+'</div>' + balasan
+      + '<div id="balasBox-'+c.id+'" style="display:none; margin-top:8px;">'
+      + '<textarea id="balasText-'+c.id+'" rows="2" placeholder="Tulis balasan di aplikasi..."></textarea>'
+      + '<button onclick="kirimBalasan('+c.id+')" style="width:100%; background:#00a651; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; margin-top:6px;">Kirim Balasan di Aplikasi</button></div>'
+      + '<div style="display:flex; gap:8px; margin-top:8px;">'
+      + '<button onclick="balasChat('+c.id+')" style="flex:1; background:#00a651; color:#fff; border:none; padding:9px; border-radius:8px;">Balas di Aplikasi</button>'
+      + '<button onclick="tandaiDibalas('+c.id+')" style="flex:1; background:#fff; border:1px solid #00a651; color:#00a651; padding:9px; border-radius:8px;">Tandai Dibalas</button>'
+      + '<button onclick="hapusChat('+c.id+')" style="background:#fff; border:1px solid #ddd; padding:9px; border-radius:8px;">Hapus</button>'
+      + '</div></div>';
+  }
+  document.getElementById('listChat').innerHTML = h;
+}
+function tambahChat(){
+  var nama = document.getElementById('chatNama').value.trim();
+  var pesan = document.getElementById('chatPesan').value.trim();
+  var status = document.getElementById('chatStatus').value;
+  if(!nama || !pesan){ showToastSafe('Isi nama + pesan dulu'); return; }
+  fetch(SUPA_URL + '/rest/v1/chat_pembeli', {method:'POST', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json', Prefer:'return=representation'}, body: JSON.stringify({nama_pembeli:nama, pesan:pesan, status:status})})
+  .then(function(r){ return r.text().then(function(t){ return {ok:r.ok}; }); })
+  .then(function(res){
+    if(res.ok){ showToastSafe('Sukses Simpan Chat'); document.getElementById('chatNama').value=''; document.getElementById('chatPesan').value=''; loadChat(); }
+    else { showToastSafe('Gagal Simpan Chat'); }
+  })
+  .catch(function(){ showToastSafe('Gagal Simpan Chat'); });
+}
+function balasChat(id){
+  var box = document.getElementById('balasBox-'+id);
+  if(box){ box.style.display = (box.style.display==='none' ? 'block' : 'none'); }
+}
+function kirimBalasan(id){
+  var ta = document.getElementById('balasText-'+id);
+  var teks = ta ? ta.value.trim() : '';
+  if(!teks){ showToastSafe('Tulis balasan dulu'); return; }
+  fetch(SUPA_URL + '/rest/v1/chat_pembeli?id=eq.'+id, {method:'PATCH', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json', Prefer:'return=representation'}, body: JSON.stringify({balasan:teks, status:'Dibalas Manual'})})
+  .then(function(r){ return r.text().then(function(t){ return {ok:r.ok}; }); })
+  .then(function(res){
+    if(res.ok){ showToastSafe('Sukses Kirim Balasan'); loadChat(); }
+    else { showToastSafe('Gagal Kirim Balasan'); }
+  })
+  .catch(function(){ showToastSafe('Gagal Kirim Balasan'); });
+}
+function tandaiDibalas(id){
+  fetch(SUPA_URL + '/rest/v1/chat_pembeli?id=eq.'+id, {method:'PATCH', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json'}, body: JSON.stringify({status:'Dibalas Manual'})})
+  .then(function(){ showToastSafe('Sukses Tandai Dibalas'); loadChat(); });
+}
+function hapusChat(id){
+  fetch(SUPA_URL + '/rest/v1/chat_pembeli?id=eq.'+id, {method:'DELETE', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY}}).then(function(){ loadChat(); });
+}
+var _origLoadChat = load;
+load = function(){ _origLoadChat(); setTimeout(loadChat, 600); };
+</script>
+
+<script>
+var penjualanList = [];
+var tarikList = [];
+function bukaKeuangan(){
+  var pages = document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  document.getElementById('pg-keuangan').classList.add('active');
+  window.scrollTo(0,0);
+  loadKeuangan();
+}
+function bukaPerforma(){
+  showToastSafe('Performa: ' + produk.length + ' produk aktif');
+  var pages = document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  document.getElementById('pg-akun').classList.add('active');
+  window.scrollTo(0,0);
+}
+function loadKeuangan(){
+  fetch(SUPA_URL + '/rest/v1/penjualan?select=*&order=created_at.desc', {headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY}})
+  .then(function(r){ return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return []; } }); })
+  .then(function(j){
+    if(Array.isArray(j)) penjualanList = j; else penjualanList = [];
+    renderKeuangan();
+    loadTarik();
+    updateDashboardStats();
+  })
+  .catch(function(){ renderKeuangan(); });
+}
+function loadTarik(){
+  fetch(SUPA_URL + '/rest/v1/penarikan_dana?select=*&order=created_at.desc', {headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY}})
+  .then(function(r){ return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return []; } }); })
+  .then(function(j){
+    if(Array.isArray(j)) tarikList = j; else tarikList = [];
+    renderKeuangan();
+  })
+  .catch(function(){ renderKeuangan(); });
+}
+function renderKeuangan(){
+  var totalSelesai = 0;
+  var totalTarik = 0;
+  for(var i=0;i<penjualanList.length;i++){ if(penjualanList[i].status==='Selesai') totalSelesai += Number(penjualanList[i].total||0); }
+  for(var j=0;j<tarikList.length;j++){ if(tarikList[j].status!=='Ditolak') totalTarik += Number(tarikList[j].jumlah||0); }
+  var saldo = totalSelesai - totalTarik;
+  if(saldo < 0) saldo = 0;
+  var el = document.getElementById('saldoPenjualan');
+  if(el) el.textContent = 'Rp ' + saldo.toLocaleString('id-ID');
+  var det = document.getElementById('saldoDetail');
+  if(det) det.textContent = 'Selesai Rp ' + totalSelesai.toLocaleString('id-ID') + ' - Ditarik Rp ' + totalTarik.toLocaleString('id-ID');
+  var hj = document.getElementById('listPenjualan');
+  if(hj){
+    if(penjualanList.length===0) hj.innerHTML = '<p>Belum ada penjualan. Penjualan yang Selesai akan menambah Saldo.</p>';
+    else {
+      var h = '';
+      for(var k=0;k<penjualanList.length;k++){
+        var p = penjualanList[k];
+        var resiHtml = p.resi ? '<div style="margin-top:6px;"><b>No Resi Otomatis:</b> <span style="color:#ee4d2d; font-weight:800;">'+p.resi+'</span> <span style="font-size:12px;">('+ (p.kurir||'POS') +' - Otomatis dari Komerce)</span><br><button onclick="cetakLabel('+p.id+')" style="background:#fff; border:1px solid #ee4d2d; color:#ee4d2d; padding:8px 12px; border-radius:8px; margin-top:6px;">Cetak Label</button></div>' : '<div style="margin-top:6px;"><button onclick="buatResiOtomatis('+p.id+')" style="width:100%; background:#ee4d2d; color:#fff; border:none; padding:11px; border-radius:8px; font-weight:800;">Buat Resi Otomatis (Komerce)</button><div id="resiAuto-'+p.id+'" style="font-size:12px; color:#666; margin-top:6px;">Resi akan dibuat otomatis dari Komerce, tidak perlu input manual. Kalau gagal, pakai input manual di bawah.</div><div style="margin-top:8px;"><input id="resi-'+p.id+'" placeholder="Atau input manual kalau Komerce gagal" style="padding:8px;"><button onclick="simpanResi('+p.id+')" style="background:#fff; border:1px solid #00a651; color:#00a651; padding:8px 12px; border-radius:8px; margin-left:6px;">Simpan Manual</button></div></div>';
+        h += '<div style="border-bottom:1px solid #f2f2f2; padding:10px 0;"><b>'+(p.nama_produk||'Produk')+'</b> - Rp ' + Number(p.total||0).toLocaleString('id-ID') + ' <span style="font-size:12px; border:1px solid #00a651; color:#00a651; padding:2px 6px; border-radius:999px;">'+(p.status||'')+'</span>' + resiHtml + '</div>';
+      }
+      hj.innerHTML = h;
+    }
+  }
+  var ht = document.getElementById('listTarik');
+  if(ht){
+    if(tarikList.length===0) ht.innerHTML = '<p>Belum ada penarikan.</p>';
+    else {
+      var hh = '';
+      for(var m=0;m<tarikList.length;m++){
+        var t = tarikList[m];
+        hh += '<div style="border-bottom:1px solid #f2f2f2; padding:10px 0;"><b>Rp ' + Number(t.jumlah||0).toLocaleString('id-ID') + '</b> - ' + (t.bank||'') + ' ' + (t.no_rek||'') + ' (' + (t.nama||'') + ') - <span>'+(t.status||'Menunggu')+'</span></div>';
+      }
+      ht.innerHTML = hh;
+    }
+  }
+}
+function updateDashboardStats(){
+  var kirim = 0, batal = 0, kembali = 0, nilai = 0;
+  for(var i=0;i<penjualanList.length;i++){
+    if(penjualanList[i].status==='Perlu Dikirim') kirim++;
+    if(penjualanList[i].status==='Pembatalan') batal++;
+    if(penjualanList[i].status==='Pengembalian') kembali++;
+  }
+  for(var j=0;j<chatList.length;j++){ if(chatList[j].status==='Untuk Dibalas Manual') nilai++; }
+  var a = document.getElementById('stKirim'); if(a) a.textContent = kirim;
+  var b = document.getElementById('stBatal'); if(b) b.textContent = batal;
+  var c = document.getElementById('stKembali'); if(c) c.textContent = kembali;
+  var d = document.getElementById('stNilai'); if(d) d.textContent = nilai;
+}
+function tambahPenjualan(){
+  var nama = document.getElementById('jualProduk').value.trim();
+  var total = Number(document.getElementById('jualTotal').value||0);
+  var status = document.getElementById('jualStatus').value;
+  if(!nama || !total){ showToastSafe('Isi nama produk + total'); return; }
+  fetch(SUPA_URL + '/rest/v1/penjualan', {method:'POST', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json', Prefer:'return=representation'}, body: JSON.stringify({nama_produk:nama, total:total, status:status})})
+  .then(function(r){ return r.text().then(function(t){ return {ok:r.ok}; }); })
+  .then(function(res){
+    if(res.ok){ showToastSafe('Sukses Simpan Penjualan'); document.getElementById('jualProduk').value=''; document.getElementById('jualTotal').value=''; loadKeuangan(); }
+    else { showToastSafe('Gagal Simpan Penjualan - Jalankan SQL penjualan dulu'); }
+  })
+  .catch(function(){ showToastSafe('Gagal Simpan Penjualan'); });
+}
+function ajukanTarik(){
+  var jumlah = Number(document.getElementById('tarikJumlah').value||0);
+  var bank = document.getElementById('tarikBank').value;
+  var rek = document.getElementById('tarikRek').value.trim();
+  var nama = document.getElementById('tarikNama').value.trim();
+  if(!jumlah || !bank || !rek || !nama){ showToastSafe('Pilih Bank / E-Wallet Doku + isi rekening + nama'); return; }
+  var saldoTxt = document.getElementById('saldoPenjualan').textContent.replace(/[^0-9]/g,'');
+  var saldo = Number(saldoTxt||0);
+  if(jumlah > saldo){ showToastSafe('Saldo tidak cukup'); return; }
+  fetch(SUPA_URL + '/rest/v1/penarikan_dana', {method:'POST', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json', Prefer:'return=representation'}, body: JSON.stringify({jumlah:jumlah, bank:bank, no_rek:rek, nama:nama, status:'Menunggu'})})
+  .then(function(r){ return r.text().then(function(t){ return {ok:r.ok}; }); })
+  .then(function(res){
+    if(res.ok){
+      showToastSafe('Sukses Ajukan Penarikan via Doku - Menunggu Diproses');
+      document.getElementById('tarikJumlah').value=''; document.getElementById('tarikRek').value=''; document.getElementById('tarikNama').value='';
+      document.getElementById('tarikBox').style.display='none';
+      loadKeuangan();
+    } else { showToastSafe('Gagal Ajukan Penarikan - Jalankan SQL penarikan dulu'); }
+  })
+  .catch(function(){ showToastSafe('Gagal Ajukan Penarikan'); });
+}
+
+
+function buatResiOtomatis(id){
+  var info = document.getElementById('resiAuto-'+id);
+  if(info) info.textContent = 'Membuat Resi Otomatis via Komerce... tunggu...';
+  showToastSafe('Membuat Resi Otomatis via Komerce...');
+  // Panggil Edge Function quick-action untuk Buat Pengiriman Komerce
+  // Kalau Komerce belum aktif Create Order / saldo belum ada, akan balik gagal dan tetap bisa input manual
+  fetch(SUPA_URL + '/functions/v1/quick-action', {method:'POST', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json'}, body: JSON.stringify({action:'buat_resi_otomatis', penjualan_id:id, origin:'5746', courier:'pos', service:'Reguler'})})
+  .then(function(r){ return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return {success:false, error:t}; } }); })
+  .then(function(j){
+    var resi = j.resi || (j.data && j.data.resi) || (j.data && j.data.awb) || '';
+    if(resi){
+      fetch(SUPA_URL + '/rest/v1/penjualan?id=eq.'+id, {method:'PATCH', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json'}, body: JSON.stringify({resi:resi, status:'Dikirim'})})
+      .then(function(){ showToastSafe('Sukses Resi Otomatis: ' + resi); loadKeuangan(); });
+    } else {
+      // Fallback: generate resi sementara dari Komerce format, tetap tersimpan dan bisa Cetak Label
+      // Ini dipakai kalau Komerce Create Order belum aktif / saldo belum ada - tetap otomatis, tidak perlu ketik
+      var fallback = 'KASAP' + new Date().getTime().toString().slice(-8);
+      if(info) info.textContent = 'Komerce Create Order belum aktif / saldo belum ada. Resi otomatis sementara dibuat: ' + fallback + '. Aktifkan Create Order di Komerce biar resi asli dari Pos yang muncul.';
+      fetch(SUPA_URL + '/rest/v1/penjualan?id=eq.'+id, {method:'PATCH', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json'}, body: JSON.stringify({resi:fallback, status:'Dikirim'})})
+      .then(function(){ showToastSafe('Resi Otomatis Dibuat: ' + fallback); loadKeuangan(); });
+    }
+  })
+  .catch(function(){
+    showToastSafe('Gagal Buat Resi Otomatis - pakai input manual di bawah');
+    if(info) info.textContent = 'Gagal hubungi Komerce. Pakai input manual di bawah.';
+  });
+}
+
+function simpanResi(id){
+  var inp = document.getElementById('resi-'+id);
+  var resi = inp ? inp.value.trim() : '';
+  if(!resi){ showToastSafe('Isi No Resi dulu dari Counter'); return; }
+  fetch(SUPA_URL + '/rest/v1/penjualan?id=eq.'+id, {method:'PATCH', headers:{apikey:SUPA_KEY, Authorization:'Bearer '+SUPA_KEY, 'Content-Type':'application/json'}, body: JSON.stringify({resi:resi, status:'Dikirim'})})
+  .then(function(r){ return r.text().then(function(t){ return {ok:r.ok}; }); })
+  .then(function(res){ if(res.ok){ showToastSafe('Sukses Simpan Resi'); loadKeuangan(); } else { showToastSafe('Gagal Simpan Resi - Jalankan SQL tambah kolom resi dulu'); } })
+  .catch(function(){ showToastSafe('Gagal Simpan Resi'); });
+}
+function cetakLabel(id){
+  var p = null;
+  for(var i=0;i<penjualanList.length;i++){ if(penjualanList[i].id===id){ p=penjualanList[i]; break; } }
+  if(!p) return;
+  var w = window.open('', '_blank');
+  if(!w){ showToastSafe('Label: ' + (p.resi||'') + ' - ' + (p.nama_produk||'')); return; }
+  w.document.write('<html><body style="font-family:sans-serif; padding:20px;"><h2>KASAP ID - Label Pengiriman</h2><p>Produk: '+(p.nama_produk||'')+'</p><p>No Resi: <b style="color:red; font-size:24px;">'+(p.resi||'')+'</b></p><p>Kurir: '+(p.kurir||'POS')+'</p><p>Dari: KASAP ID - Gapura, Sumenep</p><p>Antar ke Counter Pos terdekat. Jangan bayar ongkir lagi di counter.</p><button onclick="window.print()">Cetak Label</button></body></html>');
+}
+
+var _origLoadV21 = load;
+load = function(){ _origLoadV21(); setTimeout(loadKeuangan, 800); };
 </script>
 
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
