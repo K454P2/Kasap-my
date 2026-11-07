@@ -45,15 +45,16 @@ input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;ma
 
 <!-- DAFTAR -->
 <div id="pg-daftar" class="box"><h2>📝 Daftar Akun Baru</h2>
-<label>Nama Lengkap</label><input id="dNama" placeholder="Contoh: Angkasa">
+<label>Nama Sesuai KTP</label><input id="dNama" placeholder="Contoh: Angkasa">
+<div id="boxNamaToko" style="display:block"><label>Nama Toko</label><input id="dNamaToko" placeholder="Contoh: Toko Angkasa Jaya"></div>
 <label>Alamat Lengkap</label><input id="dAlamat" placeholder="jl. raya sumur agung, karang nangka, karang dami">
 <label>No HP (WA)</label><input id="dHp" placeholder="Contoh: 081234567890" type="tel">
 <label>Email</label><input id="dEmail" placeholder="Contoh: nama@gmail.com" type="email">
 <label>Buat Password</label><div style="position:relative"><input id="dPass" placeholder="Minimal 6 karakter" type="password" style="padding-right:44px"><button type="button" onclick="toggleMata('dPass',this)" style="position:absolute;right:6px;top:6px;background:none;border:none;font-size:18px;cursor:pointer;padding:6px 8px">👁️</button></div>
 <label>Mau masuk sebagai apa?</label>
 <div class="role">
-<label><input type="radio" name="role" value="buyer" checked><span>🛒 Buyer<br><small>Beli</small></span></label>
-<label><input type="radio" name="role" value="seller"><span>🌸 Seller<br><small>Jualan</small></span></label>
+<label><input type="radio" name="role" value="buyer" checked onclick="toggleNamaToko()"><span>🛒 Buyer<br><small>Beli</small></span></label>
+<label><input type="radio" name="role" value="seller" onclick="toggleNamaToko()"><span>🌸 Seller<br><small>Jualan</small></span></label>
 </div>
 <button class="btn" onclick="daftar()">Daftar & Langsung Masuk</button>
 
@@ -75,13 +76,15 @@ var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
 var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},2500)}
 function showTab(w){document.getElementById('pg-daftar').style.display=w==='daftar'?'block':'none';document.getElementById('pg-login').style.display=w==='login'?'block':'none';document.getElementById('tDaftar').className=w==='daftar'?'on':'off';document.getElementById('tLogin').className=w==='login'?'on':'off'}
+function toggleNamaToko(){document.getElementById('boxNamaToko').style.display='block'}
 function getRole(){var r=document.querySelector('input[name="role"]:checked');return r?r.value:'buyer'}
-function simpanLocal(u){localStorage.setItem('kasap_user',JSON.stringify(u));localStorage.setItem('kasap_nama',u.nama||'');localStorage.setItem('kasap_alamat',u.alamat||'');localStorage.setItem('kasap_hp',u.no_hp||'');localStorage.setItem('kasap_email',u.email||'');localStorage.setItem('kasap_role',u.role||'buyer')}
+function simpanLocal(u){localStorage.setItem('kasap_user',JSON.stringify(u));localStorage.setItem('kasap_nama',u.nama||'');localStorage.setItem('kasap_alamat',u.alamat||'');localStorage.setItem('kasap_hp',u.no_hp||'');localStorage.setItem('kasap_email',u.email||'');localStorage.setItem('kasap_role',u.role||'buyer');localStorage.setItem('kasap_nama_toko',u.nama_toko||'')}
 function goByRole(role){if(role==='seller'){location.href='https://kasap2.github.io/kasap/my/seller/'}else{location.href='https://kasap2.github.io/kasap/my/'}}
 async function daftar(){
-var nama=document.getElementById('dNama').value.trim(),alamat=document.getElementById('dAlamat').value.trim(),hp=document.getElementById('dHp').value.trim(),email=document.getElementById('dEmail').value.trim(),pass=document.getElementById('dPass').value,role=getRole();
+var nama=document.getElementById('dNama').value.trim(),namaToko=document.getElementById('dNamaToko')?document.getElementById('dNamaToko').value.trim():'',alamat=document.getElementById('dAlamat').value.trim(),hp=document.getElementById('dHp').value.trim(),email=document.getElementById('dEmail').value.trim(),pass=document.getElementById('dPass').value,role=getRole();
 if(!nama||!alamat||!hp||!email||!pass){toast('Isi semua dulu: Nama, Alamat, No HP, Email, Password');return}
 if(pass.length<6){toast('Password minimal 6 karakter');return}
+// Nama Toko boleh kosong untuk Buyer, wajib untuk Seller tapi tidak diblokir di sini
 toast('Menyimpan...');
 try{
 // 1. Buat akun Auth Supabase
@@ -89,10 +92,10 @@ var r1=await fetch(SUPA_URL+'/auth/v1/signup',{method:'POST',headers:{apikey:SUP
 var j1=await r1.json();if(j1.error) throw new Error(j1.error.message||'Gagal Daftar Auth');
 // 2. Simpan profil ke tabel pengguna (nama, alamat, no_hp, email, role)
 var userId=j1.user?j1.user.id:null;
-var r2=await fetch(SUPA_URL+'/rest/v1/pengguna',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({id:userId,nama:nama,alamat:alamat,no_hp:hp,email:email,role:role})});
+var r2=await fetch(SUPA_URL+'/rest/v1/pengguna',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({id:userId,nama:nama,nama_toko:namaToko,alamat:alamat,no_hp:hp,email:email,role:role})});
 if(!r2.ok){var t2=await r2.text();throw new Error('Gagal simpan ke tabel pengguna. Jalankan SQL pengguna dulu. '+t2.slice(0,120))}
 // 3. Simpan di HP + langsung ngelink
-var u={id:userId,nama:nama,alamat:alamat,no_hp:hp,email:email,role:role};
+var u={id:userId,nama:nama,nama_toko:namaToko,alamat:alamat,no_hp:hp,email:email,role:role};
 simpanLocal(u);toast('Sukses Daftar! Masuk ke '+(role==='seller'?'Seller':'Buyer')+'...');
 setTimeout(function(){goByRole(role)},900);
 }catch(e){toast('Gagal: '+e.message)}
