@@ -205,11 +205,14 @@ function simpanEdit(){
     });
   }
   kirim(dataFull).then(function(res){
+    var j = res.j;
+    var isEmptyArray = (Array.isArray(j) && j.length === 0);
+    if(res.ok && isEmptyArray){ alert("GAGAL UPDATE - 0 baris berubah! RLS masih nge-block. Jalankan di Supabase SQL: alter table produk disable row level security; Lalu coba lagi."); return; }
     if(res.ok){ alert("Berhasil Update!"); tutupEdit(); load(); return; }
     var msg = JSON.stringify(res.j);
     if(msg.indexOf("column") !== -1){
       return kirim(dataSimple).then(function(res2){
-        if(res2.ok){ alert("Berhasil Update Nama + Harga! Tapi Deskripsi/Stok belum tersimpan karena kolomnya belum ada. Jalankan SQL tambah kolom di Supabase."); tutupEdit(); load(); }
+        if(res2.ok && !(Array.isArray(res2.j) && res2.j.length===0)){ alert("Berhasil Update Nama + Harga! Tapi Deskripsi/Stok belum tersimpan karena kolomnya belum ada. Jalankan SQL tambah kolom di Supabase."); tutupEdit(); load(); }
         else { alert("Gagal Update: " + JSON.stringify(res2.j).slice(0,600)); }
       });
     }
