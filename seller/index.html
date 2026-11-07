@@ -180,25 +180,35 @@ function previewEditFoto(event){
   document.getElementById('editFotoPreview').src=URL.createObjectURL(f);
 }
 function simpanEdit(){
-  if(!editId) return;
-  var data={
-    nama: document.getElementById('editNama').value,
+  if(!editId){ alert("Edit ID tidak ketemu, tutup lalu buka lagi."); return; }
+  var nama = document.getElementById('editNama').value.trim();
+  if(!nama){ alert("Nama Produk tidak boleh kosong!"); return; }
+  var dataFull = {
+    nama: nama,
     deskripsi: document.getElementById('editDeskripsi').value,
     kategori: document.getElementById('editKategori').value,
-    harga: Number(document.getElementById('editHarga').value||0),
-    stok: Number(document.getElementById('editStok').value||0),
-    min_beli: Number(document.getElementById('editMin').value||1),
-    berat: Number(document.getElementById('editBerat').value||1000),
+    harga: Number(document.getElementById('editHarga').value || 0),
+    stok: Number(document.getElementById('editStok').value || 0),
+    min_beli: Number(document.getElementById('editMin').value || 1),
+    berat: Number(document.getElementById('editBerat').value || 1000),
     kondisi: document.getElementById('editKondisi').value
   };
-  document.getElementById('editHasil').textContent="Menyimpan...";
-  fetch(SUPA_URL+"/rest/v1/produk?id=eq."+editId,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify(data)})
-  .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
-  .then(function(res){
-    if(res.ok){ document.getElementById('editHasil').textContent="Berhasil Update!"; setTimeout(function(){ tutupEdit(); load(); },600); }
-    else{ document.getElementById('editHasil').textContent="Gagal: "+JSON.stringify(res.j).slice(0,300)+"\nKalau ada tulisan 'column does not exist', jalankan SQL tambah kolom di Supabase dulu (lihat bawah)."; }
-  })
-  .catch(function(e){ document.getElementById('editHasil').textContent="Gagal: "+e.message; });
+  var dataSimple = { nama: nama, harga: dataFull.harga };
+  function kirim(data){
+    return fetch(SUPA_URL + "/rest/v1/produk?id=eq." + editId, {method:"PATCH", headers:{apikey:SUPA_KEY, Authorization:"Bearer "+SUPA_KEY, "Content-Type":"application/json", "Prefer":"return=representation"}, body: JSON.stringify(data)})
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, status:r.status, j:j}; }); });
+  }
+  kirim(dataFull).then(function(res){
+    if(res.ok){ alert("Berhasil Update!"); tutupEdit(); load(); return; }
+    var msg = JSON.stringify(res.j);
+    if(msg.indexOf("column") !== -1){
+      return kirim(dataSimple).then(function(res2){
+        if(res2.ok){ alert("Berhasil Update Nama + Harga! Tapi Deskripsi/Stok belum tersimpan karena kolomnya belum ada. Jalankan SQL tambah kolom di Supabase."); tutupEdit(); load(); }
+        else { alert("Gagal Update: " + JSON.stringify(res2.j).slice(0,600)); }
+      });
+    }
+    alert("Gagal Update (" + res.status + "): " + msg.slice(0,600));
+  }).catch(function(e){ alert("Gagal Update jaringan: " + e.message); });
 }
 function arsipkanProduk(){
   if(!editId) return;
