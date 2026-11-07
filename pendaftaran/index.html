@@ -70,6 +70,11 @@ select:focus{outline:none;border:2px solid #00a651}input,select{width:100%;paddi
 <div id="pg-login" class="box" style="display:none"><h2>🔑 Login</h2>
 <label>Email</label><input id="lEmail" placeholder="Email yang dipakai Daftar" type="email">
 <label>Password</label><div style="position:relative"><input id="lPass" placeholder="Password" type="password" style="padding-right:44px"><button type="button" onclick="toggleMata('lPass',this)" style="position:absolute;right:6px;top:6px;background:none;border:none;font-size:18px;cursor:pointer;padding:6px 8px">👁️</button></div><div style="text-align:right;margin-top:8px"><span onclick="lupaPassword()" style="color:#00a651;font-size:13px;font-weight:700;cursor:pointer">Lupa Password?</span></div>
+<label>Mau masuk sebagai apa?</label>
+<div class="role">
+<label><input type="radio" name="roleLogin" value="buyer" checked><span>🛒 Buyer<br><small>Beli</small></span></label>
+<label><input type="radio" name="roleLogin" value="seller"><span>🌸 Seller<br><small>Jualan</small></span></label>
+</div>
 <button class="btn" onclick="login()">Login & Masuk</button>
 <button class="btn2" onclick="showTab('daftar')">Belum punya akun? Daftar dulu</button>
 
@@ -118,9 +123,10 @@ var token=j1.access_token;
 // Ambil profil dari tabel pengguna
 var r2=await fetch(SUPA_URL+'/rest/v1/pengguna?email=eq.'+encodeURIComponent(email)+'&select=*',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+token}});
 var j2=await r2.json();var u=j2&&j2[0]?j2[0]:{nama:email.split('@')[0],alamat:'',no_hp:'',email:email,role:'buyer'};
+var pilih=document.querySelector('input[name="roleLogin"]:checked');var rolePilih=pilih?pilih.value:u.role;u.role=rolePilih;
 simpanLocal(u);localStorage.setItem('kasap_token',token);
-toast('Sukses Login! Masuk ke '+(u.role==='seller'?'Seller':'Buyer')+'...');
-setTimeout(function(){goByRole(u.role)},900);
+toast('Sukses Login! Masuk ke '+(rolePilih==='seller'?'Seller':'Buyer')+'...');
+setTimeout(function(){goByRole(rolePilih)},900);
 }catch(e){toast('Gagal: '+e.message)}
 }
 // Kalau sudah login, langsung tawarkan masuk
