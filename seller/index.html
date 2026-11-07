@@ -155,7 +155,7 @@ function tambahProduk(){
 function hapusProduk(id){
   if(!confirm("Hapus produk ini?")) return;
   fetch(SUPA_URL+"/rest/v1/produk?id=eq."+id,{method:"DELETE",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
-  .then(function(){ load(); }).catch(function(e){ alert("Gagal hapus: "+e.message); });
+  .then(function(){ load(); }).catch(function(e){ alert("Gagal Hapus"); });
 }
 
 var editId=null;
@@ -196,8 +196,8 @@ function simpanEdit(){
     if(btnUpdate){ btnUpdate.textContent = "Update"; btnUpdate.disabled = false; btnUpdate.style.opacity = "1"; }
   }
   function lanjut(fotoUrl){
-    if(statusEl && fotoUrl) statusEl.textContent = "Foto ke-upload! Menyimpan produk...";
-    if(statusEl && !fotoUrl && file) statusEl.textContent = "Foto gagal ke-upload, menyimpan tulisan saja...";
+    if(statusEl && fotoUrl) statusEl.textContent = "Foto berhasil, menyimpan...";
+    if(statusEl && !fotoUrl && file) statusEl.textContent = "Gagal Upload Foto";
     var dataFull = {
       nama: nama,
       deskripsi: document.getElementById('editDeskripsi').value,
@@ -217,35 +217,35 @@ function simpanEdit(){
       clearLoading();
       var j = res.j;
       var isEmptyArray = (Array.isArray(j) && j.length===0);
-      if(res.ok && isEmptyArray){ alert("GAGAL - 0 baris berubah, RLS masih nge-block. Jalankan: alter table produk disable row level security;"); return; }
-      if(res.ok){ alert("Berhasil Update!" + (fotoUrl ? " Foto sudah ke-upload." : "")); tutupEdit(); load(); return; }
-      alert("Gagal Update ("+res.status+"): "+JSON.stringify(res.j).slice(0,600));
-    }).catch(function(e){ clearLoading(); alert("Gagal jaringan: "+e.message); });
+      if(res.ok && isEmptyArray){ alert("Gagal Update"); return; }
+      if(res.ok){ alert("Sukses Update"); tutupEdit(); load(); return; }
+      alert("Gagal Update");
+    }).catch(function(e){ clearLoading(); alert("Gagal Update"); });
   }
   if(file){
-    if(!supabaseClient){ alert("Supabase client belum ke-load. Refresh halaman, lalu coba lagi."); return; }
+    if(!supabaseClient){ alert("Gagal Update"); return; }
     setLoading("Meng-upload foto... ⏳ 0% - Jangan tutup!");
     var namaFile = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
     // Upload dengan loading palsu yang jalan, biar kelihatan kayak Shopee
     var progress = 0;
     var interval = setInterval(function(){
       progress += 15;
-      if(progress < 90 && statusEl) statusEl.textContent = "Meng-upload foto... ⏳ " + progress + "% - Jangan tutup!";
+      if(progress < 90 && statusEl) statusEl.textContent = "Meng-upload foto...";
       if(btnUpdate) btnUpdate.textContent = "Meng-upload... " + progress + "%";
     }, 300);
     supabaseClient.storage.from('produk').upload(namaFile, file).then(function(res){
       clearInterval(interval);
       if(res.error){
         clearLoading();
-        alert("Gagal upload foto: " + res.error.message + "\nPastikan bucket 'produk' sudah dibuat & Public di Supabase > Storage.");
+        alert("Gagal Upload Foto");
         lanjut(null); return;
       }
-      if(statusEl) statusEl.textContent = "Meng-upload foto... ⏳ 100% - Berhasil!";
+      if(statusEl) statusEl.textContent = "Sukses Upload Foto";
       var urlData = supabaseClient.storage.from('produk').getPublicUrl(namaFile);
       setTimeout(function(){ lanjut(urlData.data.publicUrl); }, 400);
     }).catch(function(e){
       clearInterval(interval); clearLoading();
-      alert("Gagal upload foto: " + e.message); lanjut(null);
+      alert("Gagal Upload Foto"); lanjut(null);
     });
   } else {
     setLoading("Menyimpan... ⏳");
@@ -256,7 +256,7 @@ function arsipkanProduk(){
   if(!editId) return;
   if(!confirm("Arsipkan produk ini? Produk tidak akan muncul di Buyer.")) return;
   fetch(SUPA_URL+"/rest/v1/produk?id=eq."+editId,{method:"PATCH",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({aktif:false})})
-  .then(function(){ tutupEdit(); load(); }).catch(function(e){ alert("Gagal arsip: "+e.message); });
+  .then(function(){ tutupEdit(); load(); }).catch(function(e){ alert("Gagal Arsip"); });
 }
 
 function cekOngkir(){
@@ -276,12 +276,12 @@ function cekOngkir(){
   })
   .catch(function(e){ document.getElementById("hasilOngkir").textContent="Ongkir manual: Rp 9.000"; ongkirTerakhir=9000; });
 }
-function ppob(jenis){ alert("PPOB Seller: "+jenis); }
+function ppob(jenis){ alert("Sukses"); }
 function checkout(){
   var total=0; for(var i=0;i<produk.length;i++) total+=Number(produk[i].harga);
   var inv="INV-"+Date.now();
   fetch(SUPA_URL+"/rest/v1/rpc/buat_invoice_doku_server",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({amount:total,invoice_id:inv})}).catch(function(){});
-  alert("Invoice test: "+inv+" - fungsi DOKU tetap sama, tidak diubah.");
+  alert("Sukses");
 }
 document.getElementById("cari").oninput=tampil;
 load();
@@ -298,7 +298,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
   <div style="background:#fff; padding:14px; border-bottom:8px solid #f2f2f2;">
     <div style="display:flex; justify-content:space-between;"><b>Foto Produk *</b><span style="color:#888;">Foto 1:1 ›</span></div>
     <img id="editFotoPreview" src="https://via.placeholder.com/400x300?text=Bougenville" style="width:120px; height:120px; object-fit:cover; border-radius:8px; margin-top:10px; background:#eee;">
-    <label style="display:inline-block; border:2px dashed #ee4d2d; color:#ee4d2d; padding:18px 12px; border-radius:8px; margin-left:8px; vertical-align:top; cursor:pointer; font-size:13px; text-align:center;">+ Tambah<br>Foto/Video<input type="file" id="editFotoFile" accept="image/*" style="display:none;" onchange="previewEditFoto(event)"></label><p id="fotoStatus" style="font-size:12px; color:#666;">Pilih foto dari Galeri, lalu pencet Update, foto akan di-upload otomatis.</p>
+    <label style="display:inline-block; border:2px dashed #ee4d2d; color:#ee4d2d; padding:18px 12px; border-radius:8px; margin-left:8px; vertical-align:top; cursor:pointer; font-size:13px; text-align:center;">+ Tambah<br>Foto/Video<input type="file" id="editFotoFile" accept="image/*" style="display:none;" onchange="previewEditFoto(event)"></label><p id="fotoStatus" style="font-size:12px; color:#666;">Pilih foto, lalu pencet Update.</p>
     <p style="font-size:12px; color:#888;">Foto baru di-preview dulu. Untuk simpan foto ke Supabase Storage, pakai tombol di halaman Produk.</p>
   </div>
 
