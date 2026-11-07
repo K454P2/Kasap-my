@@ -84,7 +84,8 @@ input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:1
     else if(msg.indexOf("Gagal")!==-1) toast("Gagal Update", false);
     else toast(msg.slice(0,40), true);
   };
-  window.showToast = function(m, ok){ toast(m, ok); };
+  function showToastSafe(m){ var t=document.getElementById('toast'); if(t){ t.textContent=m; t.style.background='#111'; t.style.opacity='1'; setTimeout(function(){ t.style.opacity='0'; },2000);} }
+window.showToast = function(m, ok){ toast(m, ok); };
 })();
 </script>
 
