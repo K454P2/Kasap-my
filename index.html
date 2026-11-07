@@ -55,6 +55,98 @@
 <div class="nav"><button class="active" onclick="nav('beranda')">🏠<br>Beranda</button><button onclick="nav('live')">🎥<br>Live</button><button onclick="nav('chat')">💬<br>Chat</button><button onclick="nav('keranjang')">🛒<br>Keranjang <span id="cartCount">0</span></button><button onclick="nav('pesanan')">📦<br>Pesanan</button><button onclick="nav('akun')">👤<br>Akun</button></div>
 <div id="toast" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:999px;display:none;z-index:99999"></div>
 <script>
+  <script>
+// === TAMBALAN BUYER - tempel sebelum </body> ===
+function cekChatFilter(pesan){
+  var p=(pesan||"").toLowerCase();
+  var blok=["anjing","bangsat","tolol","goblok","kontol","memek","jancok","narkoba","sabu","ganja","senjata","judi","slot","porno","bokep","wa.me","whatsapp","lanjut wa","bayar di luar","transfer ke bca","transfer ke bri","transfer ke mandiri"];
+  for(var i=0;i<blok.length;i++){ if(p.indexOf(blok[i])!==-1) return {blok:true,alasan:blok[i]}; }
+  if(/\b08\d{8,}\b/.test(p)) return {blok:true,alasan:"nomor HP"};
+  if(/\b\d{10,}\b/.test(p)) return {blok:true,alasan:"nomor rekening"};
+  return {blok:false};
+}
+function tampil(){
+  var g=document.getElementById("grid"); if(!g) return;
+  var q=(document.getElementById("cari")?.value||"").toLowerCase();
+  var list=produk.filter(function(p){ return (p.nama||"").toLowerCase().indexOf(q)!==-1; });
+  document.getElementById("count").textContent=list.length+" produk";
+  if(!list.length){ g.innerHTML="<p>Belum ada produk.</p>"; return; }
+  g.innerHTML=list.map(function(p){
+    var img=p.foto?'<img src="'+p.foto+'" style="width:100%">':'<div style="height:150px;background:#e8f5ee;display:flex;align-items:center;justify-content:center;font-size:48px">🌺</div>';
+    return '<div class="card">'+img+'<b>'+(p.nama||"")+'</b><div class="price">Rp '+Number(p.harga||0).toLocaleString("id-ID")+'</div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="beliLangsung('+p.id+')" style="flex:1;background:#00a651;color:#fff;border:none;border-radius:8px">Beli</button><button onclick="tambahKeranjang('+p.id+')" style="flex:1;background:#fff;color:#00a651;border:1px solid #00a651;border-radius:8px">Masuk Keranjang</button></div></div>';
+  }).join("");
+}
+function loadChat(){
+  fetch(SUPA_URL+"/rest/v1/chat_pembeli?select=*&order=created_at.desc&limit=20",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
+  .then(function(r){return r.json()}).then(function(j){
+    var el=document.getElementById("listChat"); if(!el) return;
+    if(!Array.isArray(j)||!j.length){ el.innerHTML="<p>Belum ada chat.</p>"; return; }
+    el.innerHTML=j.map(function(c){ return '<div style="border-bottom:1px solid #eee;padding:8px 0"><b>'+(c.nama_pembeli||"")+'</b><div>'+(c.pesan||"")+'</div></div>'; }).join("");
+  }).catch(function(){});
+}
+function tambahKeranjang(id){
+  var p=produk.find(function(x){return String(x.id)===String(id)}); if(!p) return;
+  var ada=cart.find(function(x){return String(x.id)===String(id)});
+  if(ada) ada.qty++; else cart.push({id:p.id,nama:p.nama,harga:p.harga,qty:1});
+  document.getElementById("cartCount").textContent=cart.reduce(function(a,b){return a+b.qty},0);
+  toast("Masuk Keranjang: "+p.nama); renderCart();
+}
+function beliLangsung(id){ tambahKeranjang(id); nav("keranjang"); }
+function renderCart(){
+  var el=document.getElementById("cartList"); if(!el) return;
+  if(!cart.length){ el.innerHTML="<p>Keranjang kosong.</p>"; document.getElementById("totalBayar").textContent=""; return; }
+  var total=0;
+  el.innerHTML=cart.map(function(c,i){
+    total+=c.harga*c.qty;
+    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee"><b>'+c.nama+' x'+c.qty+'</b><span>Rp '+(c.harga*c.qty).toLocaleString("id-ID")+' <span onclick="cart.splice('+i+',1);renderCart()" style="color:red;cursor:pointer">✕</span></span></div>';
+  }).join("");
+  document.getElementById("totalBayar").textContent="Total: Rp "+(total+ongkirTerakhir).toLocaleString("id-ID")+(ongkirTerakhir?" (incl. ongkir)":"");
+  // autofill dari daftar
+  var n=document.getElementById("namaPembeli"); if(n && !n.value) n.value=localStorage.getItem("kasap_nama")||"";
+}
+function cekOngkirBuyer(){
+  var kota=document.getElementById("kotaTujuan").value.trim();
+  if(!kota){ toast("Isi kode kota dulu"); return; }
+  toast("Cek ongkir...");
+  fetch(SUPA_URL+"/functions/v1/komerce-ongkir",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({kota_tujuan:kota,berat:1000})})
+  .then(function(r){return r.json()}).then(function(d){
+    ongkirTerakhir=d.ongkir||15000;
+    document.getElementById("hasilOngkir").textContent="Ongkir: Rp "+ongkirTerakhir.toLocaleString("id-ID");
+    renderCart();
+  }).catch(function(){ ongkirTerakhir=15000; document.getElementById("hasilOngkir").textContent="Ongkir (fallback): Rp 15.000"; renderCart(); });
+}
+function checkout(){
+  if(!cart.length){ toast("Keranjang kosong"); return; }
+  var nama=document.getElementById("namaPembeli").value.trim()||localStorage.getItem("kasap_nama")||"Buyer";
+  var total=cart.reduce(function(a,b){return a+b.harga*b.qty},0)+ongkirTerakhir;
+  toast("Membuat pembayaran Doku Rp "+total.toLocaleString("id-ID")+"...");
+  fetch(SUPA_URL+"/functions/v1/doku-checkout",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify({nama:nama,total:total,items:cart})})
+  .then(function(r){return r.json()}).then(function(d){
+    if(d && d.url){ window.location.href=d.url; }
+    else document.getElementById("checkoutHasil").textContent="Checkout dibuat. Total Rp "+total.toLocaleString("id-ID")+" - Seller akan hubungi untuk pembayaran.";
+  }).catch(function(){ document.getElementById("checkoutHasil").textContent="Checkout dibuat (offline). Total Rp "+total.toLocaleString("id-ID"); });
+}
+function updateAkunPesanan(list){
+  var belum=list.filter(function(x){return x.status==="Perlu Dikirim"}).length;
+  var dikemas=list.filter(function(x){return x.status==="Dikemas"}).length;
+  var dikirim=list.filter(function(x){return x.status==="Dikirim"}).length;
+  var selesai=list.filter(function(x){return x.status==="Selesai"}).length;
+  var s=function(id,v){var e=document.getElementById(id); if(e) e.textContent=v;};
+  s("akBelum",belum); s("akKemas",dikemas); s("akKirim",dikirim); s("akNilai",selesai);
+}
+function loadDompetStatus(){}
+function simpanNotifAkun(){ toast("Notifikasi disimpan"); }
+function simpanAlamatAkun(){
+  var a=document.getElementById("alamatAkun").value; var k=document.getElementById("kotaAkun").value;
+  localStorage.setItem("kasap_alamat",a); localStorage.setItem("kasap_kota",k); toast("Alamat disimpan");
+}
+function simpanBahasaAkun(){
+  var b=document.getElementById("bahasaAkunSet").value;
+  document.getElementById("bahasaLabelAkun").textContent=b==="en"?"English":"Bahasa Indonesia"; toast("Bahasa disimpan");
+}
+// refresh setelah tambalan
+tampil(); loadChat(); renderCart();
+</script>
 var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";var produk=[];var cart=[];var chatList=[];var liveSesiId=null;var livePenonton=0;var ongkirTerakhir=0;
 function toast(m){var t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(function(){t.style.display="none"},2000)}
 function setText(id,txt){var e=document.getElementById(id);if(e)e.textContent=txt}
