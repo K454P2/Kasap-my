@@ -68,7 +68,6 @@ function bayarPulsa(jenis){ var no=document.getElementById('pulsaNo'); var nom=d
 function hubungkanDompet(nama){ bukaDompet(nama); }
 function simpanDompet(nama){ bukaDompet(nama); }
 function hapusDompet(nama){ toast('Dompet '+nama+' hanya link ke aplikasinya, tidak ada nomor yang disimpan.'); }
-function loadDompetStatus(){ }
 
 function simpanDompet(nama){ var inp=document.getElementById('dompetNo'); var no=inp?inp.value.trim():''; if(!no){ toast('Isi nomor HP dulu'); return; } localStorage.setItem('kasap_dompet_'+nama, no); var id='dom'+nama; var el=document.getElementById(id); if(el) el.textContent='Terhubung: '+no; document.getElementById('dompetForm').innerHTML=''; toast('Nomor '+nama+' '+no+' disimpan di HP ini saja. Tanpa hubung ke pusat '+nama+'.'); }
 function hapusDompet(nama){ localStorage.removeItem('kasap_dompet_'+nama); var el=document.getElementById('dom'+nama); if(el) el.textContent='Belum Terhubung'; document.getElementById('dompetForm').innerHTML=''; toast('Nomor '+nama+' dihapus dari HP ini'); }
