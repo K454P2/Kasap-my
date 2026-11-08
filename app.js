@@ -4,9 +4,8 @@
    ================================== */
 
 // SUPABASE CONFIGURATION
-const SUPA_URL = "ISI_SUPABASE_PROJECT_URL";
-const SUPA_KEY = "ISI_SUPABASE_ANON_KEY";
-
+const SUPA_URL = "https://zgliygdpbaorutzttxlr.supabase.co";
+const SUPA_KEY = "sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
 let supabaseClient = null;
 let products = [];
 let cart = JSON.parse(localStorage.getItem("kasap_cart") || "[]");
