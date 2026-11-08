@@ -1,7 +1,7 @@
 
 /* KASAP MARKETPLACE SERVICE WORKER */
 
-const CACHE_NAME = "kasap-marketplace-v1";
+const CACHE_NAME = "kasap-marketplace-v2";
 
 const APP_FILES = [
   "./",
@@ -10,7 +10,7 @@ const APP_FILES = [
   "./app.js"
 ];
 
-// Install
+// INSTALL
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
@@ -21,13 +21,14 @@ self.addEventListener("install", event => {
   self.skipWaiting();
 });
 
-// Activate
+// ACTIVATE
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
         keys
-          .filter(key => key !== CACHE_NAME)
+          .filter(key => key.startsWith("kasap-marketplace-") &&
+                         key !== CACHE_NAME)
           .map(key => caches.delete(key))
       )
     )
@@ -36,12 +37,14 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// Fetch
+// FETCH
 self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Jangan cache API Supabase atau pembayaran
+  if (request.method !== "GET") return;
+
+  // Jangan cache API dan pembayaran
   if (
     url.hostname.includes("supabase.co") ||
     url.hostname.includes("doku.com")
@@ -49,12 +52,13 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  if (request.method !== "GET") return;
+  // Hanya cache file dari website Kasap
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
     fetch(request)
       .then(response => {
-        if (response.ok && url.origin === self.location.origin) {
+        if (response.ok) {
           const copy = response.clone();
 
           caches.open(CACHE_NAME).then(cache => {
@@ -65,16 +69,9 @@ self.addEventListener("fetch", event => {
         return response;
       })
       .catch(() =>
-        caches.match(request).then(cached =>
-          cached || caches.match("./index.html")
-                                   if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./server-worker.js")
-      .then(() => console.log("Kasap offline siap"))
-      .catch(error => console.error(error));
-  });
-}
-        )
+        caches.match(request).then(cached => {
+          return cached || caches.match("./index.html");
+        })
       )
   );
 });
