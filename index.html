@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <style>
+    @font-face {
+      font-family: "Optimistic";
+      font-style: normal;
+      font-weight: 400 600;
+      font-display: swap;
+      src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Optimistic Mono";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+    }
+    :where(html) {
+      font-family: "Optimistic", system-ui, sans-serif;
+    }
+    :where(code, pre, kbd, samp) {
+      font-family: "Optimistic Mono", ui-monospace, monospace;
+    }
+  </style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>KASAP ID - Buyer</title>
@@ -8,23 +30,22 @@
     body { margin: 0; font-family: sans-serif; background: #f5f5f5; padding-bottom: 80px; }
     .top { background: #00a651; color: #fff; padding: 14px; }
     .top b { font-size: 22px; }
-    .box { background: #fff; margin: 10px; padding: 14px; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .box { background: #fff; margin: 10px; padding: 14px; border-radius: 14px; }
     .btn { width: 100%; background: #00a651; color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 800; margin-top: 8px; cursor: pointer; }
-    .btn:hover { background: #007a3f; }
     input, select, textarea { width: 100%; padding: 11px; border: 1px solid #ddd; border-radius: 10px; margin: 6px 0; box-sizing: border-box; }
     
-    /* Sistem Pindah Halaman */
+    /* Pengatur Halaman Aktif */
     .page { display: none; }
     .page.active { display: block; }
     
-    /* Navigasi Bawah Agar Rapi Lock di Bawah Layar */
-    .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 9999; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+    /* Navigasi Menu Bawah Kunci Posisi */
+    .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 9999; }
     .nav button { flex: 1; background: none; border: none; padding: 12px 2px; font-size: 12px; cursor: pointer; color: #666; text-align: center; }
     .nav button.active { color: #00a651; font-weight: 800; }
     
-    /* Grid Produk Beranda */
+    /* Grid Katalog Produk */
     #grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .card { border: 1px solid #eee; border-radius: 12px; padding: 8px; margin: 0; background: #fff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
+    .card { border: 1px solid #eee; border-radius: 12px; padding: 8px; margin: 0; background: #fff; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
     .card img { height: 130px; width: 100%; object-fit: cover; border-radius: 8px; }
     .card b { font-size: 14px; line-height: 1.3; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 6px; }
     .card .price { font-size: 14px; margin: 4px 0; color: #00a651; font-weight: 800; }
@@ -36,7 +57,7 @@
 </head>
 <body>
 
-  <!-- 1. HALAMAN BERANDA -->
+  <!-- 1. BERANDA -->
   <div id="pg-beranda" class="page active">
     <div class="top">
       <b>KASAP ID</b>
@@ -57,7 +78,7 @@
     </div>
   </div>
 
-  <!-- 2. HALAMAN LIVE -->
+  <!-- 2. LIVE -->
   <div id="pg-live" class="page" style="padding:0;background:#000">
     <div style="position:relative;width:100%;max-width:480px;margin:0 auto;background:#000;min-height:100vh">
       <div style="position:relative;width:100%;aspect-ratio:9/16;background:#111;overflow:hidden">
@@ -76,7 +97,7 @@
     </div>
   </div>
 
-  <!-- 3. HALAMAN CHAT -->
+  <!-- 3. CHAT -->
   <div id="pg-chat" class="page">
     <div class="top"><b>Chat dengan Seller</b></div>
     <div class="box">
@@ -91,21 +112,19 @@
     </div>
   </div>
 
-  <!-- 4. HALAMAN KERANJANG -->
+  <!-- 4. KERANJANG -->
   <div id="pg-keranjang" class="page">
     <div class="top"><b>Keranjang</b></div>
     <div class="box">
       <div id="cartList"><p>Keranjang masih kosong.</p></div>
       <input id="kotaTujuan" placeholder="Nama kota tujuan">
       <input id="namaPembeli" placeholder="Nama Pembeli">
-      
       <label style="font-size:13px;font-weight:800">Kurir</label>
       <select id="kurirPilih" onchange="renderCart()">
         <option value="7000">Hemat — Rp 7.000</option>
         <option value="9000" selected>Reguler — Rp 9.000</option>
         <option value="15000">Cargo — Rp 15.000</option>
       </select>
-      
       <label style="font-size:13px;font-weight:800">Metode Pembayaran</label>
       <select id="metodeBayar" onchange="renderCart()">
         <option value="Transfer Bank">Transfer Bank</option>
@@ -113,7 +132,6 @@
         <option value="COD">COD</option>
         <option value="PayLater">PayLater</option>
       </select>
-      
       <div id="bayarDetail" style="font-size:13px;background:#f9f9f9;border-radius:10px;padding:10px;margin:6px 0"></div>
       <div id="hasilOngkir" style="font-weight:800;margin:8px 0"></div>
       <div id="rincianBayar" style="font-size:14px"></div>
@@ -123,7 +141,7 @@
     </div>
   </div>
 
-  <!-- 5. HALAMAN NOTIFIKASI -->
+  <!-- 5. NOTIFIKASI -->
   <div id="pg-pesanan" class="page">
     <div class="top"><b>Notifikasi</b></div>
     <div class="box">
@@ -140,7 +158,7 @@
     </div>
   </div>
 
-  <!-- 6. HALAMAN AKUN MURNI -->
+  <!-- 6. AKUN -->
   <div id="pg-akun" class="page">
     <div class="top"><b>Akun Saya</b></div>
     <div class="box">
@@ -171,15 +189,6 @@
     </div>
   </div>
 
-  <!-- MENU NAVIGASI BAWAH FIXED -->
+  <!-- MENU NAVIGASI BAWAH -->
   <div class="nav">
     <button id="btn-beranda" onclick="nav('beranda')" class="active">🏠<br>Beranda</button>
-    <button id="btn-live" onclick="nav('live')">🎥<br>Live</button>
-    <button id="btn-chat" onclick="nav('chat')">💬<br>Chat</button>
-    <button id="btn-keranjang" onclick="nav('keranjang')">🛒<br>Keranjang</button>
-    <button id="btn-pesanan" onclick="nav('pesanan')">🔔<br>Notifikasi</button>
-    <button id="btn-akun" onclick="nav('akun')">👤<br>Akun</button>
-  </div>
-
-  <!-- SISTEM LOGIKA JAVASCRIPT -->
-  <script>
