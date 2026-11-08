@@ -61,7 +61,8 @@
 <div id="toast" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:999px;display:none;z-index:99999"></div>
 <script>
 var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";var produk=[];var cart=[];var chatList=[];var liveSesiId=null;var livePenonton=0;var ongkirTerakhir=0;
-function toast(m){var t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(function(){t.style.display="none"},2000)}
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(function(){t.style.display="none"},2000)} 
+document.getElementById('liveNamaToko').textContent = localStorage.getItem('kasap_nama_toko') || localStorage.getItem('kasap_nama') || '';  ← TEMPEL DI SINI, 1 baris ini doang
 function setText(id,txt){var e=document.getElementById(id);if(e)e.textContent=txt}
 function nav(p){try{var ps=document.querySelectorAll(".page");for(var i=0;i<ps.length;i++)ps[i].classList.remove("active");var pg=document.getElementById("pg-"+p);if(!pg){toast("Halaman "+p+" tidak ketemu");return}pg.classList.add("active");var bs=document.querySelectorAll(".nav button");for(var j=0;j<bs.length;j++)bs[j].classList.remove("active");var idx={beranda:0,live:1,chat:2,keranjang:3,pesanan:4,akun:5}[p];if(idx!==undefined)bs[idx].classList.add("active");if(p==="live"){try{cekLive()}catch(e){}}if(p==="keranjang"){try{renderCart()}catch(e){}}if(p==="pesanan"){try{loadPesanan()}catch(e){}}if(p==="akun"){try{loadDompetStatus();loadPesanan()}catch(e){}}window.scrollTo(0,0)}catch(e){console.log(e)}}
 var _loadSudah=false;
