@@ -77,6 +77,69 @@ function toggleKomentarLive(){var b=document.getElementById("liveKomentarBox");i
 function tapLove(){var l=document.getElementById("liveLove");if(l){l.style.display="block";setTimeout(function(){l.style.display="none"},800)}livePenonton++;setText("livePenonton",livePenonton+" penonton • ❤️")}
 function loadLiveChatBuyer(){if(!liveSesiId)return;fetch(SUPA_URL+"/rest/v1/live_chat?live_id=eq."+liveSesiId+"&order=created_at.asc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t)}catch(e){return[]}})}).then(function(j){var el=document.getElementById("liveChatList");if(!el)return;if(!Array.isArray(j)||j.length===0){el.innerHTML="<p>Belum ada komentar.</p>";return}var h="";for(var i=0;i<j.length;i++)h+='<div style="background:rgba(0,0,0,0.5);padding:6px 8px;border-radius:8px;margin:4px 0"><b>'+(j[i].nama||"Buyer")+":</b> "+(j[i].pesan||"")+'</div>';el.innerHTML=h})}
 function kirimLiveChatBuyer(){var inp=document.getElementById("liveChatInput");var t=inp?inp.value.trim():"";if(!t){toast("Tulis komentar dulu");return}var fr2=cekChatFilter(t);if(fr2.blok){toast("Komentar diblokir: "+fr2.alasan);return}if(!liveSesiId){toast("Seller belum Live");return}fetch(SUPA_URL+"/rest/v1/live_chat",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify({live_id:liveSesiId,nama:"Buyer",pesan:t})}).then(function(){if(inp)inp.value="";loadLiveChatBuyer();toast("Sukses Kirim Komentar")})}
+
+// ===== PERBAIKAN: fungsi yang HILANG di file lama, makanya 0 sampai kapanpun =====
+// 1. tampil() = tempat singgah: ngisi grid + count dari variabel produk
+function tampil(){
+  var grid=document.getElementById('grid');
+  var cnt=document.getElementById('count');
+  if(!grid) return;
+  if(!produk || produk.length===0){
+    if(cnt) cnt.textContent='0 produk';
+    grid.innerHTML='<p style="color:#666;font-size:13px">Belum ada produk.</p>';
+    return;
+  }
+  if(cnt) cnt.textContent=produk.length+' produk';
+  var h='';
+  for(var i=0;i<produk.length;i++){
+    var p=produk[i];
+    h+='<div class="card"><b>'+(p.nama||'')+'</b><div class="price">Rp '+Number(p.harga||0).toLocaleString('id-ID')+'</div><div style="font-size:12px;color:#666">• Stok '+(p.stok||0)+'</div><div style="display:flex;gap:8px;margin-top:8px"><button onclick="beliLangsung('+p.id+')" style="flex:1;background:#00a651;color:#fff;border:none;padding:11px;border-radius:10px;font-weight:800">Beli</button><button onclick="tambahKeranjang('+p.id+')" style="flex:1;background:#fff;color:#00a651;border:1px solid #00a651;padding:11px;border-radius:10px;font-weight:800">Masuk Keranjang</button></div></div>';
+  }
+  grid.innerHTML=h;
+}
+// 2. Keranjang: tempat produk singgah kedua (Keranjang)
+function tambahKeranjang(id){
+  var p=null; for(var i=0;i<produk.length;i++){ if(String(produk[i].id)===String(id)){ p=produk[i]; break; } }
+  if(!p) return;
+  try{ cart.push({id:p.id,nama:p.nama,harga:p.harga,qty:1}); localStorage.setItem('kasap_cart',JSON.stringify(cart)); }catch(e){}
+  try{ var b=document.querySelectorAll('[id*=Keranjang]'); }catch(e){}
+  toast('Masuk Keranjang: '+(p.nama||''));
+  try{ var kb=document.getElementById('keranjangCount'); if(kb) kb.textContent=cart.length; }catch(e){}
+}
+function beliLangsung(id){
+  tambahKeranjang(id);
+  try{ nav('keranjang'); }catch(e){}
+  toast('Lanjut ke Keranjang untuk Checkout');
+}
+// 3. Stub aman biar JS gak mati kalau fungsi lain dipanggil tapi belum ada
+function updateAkunPesanan(list){
+  try{
+    var l=Array.isArray(list)?list:[];
+    var belum=l.filter(function(x){return x.status==='Perlu Dikirim'}).length;
+    var kemas=l.filter(function(x){return x.status==='Dikirim'}).length;
+    var el1=document.getElementById('akBelum'); if(el1) el1.textContent=belum;
+    var el2=document.getElementById('akKemas'); if(el2) el2.textContent=kemas;
+    var el3=document.getElementById('akKirim'); if(el3) el3.textContent=kemas;
+  }catch(e){}
+}
+function cekChatFilter(pesan){
+  var p=(pesan||'').toLowerCase();
+  var jelek=['babi','anjing','kontol','memek','tolol','goblok'];
+  for(var i=0;i<jelek.length;i++){ if(p.indexOf(jelek[i])!==-1) return {blok:true,alasan:'kata kasar'}; }
+  return {blok:false};
+}
+function loadChat(){
+  try{
+    var el=document.getElementById('chatList'); if(!el) return;
+    fetch(SUPA_URL+"/rest/v1/chat_pembeli?select=*&order=created_at.desc&limit=20",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
+    .then(function(r){return r.text().then(function(tx){try{return JSON.parse(tx)}catch(e){return []}})})
+    .then(function(j){ if(!Array.isArray(j)||j.length===0){ el.innerHTML='<p>Belum ada chat.</p>'; return; } var h=''; for(var i=0;i<j.length;i++){ h+='<div style="border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:8px"><b>'+(j[i].nama_pembeli||'Buyer')+'</b><div>'+(j[i].pesan||'')+'</div></div>'; } el.innerHTML=h; })
+    .catch(function(){});
+  }catch(e){}
+}
+function loadDompetStatus(){ try{}catch(e){} }
+// ===== AKHIR PERBAIKAN =====
+
 function loadProduk(){ fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){ return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return []; } }); }).then(function(j){ if(Array.isArray(j) && j.length>0){ produk=j; } else { produk=[{id:901,nama:"Bougenville Poetri",harga:75000,stok:3,foto:"",deskripsi:""},{id:902,nama:"Bougenville Golden Rao",harga:610000,stok:2,foto:"",deskripsi:""},{id:903,nama:"Bougenville Citra Silver",harga:350000,stok:5,foto:"",deskripsi:""}]; } tampil(); }).catch(function(){ produk=[{id:901,nama:"Bougenville Poetri",harga:75000,stok:3,foto:"",deskripsi:""},{id:902,nama:"Bougenville Golden Rao",harga:610000,stok:2,foto:"",deskripsi:""},{id:903,nama:"Bougenville Citra Silver",harga:350000,stok:5,foto:"",deskripsi:""}]; tampil(); }); }
 loadProduk();loadChat();loadPesanan();loadDompetStatus();
 
