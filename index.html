@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08a64b">
+  <title>KASAP ID — Marketplace</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">KASAP ID</div>
+    <form id="search-form" class="search">
+      <input id="search-input" type="search" placeholder="Cari produk..." aria-label="Cari produk">
+      <button type="submit">Cari</button>
+    </form>
+  </header>
+
+  <main class="page">
+    <section class="quick-actions">
+      <button class="pill active" data-view="home">🔴 Live KASAP ID</button>
+      <button class="pill" data-view="chat">☏ Chat Seller</button>
+    </section>
+
+    <section id="home-view" class="panel">
+      <div class="section-heading">
+        <div>
+          <h1>Produk</h1>
+          <p id="product-count" class="muted">Memuat produk...</p>
+        </div>
+        <button id="refresh-button" class="small-button" type="button">Muat ulang</button>
+      </div>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <div id="product-grid" class="product-grid">
+        <div class="loading">Menghubungkan ke Supabase...</div>
+      </div>
+    </section>
+
+    <section id="chat-view" class="panel" hidden>
+      <h1>Chat Seller</h1>
+      <p class="muted">Pilih produk lalu gunakan tombol Chat Seller untuk menghubungi penjual. Fitur pesan dalam aplikasi dapat diaktifkan setelah tabel chat disiapkan.</p>
+      <div id="chat-content" class="empty-state">Belum ada percakapan.</div>
+    </section>
+
+    <section id="cart-view" class="panel" hidden>
+      <h1>Keranjang</h1>
+      <div id="cart-content"></div>
+    </section>
+
+    <section id="orders-view" class="panel" hidden>
+      <h1>Pesanan Saya</h1>
+      <div id="orders-content" class="empty-state">Silakan masuk untuk melihat pesanan.</div>
+    </section>
+
+    <section id="account-view" class="panel" hidden>
+      <h1>Akun</h1>
+      <div id="account-content"></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <button class="nav-item selected" data-view="home"><span>🏠</span>Beranda</button>
+    <button class="nav-item" data-view="chat"><span>🎥</span>Live</button>
+    <button class="nav-item" data-view="chat"><span>💬</span>Chat</button>
+    <button class="nav-item" data-view="cart"><span>🛒</span>Keranjang <b id="cart-badge">0</b></button>
+    <button class="nav-item" data-view="orders"><span>📦</span>Pesanan</button>
+    <button class="nav-item" data-view="account"><span>👤</span>Akun</button>
+  </nav>
+
+  <dialog id="auth-dialog" class="dialog">
+    <form id="auth-form" method="dialog">
+      <button class="dialog-close" type="button" id="close-auth" aria-label="Tutup">×</button>
+      <h2 id="auth-title">Masuk ke KASAP ID</h2>
+      <label>Email<input id="auth-email" type="email" required autocomplete="email"></label>
+      <label>Password<input id="auth-password" type="password" required minlength="6" autocomplete="current-password"></label>
+      <button id="auth-submit" class="primary-button" type="submit">Masuk</button>
+      <button id="auth-toggle" class="text-button" type="button">Belum punya akun? Daftar</button>
+      <p id="auth-message" class="muted" role="status"></p>
+    </form>
+  </dialog>
+
+  <footer>© <span id="year"></span> KASAP ID</footer>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "KASAP ID Marketplace",
+  "short_name": "KASAP ID",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f5",
+  "theme_color": "#08a64b",
+  "description": "Marketplace umum KASAP ID",
+  "icons": []
+}
