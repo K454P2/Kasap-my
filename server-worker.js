@@ -67,6 +67,13 @@ self.addEventListener("fetch", event => {
       .catch(() =>
         caches.match(request).then(cached =>
           cached || caches.match("./index.html")
+                                   if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./server-worker.js")
+      .then(() => console.log("Kasap offline siap"))
+      .catch(error => console.error(error));
+  });
+}
         )
       )
   );
