@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="id"><head><style>
+<html lang="id">
+<head><style>
 @font-face {
   font-family: "Optimistic";
   font-style: normal;
@@ -20,106 +21,56 @@
 :where(code, pre, kbd, samp) {
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
-</style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KASAP ID</title><style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#f2f2f2;padding-bottom:80px}
-.top{background:#00a651;color:#fff;padding:12px;position:sticky;top:0;z-index:10}.top b{font-size:20px}.top small{background:#fff;color:#00a651;padding:2px 8px;border-radius:999px;font-weight:800;font-size:11px}
-.search{display:flex;margin-top:10px;background:#fff;border-radius:999px;overflow:hidden}.search input{flex:1;border:none;padding:12px;outline:none}.search button{background:#008a43;color:#fff;border:none;padding:0 20px;font-weight:700}
-.banner{background:#00a651;color:#fff;margin:14px;border-radius:20px;padding:20px}.banner h1{margin:0;font-size:28px}
-.box{background:#fff;margin:0 12px 12px;border-radius:20px;padding:16px}.box h2{margin:0 0 14px;font-size:20px}
-.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}.stat div{background:#f2f2f2;border-radius:12px;padding:10px}.stat b{font-size:18px;display:block}
-#grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card2{background:#fff;border-radius:14px;overflow:hidden}.card2 img{width:100%;height:130px;object-fit:cover;background:#eee}.card2 .p{padding:10px}.price{color:#00a651;font-weight:800}.card2 button{width:100%;background:#00a651;color:#fff;border:none;padding:9px;border-radius:8px;margin-top:6px}.card2 button.hapus{background:#fff;color:#00a651;border:1px solid #00a651}
-.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;display:flex;border-top:1px solid #eee;z-index:20}.nav button{flex:1;background:none;border:none;padding:8px 2px;font-size:12px;color:#555}.nav button.active{color:#00a651;font-weight:700}
-.page{display:none}.page.active{display:block}input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:10px}.btn{background:#00a651;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:700}.btn2{background:#fff;color:#00a651;border:1px solid #00a651;padding:12px;border-radius:10px;width:100%;font-weight:700;margin-top:8px}
-</style></head><body>
-<!-- RANCANGAN SAJA -->
-<div id="pg-beranda" class="page active">
-<div class="top"><b>KASAP ID</b> <small>BUYER</small> <span id="status"></span><div class="search"><input id="cari" placeholder=""><button onclick="tampil()">Cari</button></div></div>
-<div class="banner"><h1>KASAP ID</h1></div>
-<div class="box"><div class="stat"><div><b id="statProduk">0</b><span></span></div><div><b id="statNilai">Rp 0</b><span></span></div><div><b id="statPesanan">0</b><span></span></div></div></div>
-<div class="box"><h2><span id="count"></span></h2><div id="grid"></div></div>
+</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KASAP ID</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>KASAP ID</h1>
+  <form id="searchForm" class="search">
+    <input id="searchInput" type="search" placeholder="Cari Bougenville..." autocomplete="off">
+    <button type="submit">Cari</button>
+  </form>
+</header>
+
+<main>
+  <section class="card actions">
+    <a class="btn-live" href="#" id="liveBtn">🔴 Live KASAP ID</a>
+    <a class="btn-chat" href="#" id="chatBtn">💬 Chat Seller</a>
+  </section>
+
+  <section class="card">
+    <h2>Produk • <span id="totalProduk">0 produk</span></h2>
+    <p id="status" class="status">Memuat produk...</p>
+    <div id="productGrid" class="grid"></div>
+    <p id="emptyMsg" class="empty" hidden>Produk tidak ditemukan.</p>
+  </section>
+</main>
+
+<nav class="bottom-nav">
+  <a href="#" class="active">🏠<span>Beranda</span></a>
+  <a href="#">🎥<span>Live</span></a>
+  <a href="#" id="navKeranjang">🛒<span>Keranjang <b id="cartCount">0</b></span></a>
+  <a href="#">📦<span>Pesanan</span></a>
+  <a href="#">👤<span>Akun</span></a>
+</nav>
+
+<!-- Drawer Keranjang -->
+<div id="cartDrawer" class="drawer" hidden>
+  <div class="drawer-box">
+    <div class="drawer-head"><h3>Keranjang</h3><button id="closeCart">✕</button></div>
+    <div id="cartItems"></div>
+    <div class="drawer-foot">
+      <strong>Total: <span id="cartTotal">Rp 0</span></strong>
+      <button id="checkoutBtn" class="btn-buy">Checkout via WhatsApp</button>
+    </div>
+  </div>
 </div>
-<div id="pg-produk" class="page">
-<div class="top"><b></b></div>
-<div class="box"><div id="cartList"></div><input id="namaPembeli" placeholder=""><input id="kotaTujuan" placeholder=""><input id="ongkirManual" type="number" placeholder=""><button class="btn" onclick="pakaiOngkirManual()"></button><div id="hasilOngkir"></div><div id="totalBayar"></div><button class="btn" onclick="checkout()"></button><p id="checkoutHasil"></p></div>
-<div class="box"><div id="grid2"></div></div>
-</div>
-<div id="pg-pesanan" class="page"><div class="box"><div id="isiPesanan"></div><button class="btn" onclick="loadPesananBuyer()"></button></div></div>
-<div id="pg-chat" class="page"><div class="box"><input id="chatNama" placeholder=""><input id="chatPesan" placeholder=""><button class="btn" onclick="tambahChat()"></button></div><div class="box"><div id="isiChatBuyer"></div></div></div>
-<div id="pg-akun" class="page"><div class="box"><p><b id="akunNama"></b><br><span id="akunToko"></span></p></div><div class="box"><div style="display:flex;gap:10px;text-align:center"><a href="https://dial.dana.id/loginob" target="_blank" style="flex:1;background:#008CFF;color:#fff;border-radius:12px;padding:14px;text-decoration:none;font-weight:800">DANA</a><a href="https://www.ovo.id" target="_blank" style="flex:1;background:#5A2EBE;color:#fff;border-radius:12px;padding:14px;text-decoration:none;font-weight:800">OVO</a><a href="https://shopee.co.id/buyer/login" target="_blank" style="flex:1;background:#EE4D2D;color:#fff;border-radius:12px;padding:14px;text-decoration:none;font-weight:800">ShopeePay</a></div></div><div class="box"><input id="alamatAkun" placeholder=""><button class="btn" onclick="simpanAlamatAkun()"></button></div><div class="box"><button class="btn2" onclick="window.location.href='seller/'"></button></div></div>
-<div id="pg-live" class="page"><div class="box"><div id="isiLiveBuyer"></div><div id="liveNamaToko"></div><div id="liveStatusDot"></div><button class="btn" onclick="loadLiveBuyer()"></button></div></div>
-<div class="nav">
-<button class="active" onclick="nav('beranda',this)">🏠<br>Beranda</button>
-<button onclick="nav('live',this)">🎥<br>Live</button>
-<button onclick="nav('chat',this)">💬<br>Chat</button>
-<button onclick="nav('produk',this)">🛒<br>Keranjang <span id="cartCountNav">0</span></button>
-<button onclick="nav('pesanan',this)">📦<br>Pesanan</button>
-<button onclick="nav('akun',this)">👤<br>Akun</button>
-</div>
-<div id="toast" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:999px;display:none;z-index:99999"></div>
-<script>
-var SUPA_URL="https://zgliygdpbaorutzttxlr.supabase.co";
-var SUPA_KEY="sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
-var produk=[]; var cart=[]; var ongkirTerakhir=0;
-function toast(m){ var t=document.getElementById("toast"); if(!t) return; t.textContent=m; t.style.display="block"; setTimeout(function(){ t.style.display="none"; },2000); }
-function nav(p,btn){ var pages=document.querySelectorAll('.page'); for(var i=0;i<pages.length;i++) pages[i].classList.remove('active'); document.getElementById('pg-'+p).classList.add('active'); var btns=document.querySelectorAll('.nav button'); for(var j=0;j<btns.length;j++) btns[j].classList.remove('active'); if(btn) btn.classList.add('active'); if(p==='produk') tampil(); if(p==='pesanan') loadPesananBuyer(); if(p==='chat') loadChatBuyer(); if(p==='live') loadLiveBuyer(); window.scrollTo(0,0); }
-// load()
-function load(){
-  document.getElementById("status").textContent="";
-  fetch(SUPA_URL+"/rest/v1/produk?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}})
-  .then(function(r){ return r.text().then(function(tx){ return {status:r.status, txt:tx}; }); })
-  .then(function(res){
-    var j=[]; try{ j=JSON.parse(res.txt); }catch(e){ j=[]; }
-    if(res.status!==200){ document.getElementById("status").textContent="HTTP "+res.status; produk=[]; tampil(); return; }
-    if(!Array.isArray(j)){ j=[]; }
-    produk=j;
-    document.getElementById("status").textContent="";
-    document.getElementById("count").textContent="";
-    document.getElementById("statProduk").textContent=produk.length;
-    var total=0; for(var i=0;i<produk.length;i++) total+=Number(produk[i].harga||0);
-    document.getElementById("statNilai").textContent="Rp "+total.toLocaleString("id-ID");
-    tampil();
-  })
-  .catch(function(e){ document.getElementById("status").textContent=e.message; });
-}
-// tampil()
-function tampil(){
-  var q=(document.getElementById("cari").value||"").toLowerCase();
-  var html="";
-  for(var i=0;i<produk.length;i++){
-    var p=produk[i];
-    if((p.nama||"").toLowerCase().indexOf(q)===-1) continue;
-    var img = p.foto || p.gambar || p.image_url || "";
-    var imgTag = img ? '<img src="'+img+'">' : '<div style="height:130px;background:#eee"></div>';
-    html+='<div class="card2">'+imgTag+'<div class="p"><b>'+(p.nama||"")+'</b><div class="price">Rp '+Number(p.harga||0).toLocaleString("id-ID")+'</div><button onclick="beliLangsung('+p.id+')"></button><button class="hapus" onclick="tambahKeranjang('+p.id+')"></button></div></div>';
-  }
-  document.getElementById("grid").innerHTML=html;
-  var g2=document.getElementById("grid2"); if(g2) g2.innerHTML=html;
-}
-function tambahKeranjang(id){ var p=null; for(var i=0;i<produk.length;i++) if(String(produk[i].id)===String(id)) p=produk[i]; if(!p) return; cart.push(p); var cn=document.getElementById("cartCountNav"); if(cn) cn.textContent=cart.length; renderCart(); }
-function beliLangsung(id){ tambahKeranjang(id); var btns=document.querySelectorAll(".nav button"); nav("produk",btns[3]); }
-function hapusCart(i){ cart.splice(i,1); var cn=document.getElementById("cartCountNav"); if(cn) cn.textContent=cart.length; renderCart(); }
-function renderCart(){ var el=document.getElementById("cartList"); if(!el) return; if(cart.length===0){ el.innerHTML=""; var tb=document.getElementById("totalBayar"); if(tb) tb.textContent=""; return; } var h=""; var tot=0; for(var i=0;i<cart.length;i++){ tot+=Number(cart[i].harga||0); h+='<div style="border:1px solid #eee;border-radius:12px;padding:12px;margin-bottom:8px"><b>'+cart[i].nama+'</b> - Rp '+Number(cart[i].harga||0).toLocaleString("id-ID")+' <button onclick="hapusCart('+i+')">Hapus</button></div>'; } el.innerHTML=h; var tb=document.getElementById("totalBayar"); if(tb) tb.textContent="Rp "+(tot+ongkirTerakhir).toLocaleString("id-ID"); }
-function pakaiOngkirManual(){ var v=Number(document.getElementById("ongkirManual").value||0); ongkirTerakhir=v; renderCart(); }
-function checkout(){
-  if(cart.length===0){ return; }
-  var nama=(document.getElementById("namaPembeli").value||"").trim(); if(!nama){ return; }
-  var tot=0; for(var i=0;i<cart.length;i++) tot+=Number(cart[i].harga||0); var grand=tot+ongkirTerakhir; var namaProduk=cart.map(function(c){return c.nama}).join(", ");
-  fetch(SUPA_URL+"/rest/v1/penjualan",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify({nama_produk:namaProduk,total:grand,status:"Perlu Dikirim"})})
-  .then(function(r){ return r.text().then(function(tx){ return {ok:r.ok,status:r.status,txt:tx}; }); })
-  .then(function(res){
-    if(res.ok){ var j=[]; try{ j=JSON.parse(res.txt); }catch(e){} cart=[]; var cn=document.getElementById("cartCountNav"); if(cn) cn.textContent=0; renderCart(); loadPesananBuyer(); var btns=document.querySelectorAll(".nav button"); nav("pesanan",btns[4]); }
-    else { var ch=document.getElementById("checkoutHasil"); if(ch) ch.textContent="HTTP "+res.status; }
-  });
-}
-function loadPesananBuyer(){ var el=document.getElementById("isiPesanan"); if(!el) return; el.innerHTML=""; fetch(SUPA_URL+"/rest/v1/penjualan?select=*&order=created_at.desc",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){ return r.text().then(function(tx){ try{ return JSON.parse(tx); }catch(e){ return []; } }); }).then(function(j){ if(!Array.isArray(j)||j.length===0){ el.innerHTML=""; var sp=document.getElementById("statPesanan"); if(sp) sp.textContent="0"; return; } var sp=document.getElementById("statPesanan"); if(sp) sp.textContent=j.length; var h=""; for(var i=0;i<j.length;i++){ h+='<div style="border:1px solid #eee;border-radius:10px;padding:10px;margin:6px 0"><b>#'+(j[i].id||"")+' - '+(j[i].nama_produk||"")+'</b><br>Rp '+Number(j[i].total||0).toLocaleString("id-ID")+' • '+(j[i].status||"")+'</div>'; } el.innerHTML=h; }); }
-function loadChatBuyer(){ var el=document.getElementById("isiChatBuyer"); if(!el) return; fetch(SUPA_URL+"/rest/v1/chat_pembeli?select=*&order=created_at.desc&limit=20",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){ return r.text().then(function(tx){ try{ return JSON.parse(tx); }catch(e){ return []; } }); }).then(function(j){ if(!Array.isArray(j)||j.length===0){ el.innerHTML=""; return; } var h=""; for(var i=0;i<j.length;i++){ h+='<div style="border:1px solid #eee;border-radius:10px;padding:10px;margin:6px 0"><b>'+(j[i].nama_pembeli||"")+'</b><div>'+(j[i].pesan||"")+'</div></div>'; } el.innerHTML=h; }); }
-function tambahChat(){ var nama=(document.getElementById("chatNama").value||"").trim(); var pesan=(document.getElementById("chatPesan").value||"").trim(); if(!nama||!pesan){ return; } fetch(SUPA_URL+"/rest/v1/chat_pembeli",{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify({nama_pembeli:nama,pesan:pesan,status:"Untuk Dibalas Manual"})}).then(function(){ document.getElementById("chatNama").value=""; document.getElementById("chatPesan").value=""; loadChatBuyer(); }); }
-function loadLiveBuyer(){ fetch(SUPA_URL+"/rest/v1/live_sesi?select=*&status=eq.live&order=created_at.desc&limit=1",{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}}).then(function(r){ return r.text().then(function(tx){ try{ return JSON.parse(tx); }catch(e){ return []; } }); }).then(function(j){ var el=document.getElementById("isiLiveBuyer"); var dot=document.getElementById("liveStatusDot"); if(Array.isArray(j)&&j.length>0){ if(el) el.innerHTML='<p>'+(j[0].judul||"")+'</p>'; if(dot) dot.textContent=""; } else { if(el) el.innerHTML=""; if(dot) dot.textContent=""; } }); }
-function simpanAlamatAkun(){ var a=(document.getElementById("alamatAkun").value||"").trim(); if(!a){ return; } try{ localStorage.setItem("kasap_alamat",a); }catch(e){} }
-document.getElementById("cari").oninput=tampil;
-load(); loadPesananBuyer(); loadChatBuyer(); loadLiveBuyer();
-try{ var _n=localStorage.getItem('kasap_nama')||''; var _an=document.getElementById('akunNama'); if(_an) _an.textContent=_n; var _t=localStorage.getItem('kasap_nama_toko')||''; var _at=document.getElementById('akunToko'); if(_at) _at.textContent=_t; var _lt=document.getElementById('liveNamaToko'); if(_lt) _lt.textContent=_t||_n; }catch(e){}
-if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(function(rs){ for(var i=0;i<rs.length;i++) rs[i].unregister(); }); }
-</script>
+
+<script src="app.js"></script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
