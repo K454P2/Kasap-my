@@ -32,7 +32,7 @@
 .box{background:#fff;margin-top:12px;padding:16px;border-radius:14px}
 .box h2{margin:0 0 10px;font-size:16px}
 label{font-size:13px;font-weight:700;display:block;margin-top:10px}
-select:focus{outline:none;border:2px solid #00a651}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px;font-size:14px;background:#fff;color:#111}
+select:focus{outline:none;border:2px solid #00a651}input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px;font-size:14px}
 .btn{width:100%;background:#00a651;color:#fff;border:none;padding:14px;border-radius:10px;font-weight:900;margin-top:14px;font-size:15px;cursor:pointer}
 .btn2{width:100%;background:#fff;color:#333;border:1px solid #ddd;padding:12px;border-radius:10px;font-weight:700;margin-top:8px;cursor:pointer}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:999px;display:none;z-index:9999;font-size:13px;max-width:90%;text-align:center}
@@ -41,18 +41,18 @@ select:focus{outline:none;border:2px solid #00a651}input,select{width:100%;paddi
 </style></head><body>
 <div class="top"><h1>KASAP ID 🌸</h1></div>
 <div class="wrap">
-<div class="tab"><button id="tDaftar" class="on" onclick="showTab('daftar')">Daftar</button><button id="tLogin" class="off" onclick="showTab('login')">Login</button></div>
+<div class="tab"><button id="tDaftar" class="off" onclick="showTab('daftar')">Daftar</button><button id="tLogin" class="off" onclick="showTab('login')">Login</button></div>
 
 <!-- DAFTAR -->
-<div id="pg-daftar" class="box"><h2>📝 Daftar Akun Baru</h2>
+<div id="pg-daftar" class="box" style="display:none"><h2>📝 Daftar Akun Baru</h2>
 <label>Nama Sesuai KTP</label><input id="dNama" placeholder="Contoh: Angkasa">
 <div id="boxNamaToko" style="display:block"><label>Nama Toko</label><input id="dNamaToko" placeholder="Contoh: Toko Angkasa Jaya"></div>
-<label>Provinsi</label><select id="dProvinsi" style="background:#fff"><option value="">Pilih Provinsi...</option><option>Aceh</option><option>Sumatera Utara</option><option>Sumatera Barat</option><option>Riau</option><option>Jambi</option><option>Sumatera Selatan</option><option>Bengkulu</option><option>Lampung</option><option>Kepulauan Bangka Belitung</option><option>Kepulauan Riau</option><option>DKI Jakarta</option><option>Jawa Barat</option><option>Jawa Tengah</option><option>DI Yogyakarta</option><option>Jawa Timur</option><option>Banten</option><option>Bali</option><option>Nusa Tenggara Barat</option><option>Nusa Tenggara Timur</option><option>Kalimantan Barat</option><option>Kalimantan Tengah</option><option>Kalimantan Selatan</option><option>Kalimantan Timur</option><option>Kalimantan Utara</option><option>Sulawesi Utara</option><option>Sulawesi Tengah</option><option>Sulawesi Selatan</option><option>Sulawesi Tenggara</option><option>Gorontalo</option><option>Sulawesi Barat</option><option>Maluku</option><option>Maluku Utara</option><option>Papua Barat</option><option>Papua</option><option>Papua Selatan</option><option>Papua Tengah</option><option>Papua Pegunungan</option><option>Papua Barat Daya</option></select>
-<label>Kabupaten / Kota</label><input id="dKabupaten" placeholder="Ketik: Sumenep" style="background:#fff">
-<label>Kecamatan</label><input id="dKecamatan" placeholder="Ketik: Gapura" style="background:#fff">
-<label>Kelurahan / Desa</label><input id="dKelurahan" placeholder="Ketik: Karang Nangka (boleh kosong)" style="background:#fff">
-<label>Alamat Lengkap (Nama Jalan / No Rumah)</label><input id="dAlamatDetail" placeholder="Contoh: jl. raya sumur agung" style="background:#fff">
-<label>Tanggal Lahir</label><input id="dTglLahir" type="date" style="background:#fff">
+<label>Provinsi</label><select id="dProvinsi"><option value="">Pilih Provinsi...</option></select>
+<label>Kabupaten / Kota</label><select id="dKabupaten"><option value="">Pilih Kabupaten dulu...</option></select>
+<label>Kecamatan</label><select id="dKecamatan"><option value="">Pilih Kecamatan dulu...</option></select>
+<label>Kelurahan / Desa</label><select id="dKelurahan"><option value="">Pilih Kelurahan dulu (boleh kosong)...</option></select>
+<label>Alamat Lengkap (Nama Jalan / No Rumah)</label><input id="dAlamatDetail" placeholder="Contoh: jl. raya sumur agung">
+<label>Tanggal Lahir</label><input id="dTglLahir" type="date">
 <input type="hidden" id="dAlamat">
 <label>No HP (WA)</label><input id="dHp" placeholder="Contoh: 081234567890" type="tel">
 <label>Email</label><input id="dEmail" placeholder="Contoh: nama@gmail.com" type="email">
@@ -62,7 +62,7 @@ select:focus{outline:none;border:2px solid #00a651}input,select{width:100%;paddi
 <label><input type="radio" name="role" value="buyer" checked onclick="toggleNamaToko()"><span>🛒 Buyer<br><small>Beli</small></span></label>
 <label><input type="radio" name="role" value="seller" onclick="toggleNamaToko()"><span>🌸 Seller<br><small>Jualan</small></span></label>
 </div>
-<button class="btn" onclick="daftar()">Daftar & Langsung Masuk</button>
+<button class="btn" onclick="daftar()">Daftar</button>/button>
 
 </div>
 
@@ -70,11 +70,6 @@ select:focus{outline:none;border:2px solid #00a651}input,select{width:100%;paddi
 <div id="pg-login" class="box" style="display:none"><h2>🔑 Login</h2>
 <label>Email</label><input id="lEmail" placeholder="Email yang dipakai Daftar" type="email">
 <label>Password</label><div style="position:relative"><input id="lPass" placeholder="Password" type="password" style="padding-right:44px"><button type="button" onclick="toggleMata('lPass',this)" style="position:absolute;right:6px;top:6px;background:none;border:none;font-size:18px;cursor:pointer;padding:6px 8px">👁️</button></div><div style="text-align:right;margin-top:8px"><span onclick="lupaPassword()" style="color:#00a651;font-size:13px;font-weight:700;cursor:pointer">Lupa Password?</span></div>
-<label>Mau masuk sebagai apa?</label>
-<div class="role">
-<label><input type="radio" name="roleLogin" value="buyer" checked><span>🛒 Buyer<br><small>Beli</small></span></label>
-<label><input type="radio" name="roleLogin" value="seller"><span>🌸 Seller<br><small>Jualan</small></span></label>
-</div>
 <button class="btn" onclick="login()">Login & Masuk</button>
 <button class="btn2" onclick="showTab('daftar')">Belum punya akun? Daftar dulu</button>
 
@@ -96,20 +91,25 @@ var nama=document.getElementById('dNama').value.trim(),namaToko=document.getElem
 var alamat=gabungAlamat();var tglLahir=document.getElementById('dTglLahir')?document.getElementById('dTglLahir').value:'';
 if(!nama||!alamat||!hp||!email||!pass){toast('Isi semua dulu: Nama, Alamat, No HP, Email, Password');return}
 if(pass.length<6){toast('Password minimal 6 karakter');return}
-// Nama Toko boleh kosong untuk Buyer, wajib untuk Seller tapi tidak diblokir di sini
 toast('Menyimpan...');
 try{
-// 1. Buat akun Auth Supabase
 var r1=await fetch(SUPA_URL+'/auth/v1/signup',{method:'POST',headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pass})});
 var j1=await r1.json();if(j1.error) throw new Error(j1.error.message||'Gagal Daftar Auth');
-// 2. Simpan profil ke tabel pengguna (nama, alamat, no_hp, email, role)
 var userId=j1.user?j1.user.id:null;
+// FIX 2: Simpan ke tabel pengguna (biar Admin liat + Login bisa cek) + simpan ke Pengaturan (localStorage)
 var r2=await fetch(SUPA_URL+'/rest/v1/pengguna',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({id:userId,nama:nama,nama_toko:namaToko,alamat:alamat,tgl_lahir:tglLahir||null,no_hp:hp,email:email,role:role})});
-if(!r2.ok){var t2=await r2.text();throw new Error('Gagal simpan ke tabel pengguna. Jalankan SQL pengguna dulu. '+t2.slice(0,120))}
-// 3. Simpan di HP + langsung ngelink
+if(!r2.ok){var t2=await r2.text();throw new Error('Gagal simpan ke tabel pengguna. '+t2.slice(0,120))}
 var u={id:userId,nama:nama,nama_toko:namaToko,alamat:alamat,tgl_lahir:tglLahir,no_hp:hp,email:email,role:role};
-simpanLocal(u);toast('Sukses Daftar! Masuk ke '+(role==='seller'?'Seller':'Buyer')+'...');
-setTimeout(function(){goByRole(role)},900);
+simpanLocal(u);
+// FIX 2: Kosongin semua kolom biar tulisan gak nempel lagi
+['dNama','dNamaToko','dAlamatDetail','dTglLahir','dHp','dEmail','dPass'].forEach(function(id){var e=document.getElementById(id);if(e)e.value=''});
+['dProvinsi','dKabupaten','dKecamatan','dKelurahan'].forEach(function(id){var e=document.getElementById(id);if(e)e.selectedIndex=0});
+document.getElementById('dAlamat').value='';
+// FIX 2: Habis Daftar -> langsung ke halaman Login, JANGAN langsung masuk ke Buyer/Seller
+toast('Daftar berhasil! Silakan Login dengan Email + Password yang baru dibuat.');
+document.getElementById('lEmail').value=email;
+document.getElementById('lPass').value='';
+showTab('login');
 }catch(e){toast('Gagal: '+e.message)}
 }
 async function login(){
@@ -119,21 +119,43 @@ toast('Login...');
 try{
 var r1=await fetch(SUPA_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pass})});
 var j1=await r1.json();if(j1.error) throw new Error('Email / Password salah');
+// FIX 1: Cek di tabel pengguna, kalau gak ada = belum Daftar, tolak. Jangan bikin user palsu.
 var token=j1.access_token;
-// Ambil profil dari tabel pengguna
 var r2=await fetch(SUPA_URL+'/rest/v1/pengguna?email=eq.'+encodeURIComponent(email)+'&select=*',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+token}});
-var j2=await r2.json();var u=j2&&j2[0]?j2[0]:{nama:email.split('@')[0],alamat:'',no_hp:'',email:email,role:'buyer'};
-var pilih=document.querySelector('input[name="roleLogin"]:checked');var rolePilih=pilih?pilih.value:u.role;u.role=rolePilih;
+var j2=await r2.json();
+if(!j2||!j2[0]){
+  // Belum Daftar di tabel pengguna -> jangan kasih masuk
+  try{await fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+token}})}catch(e){}
+  localStorage.removeItem('kasap_token');localStorage.removeItem('kasap_user');
+  toast('Email ini belum Daftar. Daftar dulu baru bisa Login.');
+  showTab('daftar');
+  document.getElementById('dEmail').value=email;
+  return;
+}
+var u=j2[0];
 simpanLocal(u);localStorage.setItem('kasap_token',token);
-toast('Sukses Login! Masuk ke '+(rolePilih==='seller'?'Seller':'Buyer')+'...');
-setTimeout(function(){goByRole(rolePilih)},900);
+toast('Sukses Login! Masuk ke '+(u.role==='seller'?'Seller':'Buyer')+'...');
+setTimeout(function(){goByRole(u.role)},900);
 }catch(e){toast('Gagal: '+e.message)}
 }
 // Kalau sudah login, langsung tawarkan masuk
-try{var s=localStorage.getItem('kasap_user');if(s){var u=JSON.parse(s);}}catch(e){}
+// FIX 1: Jangan auto-masuk. Walaupun sudah pernah Daftar, tetap harus Login dulu. Jadi tidak ada auto-redirect di sini.
 
 
-function gabungAlamat(){var detail=(document.getElementById('dAlamatDetail').value||'').trim();var kel=(document.getElementById('dKelurahan').value||'').trim();var kec=(document.getElementById('dKecamatan').value||'').trim();var kab=(document.getElementById('dKabupaten').value||'').trim();var prov=document.getElementById('dProvinsi').value||'';var parts=[];if(detail)parts.push(detail);if(kel)parts.push(kel);if(kec)parts.push(kec);if(kab)parts.push(kab);if(prov)parts.push(prov);var gab=parts.join(', ');document.getElementById('dAlamat').value=gab;return gab}
+var WIL_URL="https://www.emsifa.com/api-wilayah-indonesia/api";
+function isiSelect(id,list,valKey,txtKey){var el=document.getElementById(id);if(!el)return;el.innerHTML='<option value="">Pilih...</option>';for(var i=0;i<list.length;i++){var o=document.createElement('option');o.value=list[i][valKey];o.textContent=list[i][txtKey];el.appendChild(o)}}
+function namaSelect(id){var el=document.getElementById(id);if(!el||!el.selectedIndex||el.selectedIndex<0)return'';var opt=el.options[el.selectedIndex];return opt?opt.textContent:''}
+var PROVINSI_STATIC=[{id:"11",name:"Aceh"},{id:"12",name:"Sumatera Utara"},{id:"13",name:"Sumatera Barat"},{id:"14",name:"Riau"},{id:"15",name:"Jambi"},{id:"16",name:"Sumatera Selatan"},{id:"17",name:"Bengkulu"},{id:"18",name:"Lampung"},{id:"19",name:"Kepulauan Bangka Belitung"},{id:"21",name:"Kepulauan Riau"},{id:"31",name:"DKI Jakarta"},{id:"32",name:"Jawa Barat"},{id:"33",name:"Jawa Tengah"},{id:"34",name:"DI Yogyakarta"},{id:"35",name:"Jawa Timur"},{id:"36",name:"Banten"},{id:"51",name:"Bali"},{id:"52",name:"Nusa Tenggara Barat"},{id:"53",name:"Nusa Tenggara Timur"},{id:"61",name:"Kalimantan Barat"},{id:"62",name:"Kalimantan Tengah"},{id:"63",name:"Kalimantan Selatan"},{id:"64",name:"Kalimantan Timur"},{id:"65",name:"Kalimantan Utara"},{id:"71",name:"Sulawesi Utara"},{id:"72",name:"Sulawesi Tengah"},{id:"73",name:"Sulawesi Selatan"},{id:"74",name:"Sulawesi Tenggara"},{id:"75",name:"Gorontalo"},{id:"76",name:"Sulawesi Barat"},{id:"81",name:"Maluku"},{id:"82",name:"Maluku Utara"},{id:"91",name:"Papua Barat"},{id:"92",name:"Papua"},{id:"93",name:"Papua Selatan"},{id:"94",name:"Papua Tengah"},{id:"95",name:"Papua Pegunungan"},{id:"96",name:"Papua Barat Daya"}];
+async function loadProvinsi(){isiSelect('dProvinsi',PROVINSI_STATIC,'id','name');try{var r=await fetch(WIL_URL+"/provinces.json");var j=await r.json();if(j&&j.length)isiSelect('dProvinsi',j,'id','name')}catch(e){/* pakai static, tetap jalan */}}
+async function loadKabupaten(){var pid=document.getElementById('dProvinsi').value;if(!pid)return;document.getElementById('dKabupaten').innerHTML='<option value="">Memuat...</option>';try{var r=await fetch(WIL_URL+"/regencies/"+pid+".json");var j=await r.json();isiSelect('dKabupaten',j,'id','name');document.getElementById('dKecamatan').innerHTML='<option value="">Pilih Kecamatan dulu...</option>';document.getElementById('dKelurahan').innerHTML='<option value="">Pilih Kelurahan dulu...</option>'}catch(e){var el=document.getElementById('dKabupaten');el.innerHTML='<option value=\"\">Pilih...</option><option value=\"manual\">Ketik manual di Alamat Lengkap</option>';}}
+async function loadKecamatan(){var kid=document.getElementById('dKabupaten').value;if(!kid)return;document.getElementById('dKecamatan').innerHTML='<option value="">Memuat...</option>';try{var r=await fetch(WIL_URL+"/districts/"+kid+".json");var j=await r.json();isiSelect('dKecamatan',j,'id','name');document.getElementById('dKelurahan').innerHTML='<option value="">Pilih Kelurahan dulu...</option>'}catch(e){var el=document.getElementById('dKecamatan');el.innerHTML='<option value=\"\">Pilih...</option><option value=\"manual\">Ketik manual di Alamat Lengkap</option>';}}
+async function loadKelurahan(){var did=document.getElementById('dKecamatan').value;if(!did)return;document.getElementById('dKelurahan').innerHTML='<option value="">Memuat...</option>';try{var r=await fetch(WIL_URL+"/villages/"+did+".json");var j=await r.json();isiSelect('dKelurahan',j,'id','name')}catch(e){}}
+document.getElementById('dProvinsi').addEventListener('change',loadKabupaten);
+document.getElementById('dKabupaten').addEventListener('change',loadKecamatan);
+document.getElementById('dKecamatan').addEventListener('change',loadKelurahan);
+loadProvinsi();
+function gabungAlamat(){var detail=(document.getElementById('dAlamatDetail').value||'').trim();var kel=namaSelect('dKelurahan');var kec=namaSelect('dKecamatan');var kab=namaSelect('dKabupaten');var prov=namaSelect('dProvinsi');var parts=[];if(detail)parts.push(detail);if(kel&&kel!=='Pilih...')parts.push(kel);if(kec&&kec!=='Pilih...')parts.push(kec);if(kab&&kab!=='Pilih...')parts.push(kab);if(prov&&prov!=='Pilih...')parts.push(prov);var gab=parts.join(', ');document.getElementById('dAlamat').value=gab;return gab}
+
 function toggleMata(id,btn){var e=document.getElementById(id);if(!e)return;if(e.type==='password'){e.type='text';btn.textContent='🙈'}else{e.type='password';btn.textContent='👁️'}}
 async function lupaPassword(){var email=document.getElementById('lEmail').value.trim();if(!email){email=prompt('Masukkan Email kamu untuk reset password:');if(!email)return}toast('Mengirim link reset ke '+email+'...');try{var r=await fetch(SUPA_URL+'/auth/v1/recover',{method:'POST',headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:email})});if(!r.ok) throw new Error('Gagal kirim');toast('Cek Email kamu, link reset sudah dikirim!');}catch(e){toast('Gagal: '+e.message)}}
 </script><script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
