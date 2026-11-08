@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KASAP ID</title>
+<link rel="stylesheet" href="./style.css?v=2">
+</head>
+<body>
+<header class="topbar">
+  <h1>KASAP ID</h1>
+  <p id="cekVersi" style="font-size:12px;opacity:.7">Versi 2 - kalau tulisan ini muncul, index baru sudah ke-load</p>
+  <form id="searchForm" class="search">
+    <input id="searchInput" type="search" placeholder="Cari Bougenville..." autocomplete="off">
+    <button type="submit">Cari</button>
+  </form>
+</header>
+<main>
+  <section class="card actions">
+    <a class="btn-live" href="#" id="liveBtn">🔴 Live KASAP ID</a>
+    <a class="btn-chat" href="#" id="chatBtn">💬 Chat Seller</a>
+  </section>
+  <section class="card">
+    <h2>Produk • <span id="totalProduk">0 produk</span></h2>
+    <p id="status" class="status">Memuat produk...</p>
+    <div id="productGrid" class="grid"></div>
+    <p id="emptyMsg" class="empty" hidden>Produk tidak ditemukan.</p>
+  </section>
+</main>
+<nav class="bottom-nav">
+  <a href="#" class="active">🏠<span>Beranda</span></a>
+  <a href="#">🎥<span>Live</span></a>
+  <a href="#">💬<span>Chat</span></a>
+  <a href="#" id="navKeranjang">🛒<span>Keranjang <b id="cartCount">0</b></span></a>
+  <a href="#">📦<span>Pesanan</span></a>
+  <a href="#">👤<span>Akun</span></a>
+</nav>
+<div id="cartDrawer" class="drawer" hidden>
+  <div class="drawer-box">
+    <div class="drawer-head"><h3>Keranjang</h3><button id="closeCart">✕</button></div>
+    <div id="cartItems"></div>
+    <div class="drawer-foot">
+      <strong>Total: <span id="cartTotal">Rp 0</span></strong>
+      <button id="checkoutBtn" class="btn-buy">Checkout via WhatsApp</button>
+    </div>
+  </div>
+</div>
+<script src="./app.js?v=2"></script>
+</body>
+</html>
