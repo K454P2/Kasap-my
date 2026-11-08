@@ -1,150 +1,185 @@
-<div id="pg-akun" class="page">
-  <div class="top"><b>Akun Saya</b></div>
-  
-  <div class="box">
-    <b>Pesanan Saya</b>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;text-align:center;gap:8px;margin-top:14px">
-      <div><div style="font-size:28px">🧾</div><div style="font-size:12px">Belum Bayar</div><div id="akBelum" style="font-weight:800;color:#00a651">0</div></div>
-      <div><div style="font-size:28px">📦</div><div style="font-size:12px">Dikemas</div><div id="akKemas" style="font-weight:800;color:#00a651">0</div></div>
-      <div><div style="font-size:28px">🚚</div><div style="font-size:12px">Dikirim</div><div id="akKirim" style="font-weight:800;color:#00a651">0</div></div>
-      <div><div style="font-size:28px">⭐</div><div style="font-size:12px">Beri Penilaian</div><div id="akNilai" style="font-weight:800;color:#00a651">0</div></div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KASAP ID - Buyer</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #f5f5f5; padding-bottom: 80px; }
+    .top { background: #00a651; color: #fff; padding: 14px; }
+    .top b { font-size: 22px; }
+    .box { background: #fff; margin: 10px; padding: 14px; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .btn { width: 100%; background: #00a651; color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 800; margin-top: 8px; cursor: pointer; }
+    .btn:hover { background: #007a3f; }
+    input, select, textarea { width: 100%; padding: 11px; border: 1px solid #ddd; border-radius: 10px; margin: 6px 0; box-sizing: border-box; }
+    
+    /* Sistem Pindah Halaman */
+    .page { display: none; }
+    .page.active { display: block; }
+    
+    /* Navigasi Bawah Agar Rapi Lock di Bawah Layar */
+    .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 9999; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+    .nav button { flex: 1; background: none; border: none; padding: 12px 2px; font-size: 12px; cursor: pointer; color: #666; text-align: center; }
+    .nav button.active { color: #00a651; font-weight: 800; }
+    
+    /* Grid Produk Beranda */
+    #grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card { border: 1px solid #eee; border-radius: 12px; padding: 8px; margin: 0; background: #fff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
+    .card img { height: 130px; width: 100%; object-fit: cover; border-radius: 8px; }
+    .card b { font-size: 14px; line-height: 1.3; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 6px; }
+    .card .price { font-size: 14px; margin: 4px 0; color: #00a651; font-weight: 800; }
+    .card button { padding: 8px!important; font-size: 12px!important; margin-top: auto; }
+    
+    .chat-item { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #00a651; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. HALAMAN BERANDA -->
+  <div id="pg-beranda" class="page active">
+    <div class="top">
+      <b>KASAP ID</b>
+      <div style="display:flex;margin-top:10px">
+        <input id="cari" placeholder="Cari Bougenville..." style="margin:0;border-radius:999px 0 0 999px">
+        <button onclick="tampil()" style="background:#007a3f;color:#fff;border:none;padding:0 18px;border-radius:0 999px 999px 0;font-weight:800;cursor:pointer">Cari</button>
+      </div>
+    </div>
+    <div class="box">
+      <div style="display:flex;gap:10px;overflow-x:auto">
+        <button onclick="nav('live')" style="background:#00a651;color:#fff;border:none;padding:10px 14px;border-radius:999px;font-weight:800;cursor:pointer">🔴 Live KASAP ID</button>
+        <button onclick="nav('chat')" style="background:#fff;border:1px solid #00a651;color:#00a651;padding:10px 14px;border-radius:999px;cursor:pointer">💬 Chat Seller</button>
+      </div>
+    </div>
+    <div class="box">
+      <h2>Produk • <span id="count">0 produk</span></h2>
+      <div id="grid"><p>Memuat produk...</p></div>
     </div>
   </div>
 
-  <div class="box">
-    <b>📱 Pulsa, Tagihan & Tiket</b>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;margin-top:12px">
-      <button onclick="bukaPulsa('Pulsa')" style="background:#f5f5f5;border:none;padding:10px;border-radius:10px;cursor:pointer">📱<br>Pulsa</button>
-      <button onclick="bukaPulsa('PLN')" style="background:#f5f5f5;border:none;padding:10px;border-radius:10px;cursor:pointer">💡<br>PLN</button>
-      <button onclick="bukaPulsa('PDAM')" style="background:#f5f5f5;border:none;padding:10px;border-radius:10px;cursor:pointer">💧<br>PDAM</button>
-      <button onclick="bukaPulsa('Tiket')" style="background:#f5f5f5;border:none;padding:10px;border-radius:10px;cursor:pointer">🎫<br>Tiket</button>
-      <button onclick="bukaPulsa('Voucher TV')" style="background:#f5f5f5;border:none;padding:10px;border-radius:10px;cursor:pointer">📺<br>Voucher TV</button>
-    </div>
-    <div id="pulsaForm" style="margin-top:12px"></div>
-  </div>
-
-  <div class="box">
-    <b>Dompet Saya</b>
-    <div style="display:flex;gap:12px;text-align:center;margin-top:12px">
-      <a href="https://dana.id" target="_blank" rel="noopener" style="flex:1;border:1px solid #eee;border-radius:12px;padding:14px;background:#008cff;text-decoration:none;color:#fff;display:block;font-weight:bold">
-        Buka DANA Internal (DIAL)
-      </a>
-    </div>
-  </div>
-</div>
-
-<!-- BARIS NAVIGASI BAWAH YANG SEBELUMNYA TERPOTONG -->
-<div class="nav">
-  <button id="btn-beranda" onclick="nav('beranda')" class="active">🏠<br>Beranda</button>
-  <button id="btn-live" onclick="nav('live')">🎥<br>Live</button>
-  <button id="btn-chat" onclick="nav('chat')">💬<br>Chat</button>
-  <button id="btn-keranjang" onclick="nav('keranjang')">🛒<br>Keranjang</button>
-  <button id="btn-pesanan" onclick="nav('pesanan')">🔔<br>Notifikasi</button>
-  <button id="btn-akun" onclick="nav('akun')">👤<br>Akun</button>
-</div>
-
-<!-- LOGIKA JAVASCRIPT UTK MEMBUAT TOMBOL AKTIF & PRODUK MUNCUL -->
-<script>
-  const dataProduk = [
-    { id: 1, nama: "Bougenville Singapore Variegata", harga: 45000, img: "https://unsplash.com" },
-    { id: 2, nama: "Bougenville Mahara Merah Tumpuk", harga: 65000, img: "https://unsplash.com" },
-    { id: 3, nama: "Bougenville Citra Monduring Multiwarna", harga: 120000, img: "https://unsplash.com" },
-    { id: 4, nama: "Bibit Bougenville Ungu Ekspor", harga: 25000, img: "https://unsplash.com" }
-  ];
-
-  let keranjang = [];
-  let riwayatChat = [];
-  let counterBelumBayar = 0;
-
-  function nav(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
-    
-    const targetPage = document.getElementById('pg-' + pageId);
-    const targetBtn = document.getElementById('btn-' + pageId);
-    
-    if(targetPage) targetPage.classList.add('active');
-    if(targetBtn) targetBtn.classList.add('active');
-    
-    if (pageId === 'keranjang') renderCart();
-  }
-
-  function tampil() {
-    const kataKunci = document.getElementById('cari') ? document.getElementById('cari').value.toLowerCase() : '';
-    const grid = document.getElementById('grid');
-    if (!grid) return;
-    
-    grid.innerHTML = '';
-    const produkDisaring = dataProduk.filter(p => p.nama.toLowerCase().includes(kataKunci));
-    
-    if(document.getElementById('count')) {
-      document.getElementById('count').innerText = `${produkDisaring.length} produk`;
-    }
-
-    if (produkDisaring.length === 0) {
-      grid.innerHTML = '<p style="padding:10px;">Produk tidak ditemukan.</p>';
-      return;
-    }
-
-    produkDisaring.forEach(p => {
-      grid.innerHTML += `
-        <div class="card">
-          <img src="${p.img}" alt="${p.nama}">
-          <div style="padding:6px;">
-            <b>${p.nama}</b>
-            <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
-          </div>
-          <button class="btn" onclick="tambahKeKeranjang(${p.id})" style="padding:6px; font-size:12px;">🛒 +Keranjang</button>
+  <!-- 2. HALAMAN LIVE -->
+  <div id="pg-live" class="page" style="padding:0;background:#000">
+    <div style="position:relative;width:100%;max-width:480px;margin:0 auto;background:#000;min-height:100vh">
+      <div style="position:relative;width:100%;aspect-ratio:9/16;background:#111;overflow:hidden">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#fff">
+          <div style="font-size:64px">🎥</div>
+          <div id="liveVideoSub" style="font-size:13px">Seller belum Live.</div>
         </div>
-      `;
-    });
-  }
+        <div style="position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between">
+          <div style="background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:999px;color:#fff;font-size:13px;font-weight:800">KASAP ID ✓</div>
+          <div id="livePenonton" style="background:rgba(0,0,0,0.6);color:#fff;padding:6px 12px;border-radius:999px;font-size:12px">0 penonton</div>
+        </div>
+      </div>
+      <div style="background:#000;padding:12px">
+        <button class="btn" onclick="cekLive()" style="background:#fff;color:#111">Cek Live Seller</button>
+      </div>
+    </div>
+  </div>
 
-  function tambahKeKeranjang(id) {
-    const produk = dataProduk.find(p => p.id === id);
-    const adaDiKeranjang = keranjang.find(item => item.id === id);
-    if (adaDiKeranjang) { adaDiKeranjang.qty++; } else { keranjang.push({ ...produk, qty: 1 }); }
-    alert(`${produk.nama} ditambahkan ke keranjang!`);
-  }
+  <!-- 3. HALAMAN CHAT -->
+  <div id="pg-chat" class="page">
+    <div class="top"><b>Chat dengan Seller</b></div>
+    <div class="box">
+      <b>Chat Baru ke Seller</b>
+      <input id="chatNama" placeholder="Nama kamu">
+      <input id="chatPesan" placeholder="Pesan ke Seller">
+      <button class="btn" onclick="tambahChat()">Kirim Chat di Aplikasi</button>
+    </div>
+    <div class="box">
+      <h2>Riwayat Chat</h2>
+      <div id="listChat"><p>Belum ada chat.</p></div>
+    </div>
+  </div>
 
-  function renderCart() {
-    const cartList = document.getElementById('cartList');
-    if (!cartList) return;
-    if (keranjang.length === 0) {
-      cartList.innerHTML = '<p>Keranjang masih kosong.</p>';
-      document.getElementById('totalBayar').innerText = '';
-      return;
-    }
-    cartList.innerHTML = '';
-    let subtotal = 0;
-    keranjang.forEach((item, index) => {
-      subtotal += item.harga * item.qty;
-      cartList.innerHTML += `<div class="cart-item"><div><b>${item.nama}</b><br><span class="price">Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty}</span></div><button onclick="hapusCart(${index})" style="background:#e53935;color:#fff;border:none;padding:4px 8px;border-radius:6px;cursor:pointer">Hapus</button></div>`;
-    });
-    const ongkir = parseInt(document.getElementById('kurirPilih').value) || 0;
-    const metode = document.getElementById('metodeBayar').value;
-    document.getElementById('bayarDetail').innerText = `Metode: ${metode}`;
-    document.getElementById('hasilOngkir').innerText = `Ongkir: Rp ${ongkir.toLocaleString('id-ID')}`;
-    document.getElementById('rincianBayar').innerText = `Subtotal: Rp ${subtotal.toLocaleString('id-ID')}`;
-    document.getElementById('totalBayar').innerText = `Total: Rp ${(subtotal + ongkir).toLocaleString('id-ID')}`;
-  }
+  <!-- 4. HALAMAN KERANJANG -->
+  <div id="pg-keranjang" class="page">
+    <div class="top"><b>Keranjang</b></div>
+    <div class="box">
+      <div id="cartList"><p>Keranjang masih kosong.</p></div>
+      <input id="kotaTujuan" placeholder="Nama kota tujuan">
+      <input id="namaPembeli" placeholder="Nama Pembeli">
+      
+      <label style="font-size:13px;font-weight:800">Kurir</label>
+      <select id="kurirPilih" onchange="renderCart()">
+        <option value="7000">Hemat — Rp 7.000</option>
+        <option value="9000" selected>Reguler — Rp 9.000</option>
+        <option value="15000">Cargo — Rp 15.000</option>
+      </select>
+      
+      <label style="font-size:13px;font-weight:800">Metode Pembayaran</label>
+      <select id="metodeBayar" onchange="renderCart()">
+        <option value="Transfer Bank">Transfer Bank</option>
+        <option value="E-Wallet">E-Wallet</option>
+        <option value="COD">COD</option>
+        <option value="PayLater">PayLater</option>
+      </select>
+      
+      <div id="bayarDetail" style="font-size:13px;background:#f9f9f9;border-radius:10px;padding:10px;margin:6px 0"></div>
+      <div id="hasilOngkir" style="font-weight:800;margin:8px 0"></div>
+      <div id="rincianBayar" style="font-size:14px"></div>
+      <div id="totalBayar" style="font-weight:900;font-size:18px;margin-top:10px;color:#00a651"></div>
+      <button class="btn" onclick="checkout()">Checkout</button>
+      <p id="checkoutHasil" style="font-size:13px;color:#00a651;font-weight:bold;"></p>
+    </div>
+  </div>
 
-  function hapusCart(index) { keranjang.splice(index, 1); renderCart(); }
+  <!-- 5. HALAMAN NOTIFIKASI -->
+  <div id="pg-pesanan" class="page">
+    <div class="top"><b>Notifikasi</b></div>
+    <div class="box">
+      <b>Notifikasi Toko <span id="notifTokoCount" style="background:#e53935;color:#fff;border-radius:999px;padding:2px 8px;font-size:12px">0</span></b>
+      <div id="notifTokoList" style="margin-top:12px">
+        <p style="font-size:13px;color:#666">Belum ada notifikasi toko.</p>
+      </div>
+    </div>
+    <div class="box">
+      <b>Status Pesanan</b>
+      <div id="notifPesananList" style="margin-top:12px">
+        <p style="font-size:13px;color:#666">Belum ada status pesanan.</p>
+      </div>
+    </div>
+  </div>
 
-  function checkout() {
-    const kota = document.getElementById('kotaTujuan').value;
-    const nama = document.getElementById('namaPembeli').value;
-    if (!kota || !nama || keranjang.length === 0) { alert('Lengkapi Nama, Kota dan Keranjang!'); return; }
-    counterBelumBayar++;
-    if(document.getElementById('akBelum')) document.getElementById('akBelum').innerText = counterBelumBayar;
-    document.getElementById('notifPesananList').innerHTML = `<div class="chat-item" style="border-left-color: #008cff"><b>Pesanan Baru</b><br>Tujuan ${kota} - a.n ${nama}.</div>`;
-    document.getElementById('checkoutHasil').innerText = "Checkout Berhasil!";
-    keranjang = []; renderCart();
-  }
+  <!-- 6. HALAMAN AKUN MURNI -->
+  <div id="pg-akun" class="page">
+    <div class="top"><b>Akun Saya</b></div>
+    <div class="box">
+      <b>Pesanan Saya</b>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;text-align:center;gap:8px;margin-top:14px">
+        <div><div style="font-size:28px">🧾</div><div style="font-size:12px">Belum Bayar</div><div id="akBelum" style="font-weight:800;color:#00a651">0</div></div>
+        <div><div style="font-size:28px">📦</div><div style="font-size:12px">Dikemas</div><div id="akKemas" style="font-weight:800;color:#00a651">0</div></div>
+        <div><div style="font-size:28px">🚚</div><div style="font-size:12px">Dikirim</div><div id="akKirim" style="font-weight:800;color:#00a651">0</div></div>
+        <div><div style="font-size:28px">⭐</div><div style="font-size:12px">Penilaian</div><div id="akNilai" style="font-weight:800;color:#00a651">0</div></div>
+      </div>
+    </div>
+    <div class="box">
+      <b>📱 Pulsa, Tagihan & Tiket</b>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;margin-top:12px">
+        <button onclick="bukaPulsa('Pulsa')" style="background:#f5f5f5;border:none;padding:10px;border-radius:10px;cursor:pointer">📱<br>Pulsa</button>
+        <button onclick="bukaPulsa('PLN')" style="background:#f5f5f5;border:none;padding:10px;border-radius:10px;cursor:pointer">💡<br>PLN</button>
+        <button onclick="bukaPulsa('PDAM')" style="background:#f5f5f5;border:none;padding:10px;border-radius:10px;cursor:pointer">💧<br>PDAM</button>
+      </div>
+      <div id="pulsaForm" style="margin-top:12px"></div>
+    </div>
+    <div class="box">
+      <b>Dompet Saya</b>
+      <div style="margin-top:12px">
+        <a href="https://dana.id" target="_blank" rel="noopener" style="display:block;border:1px solid #eee;border-radius:12px;padding:14px;background:#008cff;text-decoration:none;color:#fff;font-weight:bold;text-align:center">
+          Buka DANA Internal (DIAL)
+        </a>
+      </div>
+    </div>
+  </div>
 
-  window.addEventListener('DOMContentLoaded', () => {
-    tampil();
-  });
-</script>
-</body>
-</html>
+  <!-- MENU NAVIGASI BAWAH FIXED -->
+  <div class="nav">
+    <button id="btn-beranda" onclick="nav('beranda')" class="active">🏠<br>Beranda</button>
+    <button id="btn-live" onclick="nav('live')">🎥<br>Live</button>
+    <button id="btn-chat" onclick="nav('chat')">💬<br>Chat</button>
+    <button id="btn-keranjang" onclick="nav('keranjang')">🛒<br>Keranjang</button>
+    <button id="btn-pesanan" onclick="nav('pesanan')">🔔<br>Notifikasi</button>
+    <button id="btn-akun" onclick="nav('akun')">👤<br>Akun</button>
+  </div>
+
+  <!-- SISTEM LOGIKA JAVASCRIPT -->
+  <script>
