@@ -1,15 +1,16 @@
 
-/* ==================================
-   KASAP ID - SUPABASE APP
-   ================================== */
+/* =========================================
+   KASAP ID - MARKETPLACE MULTI SELLER
+   SUPABASE CONNECTION
+   ========================================= */
 
 const SUPA_URL = "https://zgliygdpbaorutzttxlr.supabase.co";
 const SUPA_KEY = "sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
 
 let supabaseClient = null;
 let products = [];
-
 let cart = [];
+
 try {
   cart = JSON.parse(localStorage.getItem("kasap_cart") || "[]");
   if (!Array.isArray(cart)) cart = [];
@@ -17,10 +18,13 @@ try {
   cart = [];
 }
 
+// =========================================
 // CONNECT SUPABASE
+// =========================================
+
 function connectSupabase() {
-  if (!window.supabase || !window.supabase.createClient) {
-    throw new Error("Library Supabase tidak berhasil dimuat.");
+  if (!window.supabase) {
+    throw new Error("Library Supabase tidak ditemukan.");
   }
 
   supabaseClient = window.supabase.createClient(
@@ -28,29 +32,28 @@ function connectSupabase() {
     SUPA_KEY
   );
 
-  console.log("KASAP: Supabase terhubung.");
+  console.log("KASAP berhasil terhubung ke Supabase.");
 }
 
-// LOAD PRODUCTS
+// =========================================
+// LOAD PRODUCTS FROM TABLE PRODUK
+// =========================================
+
 async function loadProducts() {
   const grid = document.getElementById("product-grid");
   const count = document.getElementById("product-count");
   const notice = document.getElementById("notice");
 
-  if (!grid) {
-    console.error("product-grid tidak ditemukan.");
-    return;
-  }
+  if (!grid) return;
 
-  grid.textContent = "Menghubungkan ke Supabase...";
-  if (count) count.textContent = "Memuat produk...";
+  grid.textContent = "Memuat produk...";
+  if (count) count.textContent = "Menghubungkan ke Supabase...";
 
   try {
     if (!supabaseClient) connectSupabase();
 
-    // Ambil data dari tabel products
     const { data, error } = await supabaseClient
-      .from("products")
+      .from("produk")
       .select("*")
       .order("created_at", { ascending: false });
 
@@ -58,32 +61,27 @@ async function loadProducts() {
 
     const allProducts = data || [];
 
-    // Hanya tampilkan produk aktif
-    products = allProducts.filter(p =>
-      p.aktif === true ||
-      p.aktif === "true" ||
-      p.aktif === 1
-    );
+    // FILTER PRODUK AKTIF JIKA KOLOM TERSEDIA
+    products = allProducts.filter(p => {
+      if (!Object.prototype.hasOwnProperty.call(p, "aktif")) {
+        return true;
+      }
+
+      return p.aktif === true ||
+             p.aktif === "true" ||
+             p.aktif === 1;
+    });
 
     grid.innerHTML = "";
 
     if (count) {
-      count.textContent =
-        products.length + " produk tersedia";
+      count.textContent = products.length + " produk tersedia";
     }
 
     if (notice) notice.hidden = true;
 
-    if (allProducts.length === 0) {
-      grid.textContent =
-        "Tabel products berhasil dibaca, tetapi belum ada data produk.";
-      return;
-    }
-
     if (products.length === 0) {
-      grid.textContent =
-        "Ada " + allProducts.length +
-        " produk, tetapi belum ada yang berstatus aktif.";
+      grid.textContent = "Belum ada produk yang tersedia.";
       return;
     }
 
@@ -91,6 +89,7 @@ async function loadProducts() {
       const card = document.createElement("article");
       card.className = "product-card";
 
+      // GAMBAR PRODUK
       if (product.foto) {
         const img = document.createElement("img");
         img.src = product.foto;
@@ -104,39 +103,49 @@ async function loadProducts() {
       const info = document.createElement("div");
       info.className = "product-info";
 
+      // NAMA
       const name = document.createElement("h3");
       name.className = "product-name";
       name.textContent = product.nama || "Produk";
 
+      // HARGA
       const price = document.createElement("div");
       price.className = "product-price";
       price.textContent =
         "Rp " + Number(product.harga || 0)
           .toLocaleString("id-ID");
 
+      // DESKRIPSI
       const description = document.createElement("p");
       description.textContent = product.deskripsi || "";
 
+      // STOK
       const stock = document.createElement("p");
       stock.textContent = "Stok: " + (product.stok ?? 0);
 
+      // TOMBOL KERANJANG
       const button = document.createElement("button");
+      button.type = "button";
       button.className = "primary-button";
       button.textContent = "Tambah Keranjang";
-      button.type = "button";
+
       button.addEventListener("click", () => {
         addToCart(product.id);
       });
 
-      info.append(name, price, description, stock, button);
+      info.append(
+        name,
+        price,
+        description,
+        stock,
+        button
+      );
+
       card.appendChild(info);
       grid.appendChild(card);
     });
 
-    console.log(
-      "KASAP: Produk berhasil dimuat:",
-      products.length
-    );
+    console.log("Produk berhasil dimuat:", products.length);
 
   } catch (error) {
     console.error("KASAP ERROR:", error);
@@ -144,7 +153,7 @@ async function loadProducts() {
     grid.textContent =
       "Gagal memuat produk: " + error.message;
 
-    if (count) count.textContent = "Terjadi kesalahan";
+    if (count) count.textContent = "Gagal memuat produk";
 
     if (notice) {
       notice.hidden = false;
@@ -153,7 +162,10 @@ async function loadProducts() {
   }
 }
 
-// CART
+// =========================================
+// ADD TO CART
+// =========================================
+
 function addToCart(id) {
   const product = products.find(
     p => String(p.id) === String(id)
@@ -176,11 +188,19 @@ function addToCart(id) {
     });
   }
 
-  localStorage.setItem("kasap_cart", JSON.stringify(cart));
+  localStorage.setItem(
+    "kasap_cart",
+    JSON.stringify(cart)
+  );
+
   updateCart();
 
   alert("Produk berhasil masuk keranjang!");
 }
+
+// =========================================
+// UPDATE CART
+// =========================================
 
 function updateCart() {
   const badge = document.getElementById("cart-badge");
@@ -193,48 +213,162 @@ function updateCart() {
 
   if (badge) badge.textContent = total;
 
-  if (content) {
-    content.innerHTML = "";
+  if (!content) return;
 
-    if (!cart.length) {
-      content.textContent = "Keranjang masih kosong.";
-    } else {
-      cart.forEach(item => {
-        const row = document.createElement("p");
-        row.textContent =
-          item.nama + " x " + item.quantity +
-          " - Rp " +
-          Number(item.harga * item.quantity)
-            .toLocaleString("id-ID");
+  content.innerHTML = "";
 
-        content.appendChild(row);
-      });
-    }
+  if (cart.length === 0) {
+    content.textContent = "Keranjang masih kosong.";
+    return;
   }
+
+  cart.forEach(item => {
+    const row = document.createElement("p");
+
+    row.textContent =
+      item.nama + " x " + item.quantity +
+      " - Rp " +
+      Number(item.harga * item.quantity)
+        .toLocaleString("id-ID");
+
+    content.appendChild(row);
+  });
 }
 
-// START APP
+// =========================================
+// SEARCH PRODUCTS
+// =========================================
+
+function searchProducts(keyword) {
+  const grid = document.getElementById("product-grid");
+  if (!grid) return;
+
+  const search = keyword.toLowerCase().trim();
+
+  const filtered = products.filter(p =>
+    String(p.nama || "").toLowerCase().includes(search) ||
+    String(p.kategori || "").toLowerCase().includes(search)
+  );
+
+  grid.innerHTML = "";
+
+  if (!filtered.length) {
+    grid.textContent = "Produk tidak ditemukan.";
+    return;
+  }
+
+  filtered.forEach(product => {
+    const card = document.createElement("article");
+    card.className = "product-card";
+
+    const name = document.createElement("h3");
+    name.textContent = product.nama || "Produk";
+
+    const price = document.createElement("p");
+    price.textContent =
+      "Rp " + Number(product.harga || 0)
+        .toLocaleString("id-ID");
+
+    const button = document.createElement("button");
+    button.className = "primary-button";
+    button.textContent = "Tambah Keranjang";
+
+    button.addEventListener("click", () => {
+      addToCart(product.id);
+    });
+
+    card.append(name, price, button);
+    grid.appendChild(card);
+  });
+}
+
+// =========================================
+// NAVIGATION
+// =========================================
+
+function openView(view) {
+  const views = [
+    "home",
+    "chat",
+    "cart",
+    "orders",
+    "account"
+  ];
+
+  views.forEach(name => {
+    const section = document.getElementById(name + "-view");
+    if (section) section.hidden = name !== view;
+  });
+
+  document.querySelectorAll("[data-view]").forEach(button => {
+    button.classList.toggle(
+      "selected",
+      button.dataset.view === view
+    );
+
+    button.classList.toggle(
+      "active",
+      button.dataset.view === view
+    );
+  });
+
+  if (view === "cart") updateCart();
+}
+
+// =========================================
+// START APPLICATION
+// =========================================
+
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("KASAP APP DIMULAI");
+  console.log("KASAP ID DIMULAI");
 
   const year = document.getElementById("year");
-  if (year) year.textContent = new Date().getFullYear();
+  if (year) {
+    year.textContent = new Date().getFullYear();
+  }
 
   updateCart();
 
+  // NAVIGATION BUTTONS
+  document.querySelectorAll("[data-view]").forEach(button => {
+    button.addEventListener("click", () => {
+      openView(button.dataset.view);
+    });
+  });
+
+  // REFRESH BUTTON
   const refresh = document.getElementById("refresh-button");
+
   if (refresh) {
     refresh.addEventListener("click", loadProducts);
+  }
+
+  // SEARCH FORM
+  const searchForm = document.getElementById("search-form");
+
+  if (searchForm) {
+    searchForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const input = document.getElementById("search-input");
+
+      searchProducts(input ? input.value : "");
+    });
   }
 
   await loadProducts();
 });
 
+// =========================================
 // SERVICE WORKER
+// =========================================
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("./server-worker.js")
-      .catch(error => console.error("Worker:", error));
+      .catch(error => {
+        console.error("Service Worker:", error);
+      });
   });
 }
