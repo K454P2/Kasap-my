@@ -8,12 +8,19 @@ const SUPA_KEY = "sb_publishable_o7z4YitotXfBKTSR67YScg_pcBRFS84";
 
 let supabaseClient = null;
 let products = [];
-let cart = JSON.parse(localStorage.getItem("kasap_cart") || "[]");
+
+let cart = [];
+try {
+  cart = JSON.parse(localStorage.getItem("kasap_cart") || "[]");
+  if (!Array.isArray(cart)) cart = [];
+} catch (e) {
+  cart = [];
+}
 
 // CONNECT SUPABASE
 function connectSupabase() {
-  if (!window.supabase) {
-    throw new Error("Library Supabase tidak ditemukan");
+  if (!window.supabase || !window.supabase.createClient) {
+    throw new Error("Library Supabase tidak berhasil dimuat.");
   }
 
   supabaseClient = window.supabase.createClient(
@@ -21,7 +28,7 @@ function connectSupabase() {
     SUPA_KEY
   );
 
-  console.log("Supabase berhasil diinisialisasi");
+  console.log("KASAP: Supabase terhubung.");
 }
 
 // LOAD PRODUCTS
@@ -31,31 +38,52 @@ async function loadProducts() {
   const notice = document.getElementById("notice");
 
   if (!grid) {
-    console.error("Elemen product-grid tidak ditemukan");
+    console.error("product-grid tidak ditemukan.");
     return;
   }
 
-  grid.innerHTML = '<div class="loading">Memuat produk...</div>';
+  grid.textContent = "Menghubungkan ke Supabase...";
+  if (count) count.textContent = "Memuat produk...";
 
   try {
+    if (!supabaseClient) connectSupabase();
+
+    // Ambil data dari tabel products
     const { data, error } = await supabaseClient
       .from("products")
       .select("*")
-      .eq("aktif", true)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
 
-    products = data || [];
+    const allProducts = data || [];
+
+    // Hanya tampilkan produk aktif
+    products = allProducts.filter(p =>
+      p.aktif === true ||
+      p.aktif === "true" ||
+      p.aktif === 1
+    );
 
     grid.innerHTML = "";
 
     if (count) {
-      count.textContent = products.length + " produk tersedia";
+      count.textContent =
+        products.length + " produk tersedia";
     }
 
-    if (!products.length) {
-      grid.textContent = "Belum ada produk aktif.";
+    if (notice) notice.hidden = true;
+
+    if (allProducts.length === 0) {
+      grid.textContent =
+        "Tabel products berhasil dibaca, tetapi belum ada data produk.";
+      return;
+    }
+
+    if (products.length === 0) {
+      grid.textContent =
+        "Ada " + allProducts.length +
+        " produk, tetapi belum ada yang berstatus aktif.";
       return;
     }
 
@@ -63,10 +91,15 @@ async function loadProducts() {
       const card = document.createElement("article");
       card.className = "product-card";
 
-      const img = document.createElement("img");
-      img.src = product.foto || "";
-      img.alt = product.nama || "Produk";
-      img.onerror = () => img.style.display = "none";
+      if (product.foto) {
+        const img = document.createElement("img");
+        img.src = product.foto;
+        img.alt = product.nama || "Produk";
+        img.onerror = () => {
+          img.style.display = "none";
+        };
+        card.appendChild(img);
+      }
 
       const info = document.createElement("div");
       info.className = "product-info";
@@ -78,38 +111,40 @@ async function loadProducts() {
       const price = document.createElement("div");
       price.className = "product-price";
       price.textContent =
-        "Rp " + Number(product.harga || 0).toLocaleString("id-ID");
+        "Rp " + Number(product.harga || 0)
+          .toLocaleString("id-ID");
 
       const description = document.createElement("p");
       description.textContent = product.deskripsi || "";
 
       const stock = document.createElement("p");
-      stock.textContent = "Stok: " + (product.stok || 0);
+      stock.textContent = "Stok: " + (product.stok ?? 0);
 
       const button = document.createElement("button");
       button.className = "primary-button";
       button.textContent = "Tambah Keranjang";
-      button.addEventListener("click", () => addToCart(product.id));
+      button.type = "button";
+      button.addEventListener("click", () => {
+        addToCart(product.id);
+      });
 
       info.append(name, price, description, stock, button);
-      card.append(img, info);
+      card.appendChild(info);
       grid.appendChild(card);
     });
 
-    if (notice) {
-      notice.hidden = true;
-    }
-
-    console.log("Produk berhasil dimuat:", products.length);
+    console.log(
+      "KASAP: Produk berhasil dimuat:",
+      products.length
+    );
 
   } catch (error) {
-    console.error("Supabase error:", error);
+    console.error("KASAP ERROR:", error);
 
-    grid.textContent = "Gagal memuat produk: " + error.message;
+    grid.textContent =
+      "Gagal memuat produk: " + error.message;
 
-    if (count) {
-      count.textContent = "Gagal memuat produk";
-    }
+    if (count) count.textContent = "Terjadi kesalahan";
 
     if (notice) {
       notice.hidden = false;
@@ -143,19 +178,20 @@ function addToCart(id) {
 
   localStorage.setItem("kasap_cart", JSON.stringify(cart));
   updateCart();
+
   alert("Produk berhasil masuk keranjang!");
 }
 
 function updateCart() {
   const badge = document.getElementById("cart-badge");
+  const content = document.getElementById("cart-content");
 
   const total = cart.reduce(
-    (sum, item) => sum + item.quantity, 0
+    (sum, item) => sum + Number(item.quantity || 0),
+    0
   );
 
   if (badge) badge.textContent = total;
-
-  const content = document.getElementById("cart-content");
 
   if (content) {
     content.innerHTML = "";
@@ -168,39 +204,37 @@ function updateCart() {
         row.textContent =
           item.nama + " x " + item.quantity +
           " - Rp " +
-          Number(item.harga * item.quantity).toLocaleString("id-ID");
+          Number(item.harga * item.quantity)
+            .toLocaleString("id-ID");
+
         content.appendChild(row);
       });
     }
   }
 }
 
-// REFRESH BUTTON
-document.getElementById("refresh-button")
-  ?.addEventListener("click", loadProducts);
-
 // START APP
 document.addEventListener("DOMContentLoaded", async () => {
-  document.getElementById("year").textContent =
-    new Date().getFullYear();
+  console.log("KASAP APP DIMULAI");
+
+  const year = document.getElementById("year");
+  if (year) year.textContent = new Date().getFullYear();
 
   updateCart();
 
-  try {
-    connectSupabase();
-    await loadProducts();
-  } catch (error) {
-    console.error(error);
-
-    const grid = document.getElementById("product-grid");
-    if (grid) grid.textContent = error.message;
+  const refresh = document.getElementById("refresh-button");
+  if (refresh) {
+    refresh.addEventListener("click", loadProducts);
   }
+
+  await loadProducts();
 });
 
 // SERVICE WORKER
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./server-worker.js")
+    navigator.serviceWorker
+      .register("./server-worker.js")
       .catch(error => console.error("Worker:", error));
   });
 }
