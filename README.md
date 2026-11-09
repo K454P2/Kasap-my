@@ -1,23 +1,16 @@
-# KASAP ID - untuk GitHub Pages
+# PasarKita
 
-## File
-- index.html -> struktur
-- style.css -> tampilan
-- app.js -> logika (cari, keranjang, checkout WA)
-- products.json -> DATABASE. Semua produk dari sini saja, tidak ada dummy di kode.
+The source of a YeshBe app – version 1.0.0, exported 2026-11-08.
 
-## Cara upload ke GitHub
-1. Buat repo baru, misal `Kasap-id`
-2. Upload ke-4 file ini ke root repo (jangan di dalam folder)
-3. Settings > Pages > Branch: main, Folder: / (root) > Save
-4. Buka https://username.github.io/Kasap-id/
+```
+pages/          one file per page (pages/en/… – a translation)
+components/     shared components – used by several pages (and the layout)
+utils/          shared helpers – utils/navigation.js is the menu: its order and labels
+layout.jsx      the frame around every page (header, menu, footer)
+theme.css       colors, fonts, spacing
+index.html      the HTML shell
+data/           the data model – collections, fields, permissions
+```
 
-## Cara tambah / ubah produk
-Edit HANYA products.json, contoh:
-{ "id": 4, "nama": "Bougenville baru", "harga": 50000, "stok": 5 }
-
-Hapus produk = hapus barisnya dari products.json. Web akan otomatis ikut berubah.
-
-## Yang perlu diganti
-- Di app.js: WA_NUMBER = nomor WhatsApp seller (format 62...)
-- Link Live: ganti di app.js / index.html
+These files run on YeshBe: the engine, the SDK, sign-in and the data stay there, so this folder
+doesn't run on its own. Keep it as a backup, review it, or use it as a reference.

@@ -1,0 +1,138 @@
+{
+  "appType": "website",
+  "category": "marketplace",
+  "title": "PasarKita",
+  "description": "A multi-vendor marketplace where approved sellers list moderated products, plus platform-sold PPOB products (mobile credit, PLN tokens, bills) via IAK.",
+  "slug": "pasarkita",
+  "lang": [
+    "id"
+  ],
+  "userLang": "id",
+  "fontFamily": "Plus Jakarta Sans",
+  "fontLink": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
+  "pages": [
+    {
+      "name": "Home",
+      "title": "Beranda",
+      "info": "Public marketplace home page. Sections in order: (1) Hero – a split block with a bold headline 'Belanja dari penjual terverifikasi di seluruh Indonesia', a large search bar that filters the catalog below, and a collage of product photos on the side. (2) PPOB strip – a horizontal row of service tiles read from PpobProduct (active only, grouped by type): Pulsa, Paket Data, Token PLN, Tagihan PLN, BPJS, PDAM, E-Wallet; each tile shows an icon, the label and 'mulai dari' the lowest price in IDR; clicking a tile opens a small sheet listing that type's nominals and prices with a 'Segera hadir' button (payments are not active yet), and a note that these products are sold directly by PasarKita. (3) Category chips (Fashion, Elektronik, Rumah Tangga, Makanan & Minuman, Kecantikan, Hobi, Lainnya). (4) Product catalog using ProductCatalog (variant 'marketplace') over Product rows with status 'active' only: image, name, price in IDR, store name and city (from the Store relation), average rating from approved Reviews, stock badges ('Stok habis', 'Sisa 3'); search, category filter, price range and sort; the cart button is replaced by 'Hubungi penjual' which opens WhatsApp to the store phone. (5) 'Jual di PasarKita' band on a dark background – three steps: daftar akun, ajukan toko, disetujui admin lalu mulai jualan – with a CTA to the Toko Saya page. (6) Footer with categories, about PasarKita, and a line that every seller is verified by the admin. Never show invented stats, customer counts or testimonials.",
+      "route": "/",
+      "lang": "id",
+      "home": true,
+      "auth": false,
+      "type": "page",
+      "seo": {
+        "title": "PasarKita — Marketplace Penjual Terverifikasi",
+        "description": "Belanja dari penjual terverifikasi se-Indonesia, plus pulsa, paket data, dan token listrik dalam satu tempat."
+      }
+    },
+    {
+      "name": "Login",
+      "title": "Masuk",
+      "info": "Single sign-in / sign-up page using AuthCard with a sliding switch 'Masuk | Daftar'. Sign-up asks full name, email, password and phone. New accounts start as Pembeli (role 1). A short line under the card explains: 'Ingin berjualan? Setelah daftar, ajukan toko Anda di halaman Toko Saya – admin akan memverifikasinya.' Soft brand-gradient background with the PasarKita wordmark. After login redirect to the page the user came from, else Home.",
+      "route": "/login",
+      "lang": "id",
+      "home": false,
+      "auth": false,
+      "type": "login",
+      "seo": {
+        "title": "Masuk atau Daftar — PasarKita",
+        "description": "Masuk ke akun PasarKita Anda atau buat akun baru untuk mulai belanja dan berjualan."
+      }
+    },
+    {
+      "name": "MyStore",
+      "title": "Toko Saya",
+      "info": "Seller workspace (login required); its content depends on the signed-in user's Store record (Store.ownerId = current user). STATE A – no store yet: a store application form with store name, store description, city, address, WhatsApp phone and logo URL, plus a checkbox agreeing to the seller terms; submitting creates a Store with status 'pending' and appliedAt = today. STATE B – status 'pending': a calm status card 'Pengajuan toko sedang ditinjau admin' with the submitted details and the application date. STATE 'rejected' shows the admin's rejectionReason with an option to edit and resubmit (sets status back to pending); STATE 'blocked' shows that the store is blocked and to contact PasarKita. STATE C – status 'approved': a seller dashboard. Top: 4 KPI cards – Produk aktif (count of the store's Products with status active), Menunggu moderasi (count with status pending), Pesanan bulan ini (count of Orders for this store with orderDate in the current month), Pendapatan bersih bulan ini (sum of total minus commissionAmount for those orders, not counting cancelled/refunded). Below: a product management table (name, image thumbnail, category, price in IDR, stock, moderation status badge: Menunggu / Aktif / Ditolak / Disembunyikan) with search and a status filter. 'Tambah produk' opens a form: name, category, price, stock, image URL, description; every new or edited product is saved with status 'pending' and a note that it will appear after admin moderation. Sellers can edit and delete their own products.",
+      "route": "/toko-saya",
+      "lang": "id",
+      "home": false,
+      "auth": true,
+      "type": "page",
+      "seo": {
+        "title": "Toko Saya — PasarKita",
+        "description": "Ajukan toko Anda, pantau status verifikasi, dan kelola produk di PasarKita."
+      }
+    }
+  ],
+  "laterPages": [
+    "Panel Admin: Verifikasi Penjual",
+    "Moderasi Produk & Ulasan",
+    "Pesanan, Refund & Sengketa",
+    "Komisi & Laporan Penjualan",
+    "Pulsa & Token Listrik (IAK)",
+    "Detail Produk",
+    "Keranjang & Checkout"
+  ],
+  "ownerQuestions": {
+    "intro": "Beberapa pertanyaan agar PasarKita bekerja persis seperti bisnis Anda:",
+    "questions": [
+      {
+        "q": "Berapa komisi platform dari setiap penjualan?",
+        "options": [
+          "5% per transaksi",
+          "10% per transaksi",
+          "Berbeda per kategori"
+        ]
+      },
+      {
+        "q": "Bagaimana pesanan dikirim ke pembeli?",
+        "multi": true,
+        "options": [
+          "Kurir ekspedisi (JNE, J&T, SiCepat)",
+          "Kurir instan",
+          "Ambil sendiri di toko"
+        ]
+      },
+      {
+        "q": "Berapa lama batas pengajuan komplain / refund?",
+        "options": [
+          "2 hari setelah diterima",
+          "7 hari setelah diterima",
+          "14 hari setelah diterima"
+        ]
+      }
+    ]
+  },
+  "design": {
+    "direction": "Pasar Modern – warm ink with one coral accent",
+    "concept": "The energy of an Indonesian pasar, edited by a calm hand: warm off-white surfaces, deep ink type and a single coral accent reserved for actions and prices. It should feel trustworthy (every seller verified) yet lively and local. Memorable for its woven-pattern detailing and confident, chunky product cards.",
+    "layout": "Sticky solid top bar with logo, a wide centered search field and account actions; contained 1200px content with full-bleed colour bands breaking the rhythm (PPOB strip, seller CTA). The seller workspace uses a clean single-column canvas with a compact header and KPI row.",
+    "nav": "Top bar: wordmark left, rounded search in the middle, 'Toko Saya' and a 'Masuk' coral pill on the end. Active link gets a short coral underline. On mobile a bottom tab bar (Beranda, Cari, Toko Saya, Akun) replaces the links; search collapses into an icon that expands full-width.",
+    "hero": "Split hero on warm off-white: oversized ink headline with one coral-highlighted word, subline, a big search field with category dropdown, and a tilted 3-photo collage of local products with rounded corners on the other side; a small 'Penjual terverifikasi admin' seal badge.",
+    "sections": "Hero (light) → PPOB tile strip on a soft coral-tinted full-bleed band → category chips → product grid (light, contained) → 'Jual di PasarKita' 3-step band in deep ink with coral numbers → compact footer.",
+    "typography": "Plus Jakarta Sans throughout; extra-bold headings with tight tracking at large sizes, small uppercase eyebrows with wide letter-spacing, tabular figures for prices.",
+    "shapes": "16px rounded cards with 1px warm-grey borders and no heavy shadows; pill buttons and chips; prices in bold coral; status badges as soft tinted pills.",
+    "imagery": "Square product photos framed inside cards; hero collage of real local goods; a subtle woven/anyaman line pattern used as texture in colour bands.",
+    "motion": "Subtle: fade-up on scroll for sections, slight lift and border-colour change on card hover, sheet slide-up for PPOB nominals.",
+    "signature": "A thin woven 'anyaman' pattern ribbon that edges the PPOB band and the seller CTA, paired with a coral 'Terverifikasi' seal on every store name."
+  },
+  "libraryComponents": [
+    "ProductCatalog",
+    "AuthCard",
+    "KpiCards",
+    "DataGridPro"
+  ],
+  "auth": {
+    "enabled": true,
+    "type": "mixed",
+    "hasUserRoles": true,
+    "hasAdmin": false,
+    "roles": [
+      {
+        "id": 1,
+        "label": "Pembeli"
+      },
+      {
+        "id": 2,
+        "label": "Penjual"
+      },
+      {
+        "id": 3,
+        "label": "Admin Platform"
+      }
+    ]
+  },
+  "payments": {
+    "enabled": false
+  }
+}

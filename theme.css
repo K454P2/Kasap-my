@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #F97362;
+  --primary-hover: #E2594A;
+  --primary-light: #FFE9E5;
+  --primary-text: #ffffff;
+
+  --secondary: #FFF2F0;
+  --secondary-hover: #FFE0DB;
+  --secondary-light: #FFFAF9;
+  --secondary-text: #F97362;
+
+  --accent: #0D9488;
+  --accent-hover: #0F766E;
+  --accent-light: #CCFBF1;
+  --accent-text: #ffffff;
+
+  --success: #22C55E;
+  --success-hover: #16A34A;
+  --success-light: #DCFCE7;
+  --success-text: #15803D;
+
+  --error: #EF4444;
+  --error-hover: #DC2626;
+  --error-light: #FEE2E2;
+  --error-text: #B91C1C;
+
+  --warning: #F59E0B;
+  --warning-hover: #D97706;
+  --warning-light: #FEF3C7;
+  --warning-text: #B45309;
+
+  --info: #3B82F6;
+  --info-hover: #2563EB;
+  --info-light: #DBEAFE;
+  --info-text: #1D4ED8;
+
+  --background: #FFFAF9;
+  --surface: #ffffff;
+  --surface-2: #FFF2F0;
+  --surface-3: #FFE0DB;
+  --overlay: rgba(0,0,0,0.45);
+
+  --text: #3B1A16;
+  --text-secondary: #6E4038;
+  --text-muted: #B5948D;
+  --text-inverse: #ffffff;
+  --text-link: #F97362;
+  --text-link-hover: #E2594A;
+
+  --border: #FFE0DB;
+  --border-focus: #F97362;
+  --border-error: #EF4444;
+  --border-success: #22C55E;
+  --divider: #FFF2F0;
+
+  --btn-primary-bg: #F97362;
+  --btn-primary-hover: #E2594A;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #FFF2F0;
+  --btn-secondary-hover: #FFE0DB;
+  --btn-secondary-text: #F97362;
+  --btn-secondary-border: #F97362;
+  --btn-danger-bg: #EF4444;
+  --btn-danger-hover: #DC2626;
+  --btn-danger-text: #ffffff;
+  --btn-danger-border: #EF4444;
+  --btn-ghost-hover: #FFE9E5;
+  --btn-ghost-text: #F97362;
+  --btn-radius: 10px;
+  --btn-sm-padding: 6px 14px;
+  --btn-md-padding: 10px 22px;
+  --btn-lg-padding: 14px 32px;
+  --btn-font-weight: 600;
+
+  --input-bg: #ffffff;
+  --input-bg-focus: #FFFAF9;
+  --input-border: #FFE0DB;
+  --input-focus: #F97362;
+  --input-error: #EF4444;
+  --input-success: #22C55E;
+  --input-text: #3B1A16;
+  --input-placeholder: #B5948D;
+  --input-radius: 10px;
+  --input-padding: 10px 14px;
+  --input-font-size: 15px;
+
+  --card-bg: #ffffff;
+  --card-border: #FFF2F0;
+  --card-radius: 14px;
+  --card-padding: 24px;
+  --card-shadow: 0 2px 12px rgba(249,115,98,0.07);
+  --card-hover-shadow: 0 6px 24px rgba(249,115,98,0.15);
+
+  --table-header-bg: #FFE9E5;
+  --table-header-text: #F97362;
+  --table-row-hover: #FFFAF9;
+  --table-border: #FFF2F0;
+  --table-row-even: #FFFAF9;
+  --table-row-odd: #ffffff;
+
+  --badge-radius: 999px;
+  --badge-padding: 3px 10px;
+  --badge-font-size: 12px;
+  --badge-font-weight: 600;
+
+  --modal-bg: #ffffff;
+  --modal-radius: 18px;
+  --modal-padding: 32px;
+  --modal-shadow: 0 8px 40px rgba(249,115,98,0.18);
+
+  --menu-bg: #ffffff;
+  --menu-border: #FFF2F0;
+  --menu-radius: 12px;
+  --menu-shadow: 0 4px 20px rgba(249,115,98,0.12);
+  --menu-item-hover: #FFF2F0;
+  --menu-item-text: #3B1A16;
+  --menu-item-padding: 10px 16px;
+
+  --tab-active-bg: #F97362;
+  --tab-active-text: #ffffff;
+  --tab-inactive: #B5948D;
+  --tab-hover-text: #F97362;
+  --tab-radius: 8px;
+  --tab-padding: 8px 18px;
+
+  --sidebar-bg: #3B1A16;
+  --sidebar-text: #E2C3BC;
+  --sidebar-text-active: #ffffff;
+  --sidebar-item-active: #F97362;
+  --sidebar-item-hover: rgba(249,115,98,0.15);
+  --sidebar-border: rgba(255,255,255,0.07);
+  --sidebar-w: 240px;
+  --sidebar-w-sm: 64px;
+
+  --header-bg: #ffffff;
+  --header-border: #FFF2F0;
+  --header-h: 64px;
+  --header-text: #3B1A16;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 3px rgba(249,115,98,0.06);
+  --shadow-sm: 0 2px 8px rgba(249,115,98,0.08);
+  --shadow-md: 0 4px 16px rgba(249,115,98,0.10);
+  --shadow-lg: 0 8px 32px rgba(249,115,98,0.13);
+  --shadow-xl: 0 16px 48px rgba(249,115,98,0.18);
+
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Courier New', monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 21px;
+  --font-size-2xl: 26px;
+  --font-size-3xl: 32px;
+  --font-size-4xl: 42px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --content-max-w: 1100px;
+  --content-padding: 24px;
+  --transition: 0.18s ease;
+  --transition-slow: 0.35s ease;
+}
+
+.dark {
+  --background: #1D0C0A;
+  --surface: #2B1512;
+  --surface-2: #3A1E1A;
+  --surface-3: #4D2A25;
+  --overlay: rgba(0,0,0,0.65);
+  --text: #FBE3DE;
+  --text-secondary: #C99F97;
+  --text-muted: #8F6E68;
+  --text-inverse: #2B1512;
+  --text-link: #FCA5A0;
+  --text-link-hover: #FCA5A0;
+  --border: #4D2A25;
+  --border-focus: #FCA5A0;
+  --divider: #3A1E1A;
+  --card-bg: #2B1512;
+  --card-border: #4D2A25;
+  --header-bg: #2B1512;
+  --header-border: #4D2A25;
+  --input-bg: #3A1E1A;
+  --input-bg-focus: #4D2A25;
+  --input-border: #4D2A25;
+  --input-text: #FBE3DE;
+  --table-header-bg: #3A1E1A;
+  --table-row-even: #2B1512;
+  --table-row-odd: #3A1E1A;
+  --table-row-hover: #4D2A25;
+  --modal-bg: #2B1512;
+  --menu-bg: #2B1512;
+  --menu-border: #4D2A25;
+  --menu-item-hover: #3A1E1A;
+  --menu-item-text: #FBE3DE;
+  --tab-inactive: #8F6E68;
+  --primary-light: #3A1E1A;
+  --secondary: #3A1E1A;
+  --secondary-hover: #4D2A25;
+  --secondary-light: #2B1512;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--background);
+  color: var(--text);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+}
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-full); }
+::selection { background: var(--primary-light); color: var(--primary); }
+:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }

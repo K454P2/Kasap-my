@@ -1,0 +1,432 @@
+[
+  {
+    "name": "User",
+    "system": true,
+    "type": "object",
+    "properties": {
+      "city": {
+        "type": "string",
+        "maxLength": 100,
+        "description": "User's city, used as default for delivery and store location"
+      }
+    },
+    "required": []
+  },
+  {
+    "name": "Store",
+    "type": "object",
+    "properties": {
+      "ownerId": {
+        "type": "relation",
+        "ref": "User",
+        "description": "The user who owns and runs this store"
+      },
+      "name": {
+        "type": "string",
+        "maxLength": 100,
+        "description": "Store display name"
+      },
+      "description": {
+        "type": "text",
+        "description": "Short description of what the store sells"
+      },
+      "city": {
+        "type": "string",
+        "maxLength": 100,
+        "description": "City where the store is located"
+      },
+      "address": {
+        "type": "string",
+        "maxLength": 250,
+        "description": "Store pickup / business address"
+      },
+      "phone": {
+        "type": "string",
+        "maxLength": 30,
+        "description": "Store WhatsApp phone number"
+      },
+      "logoUrl": {
+        "type": "string",
+        "maxLength": 500,
+        "description": "Store logo image URL"
+      },
+      "status": {
+        "type": "enum",
+        "values": [
+          "pending",
+          "approved",
+          "rejected",
+          "blocked"
+        ],
+        "labels": {
+          "pending": "Menunggu verifikasi",
+          "approved": "Disetujui",
+          "rejected": "Ditolak",
+          "blocked": "Diblokir"
+        },
+        "default": "pending",
+        "description": "Verification status set by the platform admin; only approved stores can sell"
+      },
+      "rejectionReason": {
+        "type": "text",
+        "description": "Admin's reason when the application is rejected or the store is blocked"
+      },
+      "commissionRate": {
+        "type": "number",
+        "description": "Platform commission percentage for this store; empty = platform default"
+      },
+      "appliedAt": {
+        "type": "date",
+        "description": "Date the seller submitted the store application"
+      },
+      "approvedAt": {
+        "type": "date",
+        "description": "Date the admin approved the store"
+      }
+    },
+    "required": [
+      "ownerId",
+      "name",
+      "city",
+      "phone"
+    ],
+    "publicRead": true,
+    "publicCreate": false
+  },
+  {
+    "name": "Product",
+    "type": "object",
+    "properties": {
+      "storeId": {
+        "type": "relation",
+        "ref": "Store",
+        "parent": true,
+        "description": "The store selling this product"
+      },
+      "name": {
+        "type": "string",
+        "maxLength": 100,
+        "description": "Product name"
+      },
+      "description": {
+        "type": "text",
+        "description": "Product description"
+      },
+      "price": {
+        "type": "number",
+        "description": "Price in IDR"
+      },
+      "imageUrl": {
+        "type": "string",
+        "maxLength": 500,
+        "description": "Main product image URL"
+      },
+      "category": {
+        "type": "enum",
+        "values": [
+          "fashion",
+          "electronics",
+          "home",
+          "food",
+          "beauty",
+          "hobby",
+          "other"
+        ],
+        "labels": {
+          "fashion": "Fashion",
+          "electronics": "Elektronik",
+          "home": "Rumah Tangga",
+          "food": "Makanan & Minuman",
+          "beauty": "Kecantikan",
+          "hobby": "Hobi",
+          "other": "Lainnya"
+        },
+        "description": "Product category"
+      },
+      "stock": {
+        "type": "number",
+        "description": "Units in stock – empty = unlimited"
+      },
+      "status": {
+        "type": "enum",
+        "values": [
+          "pending",
+          "active",
+          "rejected",
+          "hidden"
+        ],
+        "labels": {
+          "pending": "Menunggu moderasi",
+          "active": "Aktif",
+          "rejected": "Ditolak",
+          "hidden": "Disembunyikan"
+        },
+        "default": "pending",
+        "description": "Moderation status set by the admin; only active products are shown publicly"
+      },
+      "moderationNote": {
+        "type": "text",
+        "description": "Admin note explaining a rejection or hiding"
+      },
+      "createdDate": {
+        "type": "date",
+        "description": "Date the product was listed"
+      }
+    },
+    "required": [
+      "storeId",
+      "name",
+      "price",
+      "category"
+    ],
+    "publicRead": true,
+    "publicCreate": false
+  },
+  {
+    "name": "Review",
+    "type": "object",
+    "properties": {
+      "productId": {
+        "type": "relation",
+        "ref": "Product",
+        "parent": true,
+        "description": "The reviewed product"
+      },
+      "userId": {
+        "type": "relation",
+        "ref": "User",
+        "description": "The buyer who wrote the review"
+      },
+      "rating": {
+        "type": "number",
+        "description": "Star rating from 1 to 5"
+      },
+      "comment": {
+        "type": "text",
+        "description": "Review text"
+      },
+      "reviewDate": {
+        "type": "date",
+        "description": "Date the review was written"
+      },
+      "status": {
+        "type": "enum",
+        "values": [
+          "pending",
+          "approved",
+          "hidden"
+        ],
+        "labels": {
+          "pending": "Menunggu moderasi",
+          "approved": "Ditampilkan",
+          "hidden": "Disembunyikan"
+        },
+        "default": "pending",
+        "description": "Moderation status set by the admin"
+      }
+    },
+    "required": [
+      "productId",
+      "rating"
+    ],
+    "publicRead": true,
+    "publicCreate": false
+  },
+  {
+    "name": "Order",
+    "type": "object",
+    "properties": {
+      "orderNumber": {
+        "type": "string",
+        "maxLength": 50,
+        "description": "Human-readable order number"
+      },
+      "buyerId": {
+        "type": "relation",
+        "ref": "User",
+        "description": "The buyer who placed the order"
+      },
+      "storeId": {
+        "type": "relation",
+        "ref": "Store",
+        "description": "The store fulfilling the order"
+      },
+      "orderDate": {
+        "type": "date",
+        "description": "Date the order was placed"
+      },
+      "customerName": {
+        "type": "string",
+        "maxLength": 100,
+        "description": "Recipient name"
+      },
+      "customerPhone": {
+        "type": "string",
+        "maxLength": 30,
+        "description": "Recipient phone"
+      },
+      "shippingAddress": {
+        "type": "string",
+        "maxLength": 200,
+        "description": "Delivery address copied at order time"
+      },
+      "shippingCity": {
+        "type": "string",
+        "maxLength": 80,
+        "description": "Delivery city copied at order time"
+      },
+      "shippingZip": {
+        "type": "string",
+        "maxLength": 20,
+        "description": "Delivery postal code"
+      },
+      "subtotal": {
+        "type": "number",
+        "description": "Sum of items in IDR"
+      },
+      "shippingFee": {
+        "type": "number",
+        "description": "Shipping fee in IDR"
+      },
+      "total": {
+        "type": "number",
+        "description": "Order total in IDR"
+      },
+      "commissionAmount": {
+        "type": "number",
+        "description": "Platform commission taken from this order, in IDR"
+      },
+      "status": {
+        "type": "enum",
+        "values": [
+          "pending",
+          "paid",
+          "shipped",
+          "completed",
+          "cancelled",
+          "refunded",
+          "disputed"
+        ],
+        "labels": {
+          "pending": "Menunggu",
+          "paid": "Dibayar",
+          "shipped": "Dikirim",
+          "completed": "Selesai",
+          "cancelled": "Dibatalkan",
+          "refunded": "Dikembalikan",
+          "disputed": "Sengketa"
+        },
+        "default": "pending",
+        "description": "Order lifecycle status"
+      },
+      "disputeNote": {
+        "type": "text",
+        "description": "Details of a complaint, refund request or dispute"
+      }
+    },
+    "required": [
+      "storeId",
+      "orderDate",
+      "total"
+    ],
+    "publicRead": false,
+    "publicCreate": false
+  },
+  {
+    "name": "OrderItem",
+    "type": "object",
+    "properties": {
+      "orderId": {
+        "type": "relation",
+        "ref": "Order",
+        "parent": true,
+        "description": "The order this item belongs to"
+      },
+      "productId": {
+        "type": "relation",
+        "ref": "Product",
+        "description": "The product ordered"
+      },
+      "quantity": {
+        "type": "number",
+        "description": "Units ordered"
+      },
+      "priceAtOrder": {
+        "type": "number",
+        "description": "Unit price in IDR at the time of the order"
+      }
+    },
+    "required": [
+      "orderId",
+      "productId",
+      "quantity",
+      "priceAtOrder"
+    ],
+    "publicRead": false,
+    "publicCreate": false
+  },
+  {
+    "name": "PpobProduct",
+    "type": "object",
+    "properties": {
+      "code": {
+        "type": "string",
+        "maxLength": 50,
+        "description": "IAK product code used for the transaction"
+      },
+      "type": {
+        "type": "enum",
+        "values": [
+          "pulsa",
+          "data",
+          "plnToken",
+          "plnPostpaid",
+          "bpjs",
+          "pdam",
+          "ewallet"
+        ],
+        "labels": {
+          "pulsa": "Pulsa",
+          "data": "Paket Data",
+          "plnToken": "Token PLN",
+          "plnPostpaid": "Tagihan PLN",
+          "bpjs": "BPJS",
+          "pdam": "PDAM",
+          "ewallet": "E-Wallet"
+        },
+        "description": "PPOB service type"
+      },
+      "operator": {
+        "type": "string",
+        "maxLength": 50,
+        "description": "Operator or provider, e.g. Telkomsel, PLN"
+      },
+      "name": {
+        "type": "string",
+        "maxLength": 100,
+        "description": "Display name of the denomination"
+      },
+      "nominal": {
+        "type": "number",
+        "description": "Face value in IDR"
+      },
+      "price": {
+        "type": "number",
+        "description": "Selling price in IDR set by the platform"
+      },
+      "active": {
+        "type": "boolean",
+        "default": true,
+        "description": "Whether this PPOB product is offered"
+      }
+    },
+    "required": [
+      "code",
+      "type",
+      "name",
+      "price"
+    ],
+    "publicRead": true,
+    "publicCreate": false
+  }
+]
